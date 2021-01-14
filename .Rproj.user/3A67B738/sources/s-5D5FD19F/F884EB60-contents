@@ -1,0 +1,84 @@
+#' @title Depature Module
+#'
+#' @description Module function for simulating both general and disease-related
+#'              departures, including deaths, among population members.
+#'
+#' @inheritParams aging_msm_sdiego
+#'
+#' @details
+#' Deaths are divided into two categories: general deaths, for which demographic
+#' data on age-specific mortality rates applies; and AIDS-mortality rate.
+#'
+#' @return
+#' This function returns the updated \code{dat} object accounting for deaths.
+#'
+#' @keywords module msm
+#' @export
+#'
+departure_msm_sdiego <- function(dat, at) {
+
+  ## General departures
+  active <- dat$attr$active
+  age <- floor(dat$attr$age)
+  status <- dat$attr$status
+  stage <- dat$attr$stage
+  tx.status <- dat$attr$tx.status
+  exitTime <- dat$attr$exitTime
+
+  aids.mr <- dat$param$aids.mr
+  #age specific mortality rate
+  asmr <- dat$param$asmr
+  arrival.age <- dat$param$arrival.age
+
+
+
+  idsElig <- which(active == 1)
+  ## Calculate age-specific departure rates for each eligible node ##
+  ## Everyone older than 80 gets the final mortality rate
+  whole_ages_of_elig <- pmin(ceiling(age[idsElig]), 80)
+  departure_rates_of_elig <- asmr[(whole_ages_of_elig - arrival.age) + 1]
+
+  rates <- departure_rates_of_elig
+
+
+  #FFN: ids of Departures
+  idsDep <- idsElig[rbinom(length(idsElig), 1, rates) == 1]
+
+  ## HIV-related deaths
+  idsEligAIDS <- which(stage == 4)
+  idsDepAIDS <- idsEligAIDS[rbinom(length(idsEligAIDS), 1, aids.mr) == 1]
+
+  idsDepAll <- unique(c(idsDep, idsDepAIDS))
+  depHIV <- intersect(idsDepAll, which(status == 1))
+  #depHIV.old <- intersect(depHIV, which(age >= 65))
+
+
+  #Cumulative R0 calculations
+  if (at == 2) {
+    dat$temp$R0 <- NA
+  }
+  if (length(depHIV) > 0) {
+    newR0 <- dat$attr$count.trans[depHIV]
+    dat$temp$R0 <- c(dat$temp$R0, newR0)
+  }
+
+  if (length(idsDepAll) > 0) {
+    dat$attr$active[idsDepAll] <- 0
+    #dat$nw <- tergmLite::delete_vertices(dat$nw, idsDepAll)
+    exitTime[idsDepAll] <- at
+    dat <- set_attr(dat, "exitTime", exitTime)
+
+    #dat$attr <- deleteAttr(dat$attr, idsDepAll)
+
+  }
+
+  ## Summary Output
+
+  dat$epi$dep.gen[at] <- length(idsDep)
+  dat$epi$dep.AIDS[at] <- length(idsDepAIDS)
+  dat$epi$dep.HIV[at] <- length(depHIV)
+  #dat$epi$dep.HIV.old[at] <- length(depHIV.old)
+
+  return(dat)
+}
+

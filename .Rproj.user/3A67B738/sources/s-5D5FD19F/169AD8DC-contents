@@ -1,0 +1,88 @@
+#' @title Depature Module
+#'
+#' @description Module function for simulating both general and disease-related
+#'              departures, including deaths, among population members.
+#'
+#' @inheritParams aging_msm
+#'
+#' @details
+#' Deaths are divided into two categories: general deaths, for which demographic
+#' data on age-specific mortality rates applies; and AIDS-mortality rate.
+#'
+#' @return
+#' This function returns the updated \code{dat} object accounting for deaths.
+#'
+#' @keywords module msm
+#' @export
+#'
+departure_mig <- function(dat, at) {
+
+  ## General departures
+  active <- get_attr(dat, "active")
+  status <- get_attr(dat, "status")
+  stage <- get_attr(dat, "stage")
+  exitTime <- get_attr(dat, "exitTime")
+  rates.all <- get_param(dat, "asmr")
+  rates.aids <- get_param(dat, "aids.mr")
+  arrival.age <- get_param(dat, "arrival.age")
+
+  idsDpt.all <- NULL
+  idsDpt.aids <- NULL
+
+  # Departures (not HIV-related) --------------------------------------------------
+  nDepartures.all <- 0
+  idsElig.all <- which(active == 1)
+  nElig.all <- length(idsElig.all)
+  if (nElig.all > 0) {
+    vecDepartures.all <- which(rbinom(nElig.all, 1, rates.all) == 1)
+    if (length(vecDepartures.all) > 0) {
+      idsDpt.all <- idsElig.all[vecDepartures.all]
+      nDepartures.all <- length(idsDpt.all)
+      active[idsDpt.all] <- 0
+      exitTime[idsDpt.all] <- at
+    }
+  }
+
+  # AIDS-related departures -----------------------------------------------------
+  nDepartures.aids <- 0
+  idsElig.aids <- which(active == 1 & stage == "4")
+  nElig.aids <- length(idsElig.aids)
+  if (nElig.aids > 0) {
+    vecDepartures.aids <- which(rbinom(nElig.aids, 1, rates.aids) == 1)
+    if (length(vecDepartures.aids) > 0) {
+      idsDpt.aids <- idsElig.aids[vecDepartures.aids]
+      nDepartures.aids <- length(idsDpt.aids)
+      active[idsDpt.aids] <- 0
+      exitTime[idsDpt.aids] <- at
+    }
+  }
+
+  # counting the number of departures by natural causes
+  # that was HIV positive
+  idsDepAll <- unique(c(idsDpt.all, idsDpt.aids))
+  depHIV <- intersect(idsDepAll, which(status == "i"))
+  ndepHIV <- length(depHIV)
+
+
+  #Cumulative R0 calculations
+  if (at == 2) {
+    dat$temp$R0 <- NA
+  }
+  if (length(depHIV) > 0) {
+    newR0 <- dat$attr$count.trans[depHIV]
+    dat$temp$R0 <- c(dat$temp$R0, newR0)
+  }
+
+
+  # Output ------------------------------------------------------------------
+
+  dat <- set_attr(dat, "active", active)
+  dat <- set_attr(dat, "exitTime", exitTime)
+
+  dat <- set_epi(dat, "dall.flow", at, nDepartures.all)
+  dat <- set_epi(dat, "daids.flow", at, nDepartures.aids)
+  dat <- set_epi(dat, "dhiv.flow", at, ndepHIV)
+
+  return(dat)
+}
+

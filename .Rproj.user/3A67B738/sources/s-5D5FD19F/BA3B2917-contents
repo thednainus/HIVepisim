@@ -1,0 +1,87 @@
+#' @title Arrivals Module
+#'
+#' @description Module function for arrivals into the sexually active
+#'              population. Arrivals are modelled independetly for population 1
+#'              (which will have origin = "region" and related to the MSM population in
+#'              San Diego) and population 2 (which will have origin = global
+#'              representing the global population of MSM).
+#'
+#' @inheritParams EpiModelHIV::aging_msm
+#'
+#' @details
+#' New population members are added based on expected numbers of entries,
+#' stochastically determined with draws from Poisson distributions. For each new
+#' entry, a set of attributes is added for that node, and the nodes are added onto
+#' the network objects. Only attributes that are a part of the network model
+#' formulae are updated as vertex attributes on the network objects.
+#'
+#' @return
+#' This function updates the \code{attr} list with new attributes for each new
+#' population member, and the \code{nw} objects with new vertices.
+#'
+#' @keywords module msm
+#' @export
+#'
+arrivals_mig <- function(dat, at){
+
+  arrival.age <- get_param(dat, "arrival.age")
+
+  # Variables ---------------------------------------------------------------
+  # Arrival rate for population 1 (San Diego population)
+  a1.rate <- get_param(dat, "a1.rate")
+  index1 <- at - 1
+  nOld1 <- get_epi(dat, "num1", index1)
+  nArrivals1 <- 0
+
+  # Arrival rate for population 2 (Global population)
+  a2.rate <- get_param(dat, "a2.rate")
+  index2 <- at - 1
+  nOld2 <- get_epi(dat, "num2", index2)
+  nArrivals2 <- 0
+
+  # Add Nodes ---------------------------------------------------------------
+  # For population 1 (San Diego population)
+  if (nOld1 > 0) {
+    nArrivals1 <- rbinom(1, nOld1, a.rate1)
+    if (nArrivals1 > 0) {
+      dat <- append_core_attr(dat, at, nArrivals1)
+      dat <- append_attr(dat, "status", "s", nArrivals1)
+      dat <- append_attr(dat, "infTime", NA, nArrivals1)
+      dat <- append_attr(dat, "age", arrival.age, nArrivals1)
+      dat <- append_attr(dat, "diag.status", 0, nArrivals1)
+      dat <- append_attr(dat, "count.trans", 0, nArrivals1)
+      dat <- append_attr(dat, "risk.group", sample(x = 1:2, replace = TRUE), nArrivals1)
+      dat <- append_attr(dat, "num.neg.tests", 0, nArrivals1)
+      dat <- append_attr(dat, "origin", "region", nArrivals1)
+      dat <- append_attr(dat, "migrant", 1, nArrivals1)
+    }
+  }
+
+
+  # For population 2 (San Diego population)
+  if (nOld2 > 0) {
+    nArrivals2 <- rbinom(1, nOld2, a.rate2)
+    if (nArrivals2 > 0) {
+      dat <- append_core_attr(dat, at, nArrivals2)
+      dat <- append_attr(dat, "status", "s", nArrivals2)
+      dat <- append_attr(dat, "infTime", NA, nArrivals2)
+      dat <- append_attr(dat, "age", arrival.age, nArrivals2)
+      dat <- append_attr(dat, "diag.status", 0, nArrivals2)
+      dat <- append_attr(dat, "count.trans", 0, nArrivals2)
+      dat <- append_attr(dat, "risk.group", sample(x = 1:2, replace = TRUE), nArrivals2)
+      dat <- append_attr(dat, "num.neg.tests", 0, nArrivals2)
+      dat <- append_attr(dat, "origin", "global", nArrivals2)
+      dat <- append_attr(dat, "migrant", 2, nArrivals2)
+
+
+    }
+  }
+
+
+
+  # Output ------------------------------------------------------------------
+  dat <- set_epi(dat, "a1.flow", at, nArrivals1)
+  dat <- set_epi(dat, "a2.flow", at, nArrivals2)
+
+  return(dat)
+}
