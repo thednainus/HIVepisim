@@ -28,65 +28,97 @@ migration <- function(dat, at){
   # migration rate from population 2 to population 1
   m21.rate <- get_param(dat, "m21.rate")
 
-  # Attributes ----
-  origin <- get_attr(dat, "origin")
-  migrant <- get_attr(dat, "migrant")
-  migrationTime <- get_attr(dat, "migrationTime")
+  if(m12.rate == 0){
+    nMig12 <- 0
+  }
+
+  if(m21.rate == 0){
+    nMig21 <- 0
+  }
+
 
 
   if(m12.rate != 0){
     ## Process
     # migrations for population 1 to population 2
-    #size of population 1
-    pop1 <- dat$epi$num1[at - 1]
 
-    nMigExp12 <- pop1 * m12.rate
-    nMig12 <- rpois(1, nMigExp12)
+    nMig12 <- 0
+
+    # Attributes ----
+    active <- get_attr(dat, "active")
+    origin <- get_attr(dat, "origin")
+    migrant <- get_attr(dat, "migrant")
+    migrationTime <- get_attr(dat, "migrationTime")
+
+
+    idsMigs12 <- which(active == 1 & origin == "region")
+    nidsMigs12 <- length(idsMigs12)
 
     ## Update Attr
-    if (nMig12 > 0) {
+    if (nidsMigs12 > 0) {
       # because this is a migration from population 1 to population 2
       # the migrants will be labeled as origin = "global" (because it
       # is not in population 1 anymore)
       #random select the number fo migrants from the network to migrate
-      idsNewMig12 <- sample(which(origin == "region"), nMig12)
-      origin[idsNewMig12] <- "global"
-      migrant[idsNewMig12] <- 12
-      migrationTime[idsNewMig12] <- at
-      dat <- set_attr(dat, "origin", origin)
-      dat <- set_attr(dat, "migrant", migrant)
-      dat <- set_attr(dat, "migrationTime", migrationTime)
+      vecMigrations.12 <- which(rbinom(nidsMigs12, 1, m12.rate) == 1)
+      if (length(vecMigrations.12) > 0) {
+        idsMigs12.all <- idsMigs12[vecMigrations.12]
+        nMig12 <- length(idsMigs12.all)
+        origin[idsMigs12.all] <- "global"
+        migrant[idsMigs12.all] <- 12
+        migrationTime[idsMigs12.all] <- at
+        dat <- set_attr(dat, "origin", origin)
+        dat <- set_attr(dat, "migrant", migrant)
+        dat <- set_attr(dat, "migrationTime", migrationTime)
+        #dat$nw[[1]] <- deactivate.edges(dat$nw[[1]], onset = at,
+        #                                terminus = Inf,
+        #                                e = get.edgeIDs(x = dat$nw[[1]], v = idsMigs12.all))
+        #dat$nw[[1]] <- activate.vertex.attribute(dat$nw[[1]], prefix = "global_track",
+        #                                         value = 1, onset = at,
+        #                                         terminus = Inf, v = idsMigs12.all)
+      }
     }
-  } else {
-    nMig12 <-  0
   }
 
   if(m21.rate != 0){
+    ## Process
     # migrations for population 1 to population 2
     #size of population 1
-    pop2 <- dat$epi$num2[at - 1]
 
-    # get the number of migrants
-    nMigExp21 <- pop2 * m21.rate
-    nMig21 <- rpois(1, nMigExp21)
-
-
-    if (nMig21 > 0) {
-      # because this is a migration from population 2 to population 1
-      # the migrants will be labeled as origin = "region" (because it
-      # is not in population 2 anymore)
-      #random select the number fo migrants from the network to migrate
-      idsNewMig21 <- sample(which(origin == "global"), nMig21)
-      # reset the attribute origin
-      origin[idsNewMig21] <- "region"
-      migrant[idsNewMig21] <- 21
-      migrationTime[idsNewMig21] <- at
-      dat <- set_attr(dat, "origin", origin)
-      dat <- set_attr(dat, "migrant", migrant)
-      dat <- set_attr(dat, "migrationTime", migrationTime)
-    }
-  } else {
     nMig21 <- 0
+
+    # Attributes ----
+    active <- get_attr(dat, "active")
+    origin <- get_attr(dat, "origin")
+    migrant <- get_attr(dat, "migrant")
+    migrationTime <- get_attr(dat, "migrationTime")
+
+
+    idsMigs21 <- which(active == 1 & origin == "global")
+    nidsMigs21 <- length(idsMigs21)
+
+    ## Update Attr
+    if (nidsMigs21 > 0) {
+      # because this is a migration from population 1 to population 2
+      # the migrants will be labeled as origin = "global" (because it
+      # is not in population 1 anymore)
+      #random select the number fo migrants from the network to migrate
+      vecMigrations.21 <- which(rbinom(nidsMigs21, 1, m21.rate) == 1)
+      if (length(vecMigrations.21) > 0) {
+        idsMigs21.all <- idsMigs21[vecMigrations.21]
+        nMig21 <- length(idsMigs21.all)
+        origin[idsMigs21.all] <- "region"
+        migrant[idsMigs21.all] <- 21
+        migrationTime[idsMigs21.all] <- at
+        dat <- set_attr(dat, "origin", origin)
+        dat <- set_attr(dat, "migrant", migrant)
+        dat <- set_attr(dat, "migrationTime", migrationTime)
+        #nMig21 <- nMigrations21.all
+        #dat$nw[[1]] <- deactivate.edges(dat$nw[[1]], onset = at,
+        #                                terminus = Inf,
+        #                                e = get.edgeIDs(x = dat$nw[[1]], v = idsMigs21.all))
+      }
+    }
   }
 
 

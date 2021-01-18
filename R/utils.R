@@ -66,3 +66,35 @@ get.transmat.phylo_mod <- function(x, vertex.exit.times) {
   }
 }
 
+#' @export
+append_core_attr_mig <-  function (dat, at, n.new)
+{
+  dat <- append_attr(dat, "active", 1, n.new)
+  dat <- append_attr(dat, "entrTime", at, n.new)
+  dat <- append_attr(dat, "exitTime", NA, n.new)
+  dat <- append_attr(dat, "migrationTime", NA, n.new)
+  dat <- update_uids(dat, n.new)
+  return(dat)
+}
+
+#' @title Create the uids for the new nodes
+#'
+#' @description This function is called by `append_core_attr` and append new
+#' uids to the created nodes. It also keeps track of the already used uids with
+#' the /code{dat[["_last_uid"]]} variable
+#'
+#' @param dat a Master list object of network models
+#' @param n.new the number of new nodes to give \code{uid} to
+#'
+#' @return the Master list object of network models (\code{dat})
+#'
+#' @keywords internal
+update_uids <- function(dat, n.new) {
+  last_uid <- if (is.null(dat[["_last_uid"]])) 0L else dat[["_last_uid"]]
+  next_uids <- seq_len(n.new) + last_uid
+  dat[["_last_uid"]] <- last_uid + as.integer(n.new)
+  dat <- append_attr(dat, "uid", next_uids, n.new)
+
+  return(dat)
+}
+

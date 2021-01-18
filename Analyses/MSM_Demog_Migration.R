@@ -55,6 +55,7 @@ originVec2 <- rep("global", n_pop2)
 originVec <- c(originVec1, originVec2)
 table(originVec)
 
+
 nw <- set_vertex_attribute(nw, "origin", originVec)
 
 # Create vector of diagnose statuses
@@ -158,8 +159,6 @@ formation <- ~edges + nodemix("origin", levels2 = c(1, 2))
 target.stats <- c(450, 225, 0)
 #target.stats <- c(9, 4, 0)
 # target.stat below is for ~edges only
-#target.stats <- c(250)
-#target.stats <- c(12500, 18750, 11250, 5000)
 target.stats
 
 # Dissolution  model
@@ -235,7 +234,7 @@ param <- param.net(time.unit = 7,
                    tx.init.prob = 0.092,
                    tx.halt.prob = 0.0102,
                    tx.reinit.prob = 0.00066,
-                   trans.r = 1e-04,
+                   trans.r = 4e-04,
                    ws0 = 1,
                    ws1 = 0.1,
                    ws2 = 0.1,
@@ -248,15 +247,15 @@ param <- param.net(time.unit = 7,
                    wr2 = 10,
                    aids.mr = 10/(5.06 * 365),
                    asmr = dr_vec,
-                   a1.rate = 0.0082,
-                   a2.rate = 0.0082,
+                   a1.rate = 0.00052,
+                   a2.rate = 0.00052,
                    arrival.age = 18,
                    m12.rate = 0,
-                   m21.rate = 0)
+                   m21.rate = 0.0006)
 
 init <- init.net()
 
-control <- control.net(type = NULL, nsteps = 60, start = 1,nsims = 1,
+control <- control.net(type = NULL, nsteps = 500, start = 1,nsims = 1,
                        ncores = 2, resimulate.network = TRUE, tergmLite = FALSE,
                        initialize.FUN = initialize_mig,
                        resim_nets.FUN = resim_nets,
@@ -265,8 +264,8 @@ control <- control.net(type = NULL, nsteps = 60, start = 1,nsims = 1,
                        hivprogress.FUN = hivprogress_msm,
                        hivtrans.FUN = hivtrans_mig,
                        aging.FUN = aging_msm,
-                       migration.FUN = migration,
                        departure.FUN = departure_mig,
+                       migration.FUN = migration,
                        arrivals.FUN = arrivals_mig,
                        nwupdate.FUN = nwupdate_mig,
                        prevalence.FUN = prevalence_mig,
@@ -276,8 +275,41 @@ control <- control.net(type = NULL, nsteps = 60, start = 1,nsims = 1,
                        verbose = TRUE)
 
 sim <- netsim(est, param, init, control)
-
 sim
+
+
+
+library(ndtv)
+slice.par<-list(start=1,end=31,interval=1,
+                aggregate.dur=1,rule="earliest")
+
+
+slice.par<-list(start=31,end=61,interval=1,
+                aggregate.dur=1,rule="earliest")
+
+slice.par<-list(start=61, end=91,interval=1,
+                aggregate.dur=1,rule="earliest")
+
+slice.par<-list(start=164,end=170,interval=1,
+                aggregate.dur=1,rule="earliest")
+
+
+sim_ani<-compute.animation(sim$network$sim1[[1]],
+                            default.dist=3,
+                           slice.par=slice.par,
+                           animation.mode='MDSJ',
+                           verbose=FALSE)
+
+
+render.d3movie(sim_ani,vertex.col="global_track",
+               edge.col="darkgray",
+               displaylabels=TRUE,label.cex=.6,
+               label.col="blue", verbose=FALSE,
+               main='Simulation interactions',
+               output.mode = 'htmlWidget')
+
+
+
 
 # Simulation plot
 plot(sim, qnts = 1)
@@ -306,6 +338,9 @@ tm <- get_transmat(sim)
 transphylo <- as.phylo.transmat(tm)
 tmbytree <- get.transmat.phylo(tm)
 teste <- tm[tm$infOrigin != tm$susOrigin,]
+
+tm[tm$sus == "709",]
+tm[tm$infEdgeList == "2561_4252_8208_3207_5814_6169_8105_6439",]
 
 
 

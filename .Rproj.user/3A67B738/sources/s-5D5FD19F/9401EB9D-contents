@@ -38,7 +38,7 @@ migration <- function(dat, at){
     ## Process
     # migrations for population 1 to population 2
     #size of population 1
-    pop1 <- dat$epi$num1[at - 1]
+    pop1 <- dat$epi$num.pop1[at - 1]
 
     nMigExp12 <- pop1 * m12.rate
     nMig12 <- rpois(1, nMigExp12)
@@ -64,7 +64,7 @@ migration <- function(dat, at){
   if(m21.rate != 0){
     # migrations for population 1 to population 2
     #size of population 1
-    pop2 <- dat$epi$num2[at - 1]
+    pop2 <- dat$epi$num.pop2[at - 1]
 
     # get the number of migrants
     nMigExp21 <- pop2 * m21.rate

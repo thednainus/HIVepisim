@@ -23,14 +23,16 @@ nwupdate_mig <- function(dat, at) {
   exitTime <- get_attr(dat, "exitTime")
   migrationTime <- get_attr(dat, "migrationTime")
   migrants <- get_attr(dat, "migrant")
+  origin <- get_attr(dat, "origin")
 
-  # statOnNw <- "status" %in% dat$temp$nwterms
+  statOnNw <- "status" %in% dat$temp$nwterms
   resimulate.network <- get_control(dat, "resimulate.network")
 
   ## Vital Dynamics
   arrivals <- which(active == 1 & entrTime == at)
   departures <- which(active == 0 & exitTime == at)
-  migrations <- which((migrants == 12 | migrants == 21) & active == 1 & migrationTime == at)
+  migrations12 <- which(migrants == 12 & active == 1 & migrationTime == at)
+  migrations21 <- which(migrants == 21 & active == 1 & migrationTime == at)
 
   nArrivals <- length(arrivals)
   if (nArrivals > 0) {
@@ -54,6 +56,9 @@ nwupdate_mig <- function(dat, at) {
                                                value = status[arrivals],
                                                onset = at, terminus = Inf,
                                                v = arrivals)
+      dat$nw[[1]] <- activate.vertex.attribute(dat$nw[[1]], prefix = "global_track",
+                                               value = origin[arrivals], onset = at,
+                                               terminus = Inf, v = arrivals)
     }
     if (tergmLite == TRUE) {
       dat$el[[1]] <- add_vertices(dat$el[[1]], nv = nArrivals)
@@ -76,11 +81,38 @@ nwupdate_mig <- function(dat, at) {
   }
 
   ## Migrations---------
-  if (length(migrations) > 0) {
+  if (length(migrations12) > 0) {
     if (tergmLite == FALSE) {
-      dat$nw[[1]] <- deactivate.edges(dat$nw[[1]], onset = at,
-                                      terminus = Inf, e = migrations)
+      e = NULL
+      for (vert in migrations12){
+        e = c(e, get.edgeIDs.active(dat$nw[[1]], v = vert, onset = at,
+                                    terminus = Inf, neighborhood = "combined"))
+      }
+      if (length(e) > 0) {
+        dat$nw[[1]] <- deactivate.edges(dat$nw[[1]], onset = at, terminus = Inf,
+                         e = unique(e))
+      }
     }
+    if (tergmLite == TRUE) {
+      print("Fabricia, please figure out how to do it when tergmLite == TRUE")
+    }
+  }
+
+  if (length(migrations21) > 0) {
+    if (tergmLite == FALSE) {
+      #dat$nw[[1]] <- deactivate.edges(dat$nw[[1]], onset = at,
+      #                                terminus = Inf, e = get.edgeIDs(x = dat$nw[[1]], v = migrations21))
+       e = NULL
+       for (vert in migrations21){
+         e = c(e, get.edgeIDs.active(x = dat$nw[[1]], v = vert, onset = at,
+                                     terminus = Inf, neighborhood = "combined"))
+        }
+        if (length(e) > 0) {
+          dat$nw[[1]] <- deactivate.edges(dat$nw[[1]], onset = at, terminus = Inf,
+                                          e = unique(e))
+        }
+
+          }
     if (tergmLite == TRUE) {
       print("Fabricia, please figure out how to do it when tergmLite == TRUE")
     }
@@ -96,6 +128,16 @@ nwupdate_mig <- function(dat, at) {
     }
   }
 
+  # migrations
+  if (tergmLite == FALSE) {
+    idsNewMigs <- which((migrants == 12 | migrants == 21) & migrationTime == at)
+    if (length(idsNewMigs) > 0) {
+      dat$nw[[1]] <- activate.vertex.attribute(dat$nw[[1]], prefix = "global_track",
+                                               value = origin[idsNewMigs], onset = at,
+                                               terminus = Inf, v = idsNewMigs)
+    }
+  }
+
 
 
   ## Copy static attributes to network object
@@ -104,19 +146,28 @@ nwupdate_mig <- function(dat, at) {
   }
 
   # Attribute consistency checks
-  # if (tergmLite == FALSE) {
-  #   tst <- get.vertex.attribute.active(dat$nw[[1]], "testatus", at = at)
-  #   if (any(is.na(tst))) {
-  #     stop("Error in nwupdate.net: NA's in testatus attribute.\n")
-  #   }
-  #   if (statOnNw == TRUE) {
-  #     fstat <- get_vertex_attribute(dat$nw[[1]], "status")
-  #     if (!identical(tst, fstat)) {
-  #       stop("Error in nwupdate.net: mismatch between status and testatus
-  #             attribute.\n")
-  #     }
-  #   }
-  # }
+   if (tergmLite == FALSE) {
+     tst <- get.vertex.attribute.active(dat$nw[[1]], "testatus", at = at)
+     tst2 <- get.vertex.attribute.active(dat$nw[[1]], "global_track", at = at)
+     if (any(is.na(tst))) {
+       stop("Error in nwupdate.net: NA's in testatus attribute.\n")
+     }
+     if (any(is.na(tst2))) {
+       stop("Error in nwupdate.net: NA's in global_track attribute.\n")
+     }
+     if (statOnNw == TRUE) {
+       fstat <- get_vertex_attribute(dat$nw[[1]], "status")
+       fstat2 <- get_vertex_attribute(dat$nw[[1]], "origin")
+       if (!identical(tst, fstat)) {
+         stop("Error in nwupdate.net: mismatch between status and testatus
+               attribute.\n")
+       }
+       if (!identical(tst2, fstat2)) {
+         stop("Error in nwupdate.net: mismatch between global_track and origin
+               attribute.\n")
+       }
+     }
+   }
 
   ## Output
   return(dat)

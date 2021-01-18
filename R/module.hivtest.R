@@ -20,6 +20,7 @@ hivtest_msm <- function(dat, at) {
   ## Variables
 
   # Attributes -----
+  active <- get_attr(dat, "active")
   diag.status <- get_attr(dat, "diag.status")
   diag.time <- get_attr(dat, "diag.time")
   diag.stage <- get_attr(dat, "diag.stage")
@@ -39,7 +40,7 @@ hivtest_msm <- function(dat, at) {
 
 
   # General interval testing
-  elig <- which((diag.status == 0 | is.na(diag.status)))
+  elig <- which(active == 1 & (diag.status == 0 | is.na(diag.status)))
 
 
     # Testing rates

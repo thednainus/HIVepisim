@@ -57,7 +57,7 @@ hivprogress_msm <- function(dat, at) {
   # Note that this is following Cori et al. 2015
   # Stage 0 the acute and early HIV infection
 
-  idsStage0 <- which(stage == 0 & tx.status == 0)
+  idsStage0 <- which(active == 1 & stage == 0 & tx.status == 0)
   rates0 <- 1 / (stage_prog_yr0 * 365)
   # new ids that will progress from stage 0 to stages 1 or stage 2 or stage 3 or stage 4
   # this is following Cori et al 2015
@@ -71,7 +71,7 @@ hivprogress_msm <- function(dat, at) {
 
 
   # Change from stage 1 to stage 2 of HIV infection following Cori et al. 2015
-  idsStage1 <- which(stage == 1 & tx.status == 0)
+  idsStage1 <- which(active == 1 & stage == 1 & tx.status == 0)
   rates1 <- 1 / (stage_prog_yr1 * 365)
   newidsStage2 <- idsStage1[rbinom(length(idsStage1), 1, rates1) == 1]
 
@@ -80,7 +80,7 @@ hivprogress_msm <- function(dat, at) {
 
 
   # Change from stage 2 to stage 3 of HIV infection following Cori et al. 2015
-  idsStage2 <- which(stage == 2 & tx.status == 0)
+  idsStage2 <- which(active == 1 & stage == 2 & tx.status == 0)
   rates2 <- 1 / (stage_prog_yr2 * 365)
   newidsStage3 <- idsStage2[rbinom(length(idsStage2), 1, rates2) == 1]
 

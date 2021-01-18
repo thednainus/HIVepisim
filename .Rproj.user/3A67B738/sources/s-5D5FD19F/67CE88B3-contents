@@ -21,8 +21,8 @@ nwupdate_mig <- function(dat, at) {
   active <- get_attr(dat, "active")
   entrTime <- get_attr(dat, "entrTime")
   exitTime <- get_attr(dat, "exitTime")
-  migrationTime <- get_attr(dat, "migrationTime")
-  migrants <- get_attr(dat, "migrant")
+  #migrationTime <- get_attr(dat, "migrationTime")
+  #migrants <- get_attr(dat, "migrant")
 
   # statOnNw <- "status" %in% dat$temp$nwterms
   resimulate.network <- get_control(dat, "resimulate.network")
@@ -30,7 +30,8 @@ nwupdate_mig <- function(dat, at) {
   ## Vital Dynamics
   arrivals <- which(active == 1 & entrTime == at)
   departures <- which(active == 0 & exitTime == at)
-  migrations <- which((migrants == 12 | migrants == 21) & active == 1 & migrationTime == at)
+  #migrations12 <- which(migrants == 12 & active == 1 & migrationTime == at)
+  #migrations21 <- which(migrants == 21 & active == 1 & migrationTime == at)
 
   nArrivals <- length(arrivals)
   if (nArrivals > 0) {
@@ -76,15 +77,25 @@ nwupdate_mig <- function(dat, at) {
   }
 
   ## Migrations---------
-  if (length(migrations) > 0) {
-    if (tergmLite == FALSE) {
-      dat$nw[[1]] <- deactivate.edges(dat$nw[[1]], onset = at,
-                                      terminus = Inf, e = migrations)
-    }
-    if (tergmLite == TRUE) {
-      print("Fabricia, please figure out how to do it when tergmLite == TRUE")
-    }
-  }
+  #if (length(migrations12) > 0) {
+  #  if (tergmLite == FALSE) {
+  #    dat$nw[[1]] <- deactivate.edges(dat$nw[[1]], onset = at,
+  #                                    terminus = Inf, e = get.edgeIDs(x = dat$nw[[1]], v = migrations12))
+  #  }
+  #  if (tergmLite == TRUE) {
+  #    print("Fabricia, please figure out how to do it when tergmLite == TRUE")
+  #  }
+  #}
+
+  #if (length(migrations21) > 0) {
+  #  if (tergmLite == FALSE) {
+  #    dat$nw[[1]] <- deactivate.edges(dat$nw[[1]], onset = at,
+ #                                     terminus = Inf, e = get.edgeIDs(x = dat$nw[[1]], v = migrations21))
+  #  }
+  #  if (tergmLite == TRUE) {
+  #    print("Fabricia, please figure out how to do it when tergmLite == TRUE")
+  #  }
+ # }
 
   ## Infection-----------
   if (tergmLite == FALSE) {

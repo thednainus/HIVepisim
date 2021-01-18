@@ -19,7 +19,7 @@ ages <- 18:80
 departure_rate <- c(0.3, 0.5, 0.6, 0.8, 1.2, 1.8, 2.7, 3.9, 5.8, 9.1, 14.6, 22.5,
                     39.2, 68.2)
 
-#departure_rate <- departure_rate * 0.2
+departure_rate <- departure_rate * 0.2
 
 # Per-capita daily death rate
 dr_pp_pd <- departure_rate / 1000 / 365
@@ -35,10 +35,10 @@ data.frame(ages, dr_vec)
 #plot(ages, dr_vec, type = "o", xlab = "age", ylab = "Mortality Rate")
 
 # Initialize network
-n_pop1 = 500
-n_pop2 = 500
-#n_pop1 = 10
-#n_pop2 = 10
+#n_pop1 = 500
+#n_pop2 = 500
+n_pop1 = 10
+n_pop2 = 10
 n_total = n_pop1 + n_pop2
 #n <- 50000
 nw <- network_initialize(n_total)
@@ -59,14 +59,14 @@ nw <- set_vertex_attribute(nw, "origin", originVec)
 
 # Create vector of diagnose statuses
 diagStatusVec1 <- rep(0, n_pop1)
-init.Infected1 <- sample(1:n_pop1, 0.05 * n_pop1)
-#init.Infected1 <- sample(1:n_pop1, 0.4 * n_pop1)
+#init.Infected1 <- sample(1:n_pop1, 0.05 * n_pop1)
+init.Infected1 <- sample(1:n_pop1, 0.4 * n_pop1)
 diagStatusVec1[init.Infected1] <- 1
 
 
 diagStatusVec2 <- rep(0, n_pop2)
-init.Infected2 <- sample(1:n_pop2, 0.05 * n_pop2)
-#init.Infected2 <- sample(1:n_pop2, 0.4 * n_pop2)
+#init.Infected2 <- sample(1:n_pop2, 0.05 * n_pop2)
+init.Infected2 <- sample(1:n_pop2, 0.4 * n_pop2)
 diagStatusVec2[init.Infected2] <- 1
 
 diagStatusVec <- c(diagStatusVec1, diagStatusVec2)
@@ -155,11 +155,9 @@ formation <- ~edges + nodemix("origin", levels2 = c(1, 2))
 #overall edges = 250; edges b/t global.global = 200; edges b/t global.region = 0
 # then edges b/t global.region.region = 250 - 150 - 0 = 100
 #target.stats <- c(450, 410, 0)
-target.stats <- c(450, 225, 0)
-#target.stats <- c(9, 4, 0)
+#target.stats <- c(450, 225, 0)
+target.stats <- c(9, 4, 0)
 # target.stat below is for ~edges only
-#target.stats <- c(250)
-#target.stats <- c(12500, 18750, 11250, 5000)
 target.stats
 
 # Dissolution  model
@@ -235,7 +233,7 @@ param <- param.net(time.unit = 7,
                    tx.init.prob = 0.092,
                    tx.halt.prob = 0.0102,
                    tx.reinit.prob = 0.00066,
-                   trans.r = 1e-04,
+                   trans.r = 4e-04,
                    ws0 = 1,
                    ws1 = 0.1,
                    ws2 = 0.1,
@@ -248,15 +246,15 @@ param <- param.net(time.unit = 7,
                    wr2 = 10,
                    aids.mr = 10/(5.06 * 365),
                    asmr = dr_vec,
-                   a1.rate = 0.00052,
-                   a2.rate = 0.00052,
+                   a1.rate = 0.0082,
+                   a2.rate = 0.01,
                    arrival.age = 18,
                    m12.rate = 0,
-                   m21.rate = 0)
+                   m21.rate = 0.02)
 
 init <- init.net()
 
-control <- control.net(type = NULL, nsteps = 1000, start = 1,nsims = 1,
+control <- control.net(type = NULL, nsteps = 200, start = 1,nsims = 1,
                        ncores = 2, resimulate.network = TRUE, tergmLite = FALSE,
                        initialize.FUN = initialize_mig,
                        resim_nets.FUN = resim_nets,
@@ -265,8 +263,8 @@ control <- control.net(type = NULL, nsteps = 1000, start = 1,nsims = 1,
                        hivprogress.FUN = hivprogress_msm,
                        hivtrans.FUN = hivtrans_mig,
                        aging.FUN = aging_msm,
-                       migration.FUN = migration,
                        departure.FUN = departure_mig,
+                       migration.FUN = migration,
                        arrivals.FUN = arrivals_mig,
                        nwupdate.FUN = nwupdate_mig,
                        prevalence.FUN = prevalence_mig,
@@ -276,8 +274,44 @@ control <- control.net(type = NULL, nsteps = 1000, start = 1,nsims = 1,
                        verbose = TRUE)
 
 sim <- netsim(est, param, init, control)
-
 sim
+
+
+
+library(ndtv)
+sim <- original_sim
+activate.vertex.attribute(sim$network$sim1[[1]],'origin',c("region", "global"), onset=c(-Inf,-Inf),terminus=c(Inf,Inf))
+activate.vertex.attribute(sim$network$sim1[[1]],'status', c("s", "i"), onset=1,terminus=31)
+
+slice.par<-list(start=1,end=3,interval=1,
+                aggregate.dur=1,rule="earliest")
+
+
+
+sim_ani<-compute.animation(sim$network$sim1[[1]],
+                            default.dist=3,
+                           slice.par=slice.par,
+                           animation.mode='MDSJ',
+                           verbose=FALSE)
+
+
+
+render.d3movie(sim_ani,vertex.col=function(slice){ifelse((slice %v% "origin") == "region", "blue", "green")},
+               edge.col="darkgray",
+               displaylabels=TRUE,label.cex=.6,
+               label.col="blue", verbose=FALSE,
+               main='Windsurfer interactions, 1-day aggregation',
+               output.mode = 'htmlWidget')
+
+
+plot(sim_ani,
+     vertex.col=ifelse(
+       !is.na(get.vertex.attribute.active(sim_ani,'status',at=1)),
+       c('red',"blue")
+     ),
+     vertex.cex=0.8
+)
+
 
 # Simulation plot
 plot(sim, qnts = 1)
@@ -306,6 +340,9 @@ tm <- get_transmat(sim)
 transphylo <- as.phylo.transmat(tm)
 tmbytree <- get.transmat.phylo(tm)
 teste <- tm[tm$infOrigin != tm$susOrigin,]
+
+tm[tm$sus == "709",]
+tm[tm$infEdgeList == "2561_4252_8208_3207_5814_6169_8105_6439",]
 
 
 

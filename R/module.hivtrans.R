@@ -71,6 +71,8 @@ hivtrans_mig <- function(dat, at) {
 
   ## Initialize default incidence at 0 ##
   nInf <- 0
+  nInf.pop1 <- 0
+  nInf.pop2 <- 0
 
   if (nElig > 0 && nElig < nActive) {
 
@@ -97,6 +99,9 @@ hivtrans_mig <- function(dat, at) {
 
       del$susOrigin <- origin[del$sus]
       del$susMigrant <- migrant[del$sus]
+      del$susStatus <- status[del$sus]
+      del$susEdgeList <- paste(get.edgeIDs(x = dat$nw[[1]], v = del$sus), collapse = "_")
+      del$infEdgeList <- paste(get.edgeIDs(x = dat$nw[[1]], v = del$inf), collapse = "_")
 
 
       # Set parameters on discordant edgelist data frame

@@ -24,7 +24,6 @@ departure_mig <- function(dat, at) {
   exitTime <- get_attr(dat, "exitTime")
   rates.all <- get_param(dat, "asmr")
   rates.aids <- get_param(dat, "aids.mr")
-  arrival.age <- get_param(dat, "arrival.age")
 
   idsDpt.all <- NULL
   idsDpt.aids <- NULL

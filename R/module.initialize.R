@@ -52,7 +52,8 @@ initialize_mig <- function(x, param, init, control, s) {
 
     # Standard attributes
     num <- network.size(nw)
-    dat <- append_core_attr(dat, 1, num)
+    #dat <- append_core_attr(dat, 1, num)
+    dat <- append_core_attr_mig(dat, 1, num)
 
     ## Pull attr on nw to dat$attr
     dat <- copy_nwattr_to_datattr(dat)
@@ -183,6 +184,9 @@ init_status_mig <- function(dat) {
     dat <- set_attr(dat, "status", status)
   }
 
+  origin <- get_vertex_attribute(dat$nw[[1]], "origin")
+  dat <- set_attr(dat, "origin", origin)
+
 
   ## Set up TEA status
   if (tergmLite == FALSE) {
@@ -193,6 +197,9 @@ init_status_mig <- function(dat) {
                                              prefix = "testatus",
                                              value = status,
                                              onset = 1,
+                                             terminus = Inf)
+    dat$nw[[1]] <- activate.vertex.attribute(dat$nw[[1]], prefix = "global_track",
+                                             value = origin, onset = 1,
                                              terminus = Inf)
   }
 
@@ -253,7 +260,7 @@ init_status_mig <- function(dat) {
     dat <- set_attr(dat, "count.trans", rep(0, num.all))
     dat <- set_attr(dat, "num.neg.tests", rep(0, num.all))
 
-    dat <- set_attr(dat, "migrationTime", rep(NA, num.all))
+    #dat <- set_attr(dat, "migrationTime", rep(NA, num.all))
 
 
   return(dat)
