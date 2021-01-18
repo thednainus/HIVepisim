@@ -255,7 +255,7 @@ param <- param.net(time.unit = 7,
 
 init <- init.net()
 
-control <- control.net(type = NULL, nsteps = 500, start = 1,nsims = 1,
+control <- control.net(type = NULL, nsteps = 800, start = 1,nsims = 1,
                        ncores = 2, resimulate.network = TRUE, tergmLite = FALSE,
                        initialize.FUN = initialize_mig,
                        resim_nets.FUN = resim_nets,
@@ -278,40 +278,7 @@ sim <- netsim(est, param, init, control)
 sim
 
 
-
-library(ndtv)
-slice.par<-list(start=1,end=31,interval=1,
-                aggregate.dur=1,rule="earliest")
-
-
-slice.par<-list(start=31,end=61,interval=1,
-                aggregate.dur=1,rule="earliest")
-
-slice.par<-list(start=61, end=91,interval=1,
-                aggregate.dur=1,rule="earliest")
-
-slice.par<-list(start=164,end=170,interval=1,
-                aggregate.dur=1,rule="earliest")
-
-
-sim_ani<-compute.animation(sim$network$sim1[[1]],
-                            default.dist=3,
-                           slice.par=slice.par,
-                           animation.mode='MDSJ',
-                           verbose=FALSE)
-
-
-render.d3movie(sim_ani,vertex.col="global_track",
-               edge.col="darkgray",
-               displaylabels=TRUE,label.cex=.6,
-               label.col="blue", verbose=FALSE,
-               main='Simulation interactions',
-               output.mode = 'htmlWidget')
-
-
-
-
-# Simulation plot
+# Simulation plot ----
 plot(sim, qnts = 1)
 
 # Mean age summary statistic
@@ -334,20 +301,11 @@ plot(sim, y = "nNew")
 plot(sim, y = "incid")
 
 
+# Transmission matrix ----
 tm <- get_transmat(sim)
 transphylo <- as.phylo.transmat(tm)
 tmbytree <- get.transmat.phylo(tm)
-teste <- tm[tm$infOrigin != tm$susOrigin,]
-
-tm[tm$sus == "709",]
-tm[tm$infEdgeList == "2561_4252_8208_3207_5814_6169_8105_6439",]
+# to make sure that transmission only happens between individuals from same origin
+test <- tm[tm$infOrigin != tm$susOrigin,]
 
 
-
-origin1 <- tmbytree[[1]]$origin[tmbytree[[1]]$inf %in% transphylo[[1]]$tip.label]
-migrant1 <- tmbytree[[1]]$migrant[tmbytree[[1]]$inf %in% transphylo[[1]]$tip.label]
-transphylo[[1]]$tip.label[transphylo[[1]]$tip.label %in% tmbytree[[1]]$inf]
-
-for(i in 1:35){
-  print(IDs[IDs %in% transphylo[[i]]$tip.label])
-}
