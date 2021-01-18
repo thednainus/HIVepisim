@@ -19,6 +19,7 @@ ages <- 18:80
 departure_rate <- c(0.3, 0.5, 0.6, 0.8, 1.2, 1.8, 2.7, 3.9, 5.8, 9.1, 14.6, 22.5,
                     39.2, 68.2)
 
+# This is just to test the code so departures can happen faster
 #departure_rate <- departure_rate * 0.2
 
 # Per-capita daily death rate
@@ -141,12 +142,10 @@ nw
 # which have more than one partnership at any time.
 
 
-#formation <- ~edges + degree(0) + absdiff("age")
 #formation <- ~edges + nodemix("origin") + nodefactor("risk.group") + nodematch("risk.group") + concurrent
 # nodemix as specified below will only estimate edges for global.global and region.region
 # to know the other of terms you can type
 # summary(nw ~ nodemix("origin"))
-#formation <- ~edges + nodemix("origin", levels2 = c(1, 3))
 formation <- ~edges + nodemix("origin", levels2 = c(1, 2))
 #formation <- ~edges
 
@@ -155,7 +154,6 @@ formation <- ~edges + nodemix("origin", levels2 = c(1, 2))
 # target.stats below is including nodemix for global.global and region.region
 #overall edges = 250; edges b/t global.global = 200; edges b/t global.region = 0
 # then edges b/t global.region.region = 250 - 150 - 0 = 100
-#target.stats <- c(450, 410, 0)
 target.stats <- c(450, 225, 0)
 #target.stats <- c(9, 4, 0)
 # target.stat below is for ~edges only
@@ -175,22 +173,8 @@ coef.diss
 est <- netest(nw, formation, target.stats, coef.diss)
 
 # Model diagnostics
-# dynamic network
-#dx <- netdx(est, nsims = 10, ncores = 5, nsteps = 2000,
-#            nwstats.formula = ~edges + nodefactor("risk.group") + nodematch("risk.group") + concurrent)
-#dx <- netdx(est, nsims = 10, ncores = 5, nsteps = 2000,
-#            nwstats.formula = ~edges)
-#print(dx)
-#plot(dx)
-#plot(dx, type = "duration")
-#plot(dx, type = "dissolution")
-
-
-
-# Simulate one long time series to examine timed edgelist
+# Simulate time series to examine timed edgelist
 dx <- netdx(est, nsims = 1, nsteps = 1000, keep.tedgelist = TRUE)
-
-
 
 # Extract timed-edgelist
 te <- as.data.frame(dx)
@@ -255,7 +239,7 @@ param <- param.net(time.unit = 7,
 
 init <- init.net()
 
-control <- control.net(type = NULL, nsteps = 800, start = 1,nsims = 1,
+control <- control.net(type = NULL, nsteps = 510, start = 1,nsims = 1,
                        ncores = 2, resimulate.network = TRUE, tergmLite = FALSE,
                        initialize.FUN = initialize_mig,
                        resim_nets.FUN = resim_nets,
