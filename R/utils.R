@@ -23,7 +23,7 @@
 #' @export
 #'
 
-get.transmat.phylo_mod <- function(x, vertex.exit.times) {
+get.transmat.phylo <- function(x, vertex.exit.times) {
 
 
   # if not named properly, assume inf, sus at
@@ -96,5 +96,65 @@ update_uids <- function(dat, n.new) {
   dat <- append_attr(dat, "uid", next_uids, n.new)
 
   return(dat)
+}
+
+#' @export
+
+save_origin <- function(dat){
+  active <- get_attr(dat, "active")
+  origin <- get_attr(dat, "origin")
+  status <- get_attr(dat, "status")
+  uid <- get_attr(dat, "uid")
+
+  infID <- uid[active == 1 & status == "i"]
+  infIDindex <- match(infID, uid)
+  infOrigin <- origin[infIDindex]
+
+  inf_df <- data.frame(infID, infOrigin)
+
+  write.csv(inf_df, file = "infected_origin.csv", row.names = FALSE)
+}
+
+
+#' @export
+
+create_inf_csv <- function(tm, time_tr){
+
+  seed_names <- setdiff(unique(tm$inf), unique(tm$sus))
+  seed_idtr <- data.frame(seed_names, rep(NA, length(seed_names)), rep(time_tr, length(seed_names)))
+
+  colnames(seed_idtr) <- c("IDREC", "IDTR", "TIME_TR")
+
+  inf_sus <- data.frame(tm$sus, tm$inf, tm$at)
+  colnames(inf_sus) <- c("IDREC", "IDTR", "TIME_TR")
+
+  all_data <- rbind(seed_idtr, inf_sus)
+
+  write_csv(all_data, "inf.csv")
+
+
+}
+
+
+
+#' @export
+
+create_sample_csv <- function(tm, time_seq, seq_count){
+
+  seed_names <- names(suppressMessages(get.transmat.phylo(tm)))
+  seed_names <- as.numeric(str_extract(seed_names, "\\d+"))
+  seed_idtr <- data.frame(seed_names, rep(NA, length(seed_names)), rep(time_tr, length(seed_names)))
+
+  colnames(seed_idtr) <- c("IDREC", "IDTR", "TIME_TR")
+
+  IDPOP <- union(tm$inf, tm$sus)
+  TIME_SEQ <- rep(time_seq, length(IDPOP))
+  SEQ_COUNT <- rep(seq_count, length(IDPOP))
+
+  all_data <- data.frame(IDPOP, TIME_SEQ, SEQ_COUNT)
+
+  write_csv(all_data, "inf.csv")
+
+
 }
 

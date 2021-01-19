@@ -239,7 +239,7 @@ param <- param.net(time.unit = 7,
 
 init <- init.net()
 
-control <- control.net(type = NULL, nsteps = 510, start = 1,nsims = 1,
+control <- control.net(type = NULL, nsteps = 100, start = 1,nsims = 1,
                        ncores = 2, resimulate.network = TRUE, tergmLite = FALSE,
                        initialize.FUN = initialize_mig,
                        resim_nets.FUN = resim_nets,
@@ -292,4 +292,7 @@ tmbytree <- get.transmat.phylo(tm)
 # to make sure that transmission only happens between individuals from same origin
 test <- tm[tm$infOrigin != tm$susOrigin,]
 
+origin_inf <- read.csv("infected_origin.csv")
+
+transphylo[[1]]$tip.label %in% origin_inf$infID
 
