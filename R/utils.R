@@ -66,7 +66,20 @@ get.transmat.phylo <- function(x, vertex.exit.times) {
   }
 }
 
+
+#' Function to append core attributes
+#'
+#'
+#' @inheritParams EpiModel::append_core_attr
+#'
+#' @return
+#'
+#' @details
+#' This function is based on \link[EpiModel]{append_core_attr}. I added migrationTime
+#' as another core attribute.
 #' @export
+#'
+#'
 append_core_attr_mig <-  function (dat, at, n.new)
 {
   dat <- append_attr(dat, "active", 1, n.new)
@@ -137,8 +150,6 @@ save_origin <- function(dat, prefix = NULL){
 
   write.csv(inf_df, file = filename, row.names = FALSE)
 }
-
-
 
 
 #' Create transmission matrix csv
