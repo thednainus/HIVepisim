@@ -6,7 +6,7 @@
 #'              San Diego) and population 2 (which will have origin = global
 #'              representing the global population of MSM).
 #'
-#' @inheritParams EpiModelHIV::aging_msm
+#' @inheritParams EpiModel::arrivals.net
 #'
 #' @details
 #' New population members are added based on expected numbers of entries,

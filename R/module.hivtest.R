@@ -2,7 +2,7 @@
 #'
 #' @description Module function for HIV diagnostic testing of infected persons.
 #'
-#' @inheritParams EpiModelHIV::aging_msm
+#' @inheritParams EpiModel::arrivals.net
 #'
 #'
 #' @return

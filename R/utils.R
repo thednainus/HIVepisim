@@ -98,9 +98,26 @@ update_uids <- function(dat, n.new) {
   return(dat)
 }
 
-#' @export
 
-save_origin <- function(dat){
+
+#' Save origin of nodes in the network at final step
+#'
+#' @description At the final step of network simulation, it will save the IDs of
+#'    infected nodes and their origin. Origin can take the value of region or
+#'    global.
+#'
+#' @inheritParams EpiModel::arrivals.net
+#' @inheritParams create_sample_csv
+#'
+#' @details
+#' If a prefix is not provided, csv file will be saved as infected_origin.csv
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' TO DO
+save_origin <- function(dat, prefix = NULL){
   active <- get_attr(dat, "active")
   origin <- get_attr(dat, "origin")
   status <- get_attr(dat, "status")
@@ -112,16 +129,48 @@ save_origin <- function(dat){
 
   inf_df <- data.frame(infID, infOrigin)
 
-  write.csv(inf_df, file = "infected_origin.csv", row.names = FALSE)
+  if(is.null(prefix)){
+    filename <- "infected_origin.csv"
+  } else {
+    filename <- paste(prefix, "infected_origin.csv", sep = "_")
+  }
+
+  write.csv(inf_df, file = filename, row.names = FALSE)
 }
 
 
-#' @export
 
-create_inf_csv <- function(tm, time_tr){
+
+#' Create transmission matrix csv
+#'
+#' @description Create a transmission matrix file to be used with the
+#'    VirusTreeSimulator. VirusTreeSimulator requires that seeds are included
+#'    in the file.
+#'
+#' @inheritParams create_sample_csv
+#' @param time_tr Time of transmission for seeds. The other time of transmission
+#'    should be provided in the tm dataframe.
+#'
+#' @details
+#' If a prefix is not provided, csv file will be saved as inf.csv
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' TO DO
+create_inf_csv <- function(tm, time_tr, prefix = NULL){
 
   seed_names <- setdiff(unique(tm$inf), unique(tm$sus))
-  seed_idtr <- data.frame(seed_names, rep(NA, length(seed_names)), rep(time_tr, length(seed_names)))
+
+  if(length(time_tr) == 1){
+    seed_idtr <- data.frame(seed_names, rep(NA, length(seed_names)), rep(time_tr, length(seed_names)))
+  }else if(length(time_tr) == length(seed_names)){
+    seed_idtr <- data.frame(seed_names, rep(NA, length(seed_names)), time_tr)
+  }else{
+    stop("`time_tr` should be of length 1 or length of number of seeds")
+  }
+
 
   colnames(seed_idtr) <- c("IDREC", "IDTR", "TIME_TR")
 
@@ -130,31 +179,69 @@ create_inf_csv <- function(tm, time_tr){
 
   all_data <- rbind(seed_idtr, inf_sus)
 
-  write_csv(all_data, "inf.csv")
+  if(is.null(prefix)){
+    filename <- "inf.csv"
+  } else {
+    filename <- paste(prefix, "inf.csv", sep = "_")
+  }
 
-
+  write_csv(all_data, filename)
 }
 
 
 
+
+
+#' Get sample csv file
+#'
+#' @param tm Transmission matrix as returned using the function \link[EpiModel]{get_transmat}
+#' @param time_seq Vector for sample time. If one value is provided, it will be replicated
+#'    to the size of samples in the transmission matrix (tm).
+#' @param seq_count The number of sequences per sample in the transmission matrix.
+#'    If one value is provided, it will be replicated to the size of samples in
+#'    the transmission matrix (tm).
+#' @param prefix Text for prefix to use when saving filename.
+#'
+#' @details
+#' If a prefix is not provided, csv file will be saved as sample.csv
+#'
+#' @return
 #' @export
-
-create_sample_csv <- function(tm, time_seq, seq_count){
-
-  seed_names <- names(suppressMessages(get.transmat.phylo(tm)))
-  seed_names <- as.numeric(str_extract(seed_names, "\\d+"))
-  seed_idtr <- data.frame(seed_names, rep(NA, length(seed_names)), rep(time_tr, length(seed_names)))
-
-  colnames(seed_idtr) <- c("IDREC", "IDTR", "TIME_TR")
+#'
+#' @examples
+#' To Do
+create_sample_csv <- function(tm, time_seq, seq_count, prefix = NULL){
 
   IDPOP <- union(tm$inf, tm$sus)
-  TIME_SEQ <- rep(time_seq, length(IDPOP))
-  SEQ_COUNT <- rep(seq_count, length(IDPOP))
+
+  if(length(time_seq) == 1){
+    TIME_SEQ <- rep(time_seq, length(IDPOP))
+  } else if (length(time_seq) == length(IDPOP)){
+    TIME_SEQ <- time_seq
+  }else if (length(time_seq) != length(IDPOP)){
+    stop("`time_seq` should be of length 1 or length of samples in the transmission matrix")
+  }
+
+
+  if(length(seq_count) == 1){
+    SEQ_COUNT <- rep(seq_count, length(IDPOP))
+  } else if (length(seq_count) == length(IDPOP)){
+    SEQ_COUNT <- seq_count
+  }else if(length(seq_count) != length(IDPOP)){
+    stop(" `seq_count` should be of length 1 or length of samples in the transmission matrix")
+  }
+
 
   all_data <- data.frame(IDPOP, TIME_SEQ, SEQ_COUNT)
 
-  write_csv(all_data, "inf.csv")
+  if(is.null(prefix)){
+    filename <- "sample.csv"
+  } else {
+    filename <- paste(prefix, "sample.csv", sep = "_")
+  }
 
+
+  write_csv(all_data, filename)
 
 }
 

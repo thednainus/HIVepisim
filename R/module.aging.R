@@ -3,7 +3,7 @@
 #'
 #' @description Module for aging over time for active nodes in the population.
 #'
-#' @inheritParams EpiModelHIV::aging_msm
+#' @inheritParams EpiModel::arrivals.net
 #'
 #' @return
 #' This function returns \code{dat} after updating the nodal attribute

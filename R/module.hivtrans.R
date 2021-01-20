@@ -4,7 +4,7 @@
 #'              state of the discordand edgelist. This function should be used
 #'              when there is migration.
 #'
-#' @inheritParams EpiModelHIV::aging_msm
+#' @inheritParams EpiModel::arrivals.net
 #'
 #' @details
 #' This is the final substantive function that occurs within the time loop at

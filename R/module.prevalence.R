@@ -3,7 +3,7 @@
 #' @description This module calculates demographic, transmission, and clinical
 #'              statistics at each time step within the simulation.
 #'
-#' @inheritParams EpiModelHIV::aging_msm
+#' @inheritParams EpiModel::arrivals.net
 #'
 #' @details
 #' This function establishes the summary statistic vectors for both

@@ -3,7 +3,7 @@
 #' @description Module function for simulating both general and disease-related
 #'              departures, including deaths, among population members.
 #'
-#' @inheritParams aging_msm
+#' @inheritParams EpiModel::arrivals.net
 #'
 #' @details
 #' Deaths are divided into two categories: general deaths, for which demographic

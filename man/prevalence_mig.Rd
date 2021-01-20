@@ -7,8 +7,8 @@
 prevalence_mig(dat, at)
 }
 \arguments{
-\item{dat}{Master data list object of class \code{dat} containing networks,
-individual-level attributes, and summary statistics.}
+\item{dat}{Master list object containing a \code{networkDynamic} object and
+other initialization information passed from \code{\link[EpiModel]{netsim}}.}
 
 \item{at}{Current time step.}
 }

@@ -3,6 +3,8 @@
 export(aging_msm)
 export(append_core_attr_mig)
 export(arrivals_mig)
+export(create_inf_csv)
+export(create_sample_csv)
 export(departure_mig)
 export(get.transmat.phylo)
 export(hivprogress_msm)

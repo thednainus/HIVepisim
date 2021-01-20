@@ -4,7 +4,7 @@
 #' @description Module function for anti-retroviral treatment (ART) initiation and
 #'              adherence over time.
 #'
-#' @inheritParams EpiModelHIV::aging_msm
+#' @inheritParams EpiModel::arrivals.net
 #'
 #' @details
 #' Persons enter into the simulation with one of three ART "patterns": never

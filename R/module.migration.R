@@ -2,7 +2,7 @@
 #'
 #' @description Module function for migrations between two populations
 #'
-#' @inheritParams EpiModelHIV::aging_msm
+#' @inheritParams EpiModel::arrivals.net
 #'
 #' @details
 #' New migrations from both directions (from population 1 to 2; and

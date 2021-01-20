@@ -3,7 +3,7 @@
 #'
 #' @description Module function for HIV disease progression
 #'
-#' @inheritParams EpiModelHIV::aging_msm
+#' @inheritParams EpiModel::arrivals.net
 #'
 #' @details
 #' HIV disease is divided into four stages: stage 0 or acute and early HIV infection,
