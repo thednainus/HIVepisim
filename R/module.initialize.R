@@ -217,7 +217,7 @@ init_status_mig <- function(dat) {
     dat <- set_attr(dat, "stage.time", rep(NA, num.all))
     dat <- set_attr(dat, "aids.time", rep(NA, num.all))
     stage <- get_attr(dat, "stage")
-    stage[idsInf] <- 3
+    stage[idsInf] <- 0
     dat <- set_attr(dat, "stage", stage)
     stage.time <- get_attr(dat, "stage.time")
     stage.time[idsInf] <- infTime[idsInf] - min.hiv.time
@@ -259,8 +259,6 @@ init_status_mig <- function(dat) {
 
     dat <- set_attr(dat, "count.trans", rep(0, num.all))
     dat <- set_attr(dat, "num.neg.tests", rep(0, num.all))
-
-    #dat <- set_attr(dat, "migrationTime", rep(NA, num.all))
 
 
   return(dat)

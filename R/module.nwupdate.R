@@ -96,14 +96,12 @@ nwupdate_mig <- function(dat, at) {
       }
     }
     if (tergmLite == TRUE) {
-      print("Fabricia, please figure out how to do it when tergmLite == TRUE")
+      dat$el[[1]] <- delete_edges(dat$el[[1]], migrations12)
     }
   }
 
   if (length(migrations21) > 0) {
     if (tergmLite == FALSE) {
-      #dat$nw[[1]] <- deactivate.edges(dat$nw[[1]], onset = at,
-      #                                terminus = Inf, e = get.edgeIDs(x = dat$nw[[1]], v = migrations21))
        e = NULL
        for (vert in migrations21){
          e = c(e, get.edgeIDs.active(x = dat$nw[[1]], v = vert, onset = at,
@@ -116,7 +114,7 @@ nwupdate_mig <- function(dat, at) {
 
           }
     if (tergmLite == TRUE) {
-      print("Fabricia, please figure out how to do it when tergmLite == TRUE")
+      dat$el[[1]] <- delete_edges(dat$el[[1]], migrations21)
     }
   }
 

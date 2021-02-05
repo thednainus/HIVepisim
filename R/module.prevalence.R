@@ -42,9 +42,9 @@ prevalence_mig <- function(dat, at) {
 
   # Pop Size / Demog ----
   # Total
-  dat <- set_epi(dat, "num", at, length(active == 1))
-  dat <- set_epi(dat, "num.pop1", at, length(active == 1 & origin == "region"))
-  dat <- set_epi(dat, "num.pop2", at, length(active == 1 & origin == "global"))
+  dat <- set_epi(dat, "num", at, sum(active == 1))
+  dat <- set_epi(dat, "num.pop1", at, sum(active == 1 & origin == "region"))
+  dat <- set_epi(dat, "num.pop2", at, sum(active == 1 & origin == "global"))
 
 
 

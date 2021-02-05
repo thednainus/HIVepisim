@@ -256,3 +256,72 @@ create_sample_csv <- function(tm, time_seq, seq_count, prefix = NULL){
 
 }
 
+
+#' @title Fast Version of network::delete.vertices for Edgelist-formated Network
+#'        Modified version for migrations.
+#'
+#' @description It will delete the edges, but will keep the same attribute number
+#'    because when migration happens, only edges get removed.
+#'
+#' @param el A two-column matrix of current edges (edgelist) with an attribute
+#'           variable \code{n} containing the total current network size.
+#' @param vid A vector of IDs to delete from the edgelist.
+#'
+#' @details
+#' This function is used in \code{EpiModel} modules to remove vertices (nodes)
+#' from the edgelist object to account for exits from the population (e.g.,
+#' deaths and out-migration)
+#'
+#' @return
+#' Returns a updated edgelist object, \code{el}, with the edges of deleted
+#' vertices removed from the edgelist and the ID numbers of the remaining edges
+#' permuted downward.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' library("EpiModel")
+#' set.seed(12345)
+#' nw <- network_initialize(100)
+#' formation <- ~edges
+#' target.stats <- 50
+#' coef.diss <- dissolution_coefs(dissolution = ~offset(edges), duration = 20)
+#' x <- netest(nw, formation, target.stats, coef.diss, verbose = FALSE)
+#'
+#' param <- param.net(inf.prob = 0.3)
+#' init <- init.net(i.num = 10)
+#' control <- control.net(type = "SI", nsteps = 100, nsims = 5, tergmLite = TRUE)
+#'
+#' # Set seed for reproducibility
+#' set.seed(123456)
+#'
+#' # networkLite representation structure after initialization
+#' dat <- crosscheck.net(x, param, init, control)
+#' dat <- initialize.net(x, param, init, control)
+#'
+#' # Current edges
+#' head(dat$el[[1]], 20)
+#'
+#' # Remove nodes 1 and 2
+#' nodes.to.delete <- 1:2
+#' dat$el[[1]] <- delete_vertices(dat$el[[1]], nodes.to.delete)
+#'
+#' # Newly permuted edges
+#' head(dat$el[[1]], 20)
+#' }
+#'
+delete_edges <- function(el, vid) {
+
+  new.el <- el
+  if (length(vid) > 0) {
+    el.rows.to.del <- which(el[, 1] %in% vid | el[, 2] %in% vid)
+    if (length(el.rows.to.del) > 0) {
+      new.el <- el[-el.rows.to.del, , drop = FALSE]
+    }
+    attributes(new.el)$n <- attributes(el)$n
+  }
+
+  return(new.el)
+}
+

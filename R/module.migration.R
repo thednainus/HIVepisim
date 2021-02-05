@@ -102,7 +102,7 @@ migration <- function(dat, at){
       # because this is a migration from population 1 to population 2
       # the migrants will be labeled as origin = "global" (because it
       # is not in population 1 anymore)
-      #random select the number fo migrants from the network to migrate
+      #random select the number of migrants from the network to migrate
       vecMigrations.21 <- which(rbinom(nidsMigs21, 1, m21.rate) == 1)
       if (length(vecMigrations.21) > 0) {
         idsMigs21.all <- idsMigs21[vecMigrations.21]

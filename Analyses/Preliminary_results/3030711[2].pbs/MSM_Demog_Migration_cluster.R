@@ -1,8 +1,13 @@
 library(EpiModel)
 library(HIVepisim)
-library(EpiModelHPC)
 
 rm(list = ls())
+
+# years to simulate in nsteps
+years = 2
+
+# numbers of cores to use
+cores = 8
 
 # PARAMETERS are tests and should be CONFIRMED
 
@@ -186,41 +191,37 @@ coef.diss
 # Fit the model
 # # Fit the TERGM
 est <- netest(nw, formation, target.stats, coef.diss)
-save(est, file = "fit.rda")
 
 # Model diagnostics
 # Simulate time series to examine timed edgelist
-dx <- netdx(est, nsims = 1, nsteps = 1000, keep.tedgelist = TRUE)
+#dx <- netdx(est, nsims = 1, nsteps = 1000, keep.tedgelist = TRUE)
 
 # Extract timed-edgelist
-te <- as.data.frame(dx)
-head(te)
+#te <- as.data.frame(dx)
+#head(te)
 
 # Limit to non-censored edges
-te2 <- te[which(te$onset.censored == FALSE & te$terminus.censored == FALSE),
-          c("head", "tail", "duration")]
-head(te2)
+#te2 <- te[which(te$onset.censored == FALSE & te$terminus.censored == FALSE),
+#          c("head", "tail", "duration")]
+#head(te2)
 
 # Look up the age group of head and tail nodes
-te2$ag.head <- originVec[te2$head]
-te2$ag.tail <- originVec[te2$tail]
-head(te2)
+#te2$ag.head <- originVec[te2$head]
+#te2$ag.tail <- originVec[te2$tail]
+#head(te2)
 
 # Calculate mean durations in each age-mixed group
-mean(te$duration[te2$ag.head == "global" & te2$ag.tail == "global"])
-mean(te$duration[te2$ag.head != te2$ag.tail])
-mean(te$duration[te2$ag.head == "region" & te2$ag.tail == "region"])
+#mean(te$duration[te2$ag.head == "global" & te2$ag.tail == "global"])
+#mean(te$duration[te2$ag.head != te2$ag.tail])
+#mean(te$duration[te2$ag.head == "region" & te2$ag.tail == "region"])
 
 # Compare to targets
-durs
+#durs
 
 
 
 # EpiModel Model Simulation -----------------------------------------------
 # Base model
-#a1.rate = 3.798435e-05,
-#a2.rate = 3.798435e-05 * 0.0645
-#m21.rate = 0.00129
 param <- param.net(time.unit = time.unit,
                    groups = 1,
                    stage_prog_rate1 = 1/((3.32 * 365) / time.unit),
@@ -235,7 +236,7 @@ param <- param.net(time.unit = time.unit,
                    tx.init.prob = 0.092,
                    tx.halt.prob = 0.0102,
                    tx.reinit.prob = 0.00066,
-                   trans.r = 3e-04,
+                   trans.r = 3e-06,
                    ws0 = 1,
                    ws1 = 0.1,
                    ws2 = 0.1,
@@ -249,15 +250,15 @@ param <- param.net(time.unit = time.unit,
                    aids.mr = 1/((5.06 * 365) / time.unit),
                    asmr = dr_vec,
                    a1.rate = 0.00052,
-                   a2.rate = 0.00052,
+                   a2.rate = 0.00082,
                    arrival.age = 18,
                    m12.rate = 0,
-                   m21.rate = 0.00005)
+                   m21.rate = 0.00129)
 
 init <- init.net()
-#6752
-control <- control.net(type = NULL, nsteps = 1000, start = 1,nsims = 1,
-                       ncores = 2, resimulate.network = TRUE, tergmLite = TRUE,
+
+control <- control.net(type = NULL, nsteps = 365 * years, start = 1, nsims = 1,
+                       ncores = cores, resimulate.network = TRUE, tergmLite = FALSE,
                        initialize.FUN = initialize_mig,
                        resim_nets.FUN = resim_nets,
                        hivtest.FUN = hivtest_msm,
@@ -274,56 +275,11 @@ control <- control.net(type = NULL, nsteps = 1000, start = 1,nsims = 1,
                        save.nwstats = FALSE,
                        save.transmat = TRUE,
                        verbose = TRUE)
-print(date())
+
 sim <- netsim(est, param, init, control)
-print(date())
-
-print(date())
-sim <- netsim(est, param, init, control)
-print(date())
-
-sim <- netsim_hpc(x = "fit.rda", param = param, init = init, control = control,
-                   cp.save.int = 100, save.min = TRUE,save.max = TRUE,
-                   compress = TRUE, verbose = TRUE)
-
-sim <- netsim_hpc(x = "data/sim1/sim.cp.rda", param = param, init = init, control = control,
-                  cp.save.int = 100, save.min = TRUE,save.max = TRUE,
-                  compress = TRUE, verbose = TRUE)
-
-load("data/sim1/sim.cp.rda")
+sim
 
 
-# Simulation plot ----
-plot(sim, qnts = 1)
+# save simulations
 
-# Mean age summary statistic
-plot(sim, y = "age.mean")
-
-# Export data to data frame
-df <- as.data.frame(sim, out = "mean")
-head(df$age.mean)
-tail(df$age.mean)
-
-# Population size over time
-plot(sim, y = "num")
-
-# Deaths per day
-plot(sim, y = c("hstage1", "hstage2", "hstage3"), qnts = FALSE, legend = TRUE)
-plot(sim, y = "hstage0")
-
-plot(sim, y = "i.prev")
-plot(sim, y = "nNew")
-plot(sim, y = "incid")
-
-
-# Transmission matrix ----
-tm <- get_transmat(sim)
-transphylo <- as.phylo.transmat(tm)
-tmbytree <- get.transmat.phylo(tm)
-# to make sure that transmission only happens between individuals from same origin
-test <- tm[tm$infOrigin != tm$susOrigin,]
-
-origin_inf <- read.csv("infected_origin.csv")
-
-transphylo[[1]]$tip.label %in% origin_inf$infID
-
+saveRDS(sim, "results_sim.RDS")

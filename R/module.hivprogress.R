@@ -37,10 +37,10 @@ hivprogress_msm <- function(dat, at) {
   tx.status <- get_attr(dat, "tx.status")
 
   # Parameters -------------
-  stage_prog_yr0 <- get_param(dat, "stage_prog_yr0")
-  stage_prog_yr1 <- get_param(dat, "stage_prog_yr1")
-  stage_prog_yr2 <- get_param(dat, "stage_prog_yr2")
-  stage_prog_yr3 <- get_param(dat, "stage_prog_yr3")
+  stage_prog_rate1 <- get_param(dat, "stage_prog_rate1")
+  stage_prog_rate2 <- get_param(dat, "stage_prog_rate2")
+  stage_prog_rate3 <- get_param(dat, "stage_prog_rate3")
+
 
   f1 <- get_param(dat, "f1")
   f2 <- get_param(dat, "f2")
@@ -58,22 +58,18 @@ hivprogress_msm <- function(dat, at) {
   # Stage 0 the acute and early HIV infection
 
   idsStage0 <- which(active == 1 & stage == 0 & tx.status == 0)
-  rates0 <- 1 / (stage_prog_yr0 * 365)
   # new ids that will progress from stage 0 to stages 1 or stage 2 or stage 3 or stage 4
   # this is following Cori et al 2015
-  newids <- idsStage0[rbinom(length(idsStage0), 1, rates0) == 1]
-  stages <- sample(x = 1:4, size = length(newids),
+  stages <- sample(x = 1:4, size = length(idsStage0),
                    replace = TRUE, prob = c(f1, f2, f3, f4))
 
-  stage[newids] <- sample(x = 1:4, size = length(newids),
-                          replace = TRUE, prob = c(f1, f2, f3, f4))
-  stage.time[newids] <- 1
+  stage[idsStage0] <- stages
+  stage.time[idsStage0] <- 1
 
 
   # Change from stage 1 to stage 2 of HIV infection following Cori et al. 2015
   idsStage1 <- which(active == 1 & stage == 1 & tx.status == 0)
-  rates1 <- 1 / (stage_prog_yr1 * 365)
-  newidsStage2 <- idsStage1[rbinom(length(idsStage1), 1, rates1) == 1]
+  newidsStage2 <- idsStage1[rbinom(length(idsStage1), 1, stage_prog_rate1) == 1]
 
   stage[newidsStage2] <- 2
   stage.time[newidsStage2] <- 1
@@ -81,8 +77,7 @@ hivprogress_msm <- function(dat, at) {
 
   # Change from stage 2 to stage 3 of HIV infection following Cori et al. 2015
   idsStage2 <- which(active == 1 & stage == 2 & tx.status == 0)
-  rates2 <- 1 / (stage_prog_yr2 * 365)
-  newidsStage3 <- idsStage2[rbinom(length(idsStage2), 1, rates2) == 1]
+  newidsStage3 <- idsStage2[rbinom(length(idsStage2), 1, stage_prog_rate2) == 1]
 
   stage[newidsStage3] <- 3
   stage.time[newidsStage3] <- 1
@@ -95,8 +90,7 @@ hivprogress_msm <- function(dat, at) {
   aids.off.tx <- which(active == 1 & status == 1 & tx.status == 0 & cuml.time.off.tx > 0 & stage == 3)
   isAIDS <- c(aids.tx.naive, aids.off.tx)
 
-  rates3 <- 1 / (stage_prog_yr3 * 365)
-  newidsAIDS <- isAIDS[rbinom(length(isAIDS), 1, rates3) == 1]
+  newidsAIDS <- isAIDS[rbinom(length(isAIDS), 1, stage_prog_rate3) == 1]
 
   stage[isAIDS] <- 4
   stage.time[isAIDS] <- 1

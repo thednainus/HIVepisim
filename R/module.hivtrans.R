@@ -42,6 +42,7 @@ hivtrans_mig <- function(dat, at) {
   # Parameters ------
   # baseline for transmission rate
   trans.r <- get_param(dat, "trans.r")
+  time.unit <- get_param(dat, "time.unit")
 
   # transmission risk ratio by stage of HIV infection
   ws0 <- get_param(dat, "ws0")
@@ -100,8 +101,6 @@ hivtrans_mig <- function(dat, at) {
       del$susOrigin <- origin[del$sus]
       del$susMigrant <- migrant[del$sus]
       del$susStatus <- status[del$sus]
-      del$susEdgeList <- paste(get.edgeIDs(x = dat$nw[[1]], v = del$sus), collapse = "_")
-      del$infEdgeList <- paste(get.edgeIDs(x = dat$nw[[1]], v = del$inf), collapse = "_")
 
 
       # Set parameters on discordant edgelist data frame
@@ -134,7 +133,7 @@ hivtrans_mig <- function(dat, at) {
 
       # Transmission from infected person --------------------------------------
 
-      transmit <- rbinom(nrow(del), 1, del$trans.r*365)
+      transmit <- rbinom(nrow(del), 1, (del$trans.r*365)/time.unit)
       del <- del[which(transmit == 1), ]
 
       # Look up new ids if any transmissions occurred
