@@ -14,6 +14,9 @@ time.unit <- 1
 # Range of possible ages
 ages <- 18:80
 
+# numner of years to simulate
+years = 5
+
 
 # Age-specific mortality rates for MALES for the UK in 2018
 # (https://www.statista.com/statistics/1125118/death-rate-united-kingdom-uk-by-age/)
@@ -235,7 +238,7 @@ param <- param.net(time.unit = time.unit,
                    tx.init.prob = 0.092,
                    tx.halt.prob = 0.0102,
                    tx.reinit.prob = 0.00066,
-                   trans.r = 3e-04,
+                   trans.r =5e-05,
                    ws0 = 1,
                    ws1 = 0.1,
                    ws2 = 0.1,
@@ -251,13 +254,13 @@ param <- param.net(time.unit = time.unit,
                    a1.rate = 0.00052,
                    a2.rate = 0.00052,
                    arrival.age = 18,
-                   m12.rate = 0,
-                   m21.rate = 0.00005)
+                   m12.rate = 0.00016125,
+                   m21.rate = 0.00016125)
 
 init <- init.net()
 #6752
-control <- control.net(type = NULL, nsteps = 1000, start = 1,nsims = 1,
-                       ncores = 2, resimulate.network = TRUE, tergmLite = TRUE,
+control <- control.net(type = NULL, nsteps = 1 + (365 * years), start = 1,nsims = 1,
+                       ncores = 1, resimulate.network = TRUE, tergmLite = TRUE,
                        initialize.FUN = initialize_mig,
                        resim_nets.FUN = resim_nets,
                        hivtest.FUN = hivtest_msm,
@@ -274,9 +277,33 @@ control <- control.net(type = NULL, nsteps = 1000, start = 1,nsims = 1,
                        save.nwstats = FALSE,
                        save.transmat = TRUE,
                        verbose = TRUE)
-print(date())
+
 sim <- netsim(est, param, init, control)
-print(date())
+
+plot(sim, y = c("i.num.pop1", "i.num.pop2"), qnts = 1, legend = TRUE)
+plot(sim, y = "i.num.pop2", qnts = 1, legend = TRUE)
+plot(sim, y = "i.num.pop1", qnts = 1, legend = TRUE)
+plot(sim, y = c("num.pop1", "num.pop2"), qnts = 1, legend = TRUE)
+plot(sim, y = c("s.num.pop1", "s.num.pop2"), qnts = 1, legend = TRUE)
+plot(sim, y = "s.num.pop2", qnts = 1, legend = TRUE)
+plot(sim, y = "s.num.pop1", qnts = 1, legend = TRUE)
+plot(sim, y = c("i.prev.pop1", "i.prev.pop2"), qnts = 1, legend = TRUE)
+plot(sim, y = "i.prev.pop2", qnts = 1, legend = TRUE)
+plot(sim, y = "i.prev.pop1", qnts = 1, legend = TRUE)
+plot(sim, y = "nArrivals_mig1", qnts = 1, legend = TRUE)
+plot(sim, y = "nArrivals_mig2", qnts = 1, legend = TRUE)
+
+
+
+
+quartz()
+
+par(mfrow = c(1, 1))
+plot(sim, y = "i.num.pop2", qnts = 1, main = "Total Prevalence", mean.col = 3, qnts.col = 3)
+plot(sim_notergmLite, y = "i.num.pop2", qnts = 1, mean.col = 6, qnts.col = 6, add = TRUE)
+legend("topleft", c("tergmLite", "No tergmLite"), lwd = 3, col = c(3, 6), bty = "n")
+
+
 
 print(date())
 sim <- netsim(est, param, init, control)
