@@ -1,14 +1,14 @@
-#' @title Convert transmat infection tree into a phylo object
+#' @title Convert transmat infection tree into a phylogenetic tree
 #'
 #' @description Converts the edgelist matrix in the \code{transmat} object into
 #'              a \code{phylo} object by doing the required reordering and
-#'              labeling.
+#'              labeling. This is a specific function that requires simulations
+#'              using EpiModel using the package HIVepisim (this package)
 #'
 #' @param x An object of class \code{"transmat"}, the output from
 #'        \code{\link{get_transmat}}.
-#' @param format If origin return tip in the form of ID_global or ID_region.
-#'    If migrant return tip in the form of ID_1, ID_2, ID_21, ID_12
-#' @param collapse.singles logical, DEPRECATED
+#' @param format If format = "origin" return tip in the form of ID_global or ID_region.
+#'    If format = "migrant" return tip in the form of ID_1, ID_2, ID_21, ID_12
 #' @param vertex.exit.times  optional numeric vector providing the time of
 #'        departure of vertices, to be used to scale the lengths of branches
 #'        reaching to the tips. Index position on vector corresponds to network
@@ -17,6 +17,17 @@
 #' @param ...  further arguments (unused)
 #'
 #' @details
+#' This code was build using the algorithm as in \code{\link{as.phylo.transmat}}.
+#' The difference is that if using format = "origin", tip names of the phylogenetic
+#' tree will have appended to their names their origin at the moment infection
+#' happened (region or global). If using format = "migrant", tip names of the
+#' phylogenetic tree will have appended to their names if they are a migrant
+#' or not at the time of infection.
+#' Migrant values can take the value of 1 if vertex is from region,
+#' 2 if vertex is from global,
+#' 21 if vertex is from global that migrated to region and
+#' 12 if vertex is from region that migrated to global.
+#'
 #' Converts a \code{\link{transmat}} object containing information about the
 #' history of a simulated infection into a \code{\link{phylo}} object
 #' representation suitable for plotting as a tree with
@@ -39,34 +50,15 @@
 #' requiring 'collapse.singles' to prune it to an appropriate branching
 #' structure.
 #'
+#' This script will specifically work with the package HIVepisim.
+#'
 #' @export
-#'
-#' @examples
-#' set.seed(10)
-#' nw <- network_initialize(n = 100)
-#' formation <- ~edges
-#' target.stats <- 50
-#' coef.diss <- dissolution_coefs(dissolution = ~offset(edges), duration = 20)
-#'
-#' est1 <- netest(nw, formation, target.stats, coef.diss, verbose = FALSE)
-#'
-#' param <- param.net(inf.prob = 0.5)
-#' init <- init.net(i.num = 1)
-#' control <- control.net(type = "SI", nsteps = 40, nsims = 1, verbose = FALSE)
-#'
-#' mod1 <- netsim(est1, param, init, control)
-#' tm <- get_transmat(mod1)
-#' tmPhylo <- as.phylo.transmat(tm)
-#' plot(tmPhylo, show.node.label = TRUE,
-#'               root.edge = TRUE,
-#'               cex = 0.5)
-#'
 toPhylo_transmatOrigin <- function(x, format = "migrant",
-                              collapse.singles,
-                              vertex.exit.times,
+                                   collapse.singles,
+                                   vertex.exit.times,
                               ...) {
   format <-  format
-  # warnings if someone tries to use old args that are no longer supported
+
   if (!missing(collapse.singles)) {
     warning("the 'collapse.singles' argument to as.phylo.transmat is no longer
             supported and will be ignored")
@@ -110,6 +102,12 @@ toPhylo_transmatOrigin <- function(x, format = "migrant",
   el <- cbind(tm$inf, tm$sus)
   origNodes <- unique(as.vector(el))
 
+  if (!is.null(vertex.exit.times)) {
+    if (length(origNodes) > length(vertex.exit.times) | any(origNodes > length(vertex.exit.times))) {
+      stop("Vertex ids in edgelist imply a larger network size than vertex.exit.times")
+    }
+  }
+
   if (format == "origin"){
     el_ori <- cbind(at = tm$at,
                     inf = tm$inf,
@@ -131,6 +129,9 @@ toPhylo_transmatOrigin <- function(x, format = "migrant",
   tipNamesOri <- unique(as.vector(el_ori[,c(4:5)]))
   # get tip names only without the origin. This will allow to determine duplications
   # when a tip was region and changed to global (or vice versa, for example)
+  # or when using the different values for the "migrant" option (that can be 1
+  # for region, 2 for global, 21 indicating a global that migrated to region and
+  # 12 indicating a region that migrated to global)
   tip_names <- unlist(lapply(tipNamesOri, function(x) str_split(string = x, pattern = "_")[[1]][1]))
   # get the duplicated
   dup_tip <- tip_names[duplicated(tip_names)]
@@ -240,7 +241,23 @@ toPhylo_transmatOrigin <- function(x, format = "migrant",
 
 
 
-# function to get the oldest time
+#' @title Get oldest times of duplicates.
+#'
+#' @description This is a support function for the main function
+#'    \code{\link{toPhylo_transmatOrigin}}.
+#'
+#' @param dup_rows matrix of list of matrices of transmat
+#'    that have duplicated vertex IDs.
+#' @param get_last_time vector of oldest time
+#'
+#' @details During the simulations, vertex can migrate from region to global
+#' or global to region. When adding the information of migrant or origin to the
+#' tip name, we will observe duplicated on vertex IDs because it can be in region
+#' at one time point but later in global, for example.
+#' This function will get the duplicated rows in the transmission matrix
+#' in which a duplicated vertex is observed. It will then get the oldest observed
+#' time for each duplicated vertex.
+#'
 #' @export
 oldest_time <- function(dup_rows, get_last_time){
   dup_rows <- as.data.frame(dup_rows)
@@ -249,56 +266,26 @@ oldest_time <- function(dup_rows, get_last_time){
   return(row_int)
 }
 
-# function to get the name of the tip in the for of id_origin
-# because there can be duplicates, we need to remove those from the tree
-#' @export
-name_of_tips <- function(dup_tip, row_int){
-
-  if(dup_tip %in% row_int$inf){
-    infs_values <- row_int$inf_ori
-  }else if(dup_tip %in% row_int$sus){
-    infs_values <- row_int$sus_ori
-  }
-
-  return(infs_values)
-
-}
-
-
-#replace duplicated by the correct tip name
-#' @export
-replace_dups <- function(dup_tip, origNodes, tipNamesOri, tip_names_toInsert, tip_names){
-  #get index of location of duplicated sequences
-  index_to_remove <- which(tip_names %in% dup_tip)
-
-  tip_tmp <- tipNamesOri
-
-  tipNamesOri <- tip_tmp[-index_to_remove]
-  # add new tip names
-  #index to position to add tips
-  index_to_add <- match(dup_tip, origNodes)
-  index_to_add <- index_to_add - 1
-  if(length(tip_names_toInsert) != length(index_to_add)){
-    stop("length of `tip_names_toInsert` should be the same as `index_to_add`")
-  }
-  while(length(index_to_add) > 0){
-    tipNamesOri2 <- append(x = tipNamesOri, values = tip_names_toInsert[1], after = index_to_add[1])
-    tipNamesOri <- tipNamesOri2
-    index_to_add <- index_to_add[-1]
-    tip_names_toInsert <- tip_names_toInsert[-1]
-  }
-
-  return(tipNamesOri2)
-}
-
-
+#' Get tip names based on duplicated rows.
+#'
+#' @description This is a support function for the main function
+#'    \code{\link{toPhylo_transmatOrigin}}.
+#'
+#' @param dup_tip Vector of duplicated tips
+#' @param el_ori Matrix of edge list and information on origin or migration
+#'
+#' @return A vector of the duplicated vertex in the form of ID_origin or ID_migrant.
+#'    Based on the oldest time of duplicated rows (see \code{\link{oldest_time}}),
+#'    it will return the tip name that should be in the phylogenetic tree.
+#'    I used the origin or migrant information observed at the time of
+#'    transmission.
+#'
 #' @export
 get_newTip_names <- function(dup_tip, el_ori){
   if(length(dup_tip) == 1){
     # get duplicated rows in the el_ori matrix
     dup_rows <- el_ori[el_ori[,2] == dup_tip | el_ori[,3] == dup_tip,]
     get_last_time <- as.numeric(tail(sort(dup_rows[,1]), 1))
-    #row_int <- dup_rows[dup_rows$at == get_last_time,]
     row_int <- oldest_time(dup_rows, get_last_time)
 
     tip_origin_names <- name_of_tips(dup_tip, row_int)
@@ -316,4 +303,86 @@ get_newTip_names <- function(dup_tip, el_ori){
 
   return(tip_origin_names)
 
+}
+
+#' @title Get tip names.
+#'
+#' @description This is a support function for the main function
+#'    \code{\link{toPhylo_transmatOrigin}}.
+#'
+#' Function that gest the name of the tip in the form of ID_origin or ID_migrant
+#' because we can observe duplicates (when in the form ID_origin or ID_migrant),
+#' we need to remove those from the phylogenetic tree.
+#'
+#' @inheritParams get_newTip_names
+#' @param row_int data.frame of the row of interest. The row in the transmission
+#' matrix that have the oldest time step based on duplicated value.
+#' See \code{\link{oldest_time}} and \code{\link{get_newTip_names}}.
+#'
+#' @return vector of ID_origin or ID_migrant.
+#'
+#' @export
+name_of_tips <- function(dup_tip, row_int){
+
+  if(dup_tip %in% row_int$inf){
+    infs_values <- row_int$inf_ori
+  }else if(dup_tip %in% row_int$sus){
+    infs_values <- row_int$sus_ori
+  }
+
+  return(infs_values)
+
+}
+
+#' @title Replace duplicates.
+#'
+#' @description This is a support function for the main function
+#'    \code{\link{toPhylo_transmatOrigin}}.
+#'
+#' Replace duplicated in the form o ID_origin or ID_migrant by the correct tip
+#' name.
+#'
+#' @inheritParams get_newTip_names
+#'
+#' @param origNodes Vector of vertex IDs.
+#' @param tipNamesOri Vector in the form of ID_origin or ID_migrant. This vector
+#'    contain the duplicated vertex when considering only the ID.
+#' @param tip_names_toInsert Vector of the correct value of tip name to use in
+#'    the phylogenetic tree in the form of ID_origin or ID_migrant
+#' @param tip_names Vector of tip names in the form of ID only. This vector will
+#'    contain the duplicated ID or IDs.
+#'
+#' @return Vector of tip names in the form of ID_origin or ID_migrant to use
+#'    as tip.labels in the phylogenetic tree.
+#'
+#' @export
+replace_dups <- function(dup_tip, origNodes, tipNamesOri, tip_names_toInsert, tip_names){
+  #get index of duplicated IDs in tip_names vector
+  index_to_remove <- which(tip_names %in% dup_tip)
+
+  # save the values of tipNamesOri in a temporary object
+  tip_tmp <- tipNamesOri
+
+  tipNamesOri <- tip_tmp[-index_to_remove]
+  # add new tip names
+  #index to add tip name(s) in relation to the original vector of vertex IDs
+  # origNodes does not have any duplicates
+  index_to_add <- match(dup_tip, origNodes)
+  # subtract 1 of the indext to use with function append
+  # append is an R function that will append a value after the index value of
+  # interest
+  index_to_add <- index_to_add - 1
+  # This if will only check for consistency. If this does not hold, I coded
+  # something not right.
+  if(length(tip_names_toInsert) != length(index_to_add)){
+    stop("length of `tip_names_toInsert` should be the same as `index_to_add`")
+  }
+  while(length(index_to_add) > 0){
+    tipNamesOri2 <- append(x = tipNamesOri, values = tip_names_toInsert[1], after = index_to_add[1])
+    tipNamesOri <- tipNamesOri2
+    index_to_add <- index_to_add[-1]
+    tip_names_toInsert <- tip_names_toInsert[-1]
+  }
+
+  return(tipNamesOri2)
 }

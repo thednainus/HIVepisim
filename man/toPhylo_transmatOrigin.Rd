@@ -2,7 +2,7 @@
 % Please edit documentation in R/phylo_utils.R
 \name{toPhylo_transmatOrigin}
 \alias{toPhylo_transmatOrigin}
-\title{Convert transmat infection tree into a phylo object}
+\title{Convert transmat infection tree into a phylogenetic tree}
 \usage{
 toPhylo_transmatOrigin(
   x,
@@ -16,10 +16,8 @@ toPhylo_transmatOrigin(
 \item{x}{An object of class \code{"transmat"}, the output from
 \code{\link{get_transmat}}.}
 
-\item{format}{If origin return tip in the form of ID_global or ID_region.
-If migrant return tip in the form of ID_1, ID_2, ID_21, ID_12}
-
-\item{collapse.singles}{logical, DEPRECATED}
+\item{format}{If format = "origin" return tip in the form of ID_global or ID_region.
+If format = "migrant" return tip in the form of ID_1, ID_2, ID_21, ID_12}
 
 \item{vertex.exit.times}{optional numeric vector providing the time of
 departure of vertices, to be used to scale the lengths of branches
@@ -32,9 +30,21 @@ tree.}
 \description{
 Converts the edgelist matrix in the \code{transmat} object into
              a \code{phylo} object by doing the required reordering and
-             labeling.
+             labeling. This is a specific function that requires simulations
+             using EpiModel using the package HIVepisim (this package)
 }
 \details{
+This code was build using the algorithm as in \code{\link{as.phylo.transmat}}.
+The difference is that if using format = "origin", tip names of the phylogenetic
+tree will have appended to their names their origin at the moment infection
+happened (region or global). If using format = "migrant", tip names of the
+phylogenetic tree will have appended to their names if they are a migrant
+or not at the time of infection.
+Migrant values can take the value of 1 if vertex is from region,
+2 if vertex is from global,
+21 if vertex is from global that migrated to region and
+12 if vertex is from region that migrated to global.
+
 Converts a \code{\link{transmat}} object containing information about the
 history of a simulated infection into a \code{\link{phylo}} object
 representation suitable for plotting as a tree with
@@ -56,25 +66,6 @@ Note that in EpiModel versions <= 1.2.4, the phylo tree was constructed
 differently, translating network vertices to both phylo-nodes and tips and
 requiring 'collapse.singles' to prune it to an appropriate branching
 structure.
-}
-\examples{
-set.seed(10)
-nw <- network_initialize(n = 100)
-formation <- ~edges
-target.stats <- 50
-coef.diss <- dissolution_coefs(dissolution = ~offset(edges), duration = 20)
 
-est1 <- netest(nw, formation, target.stats, coef.diss, verbose = FALSE)
-
-param <- param.net(inf.prob = 0.5)
-init <- init.net(i.num = 1)
-control <- control.net(type = "SI", nsteps = 40, nsims = 1, verbose = FALSE)
-
-mod1 <- netsim(est1, param, init, control)
-tm <- get_transmat(mod1)
-tmPhylo <- as.phylo.transmat(tm)
-plot(tmPhylo, show.node.label = TRUE,
-              root.edge = TRUE,
-              cex = 0.5)
-
+This script will specifically work with the package HIVepisim.
 }
