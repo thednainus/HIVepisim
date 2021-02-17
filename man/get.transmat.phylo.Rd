@@ -2,9 +2,9 @@
 % Please edit documentation in R/utils.R
 \name{get.transmat.phylo}
 \alias{get.transmat.phylo}
-\title{Get transmat infection tree for each seed}
+\title{Get transmat infection tree for each seed or for specified seeds}
 \usage{
-get.transmat.phylo(x, vertex.exit.times)
+get.transmat.phylo(x, vertex.exit.times, by_areas = "all", max_value = NULL)
 }
 \arguments{
 \item{x}{An object of class \code{"transmat"}, the output from
@@ -15,6 +15,12 @@ departure of vertices, to be used to scale the lengths of branches
 reaching to the tips. Index position on vector corresponds to network
 id. NA indicates no departure, so branch will extend to the end of the
 tree.}
+
+\item{by_areas}{by_areas = "all" if interested in all seeds, or by_areas = "region"
+if interested in seeds for region only.}
+
+\item{max_value}{max value for comparison to select the seed values. It will
+select only seed values less than max_value for seeds from region only.}
 }
 \description{
 Separate a \code{transmat} object into different seedling

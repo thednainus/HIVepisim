@@ -1,4 +1,4 @@
-#' @title Get transmat infection tree for each seed
+#' @title Get transmat infection tree for each seed or for specified seeds
 #'
 #' @description Separate a \code{transmat} object into different seedling
 #'       event.
@@ -10,6 +10,10 @@
 #'        reaching to the tips. Index position on vector corresponds to network
 #'        id. NA indicates no departure, so branch will extend to the end of the
 #'        tree.
+#' @param by_areas by_areas = "all" if interested in all seeds, or by_areas = "region"
+#'        if interested in seeds for region only.
+#' @param max_value max value for comparison to select the seed values. It will
+#'        select only seed values less than max_value for seeds from region only.
 #'
 #' @details
 #' Converts a \code{\link{transmat}} object containing information about the
@@ -23,9 +27,10 @@
 #' @export
 #'
 
-get.transmat.phylo <- function(x, vertex.exit.times) {
+get.transmat.phylo <- function(x, vertex.exit.times, by_areas = "all", max_value = NULL) {
 
-
+ by_areas <-  by_areas
+ max_value <- max_value
   # if not named properly, assume inf, sus at
   if (!all(c("inf", "sus", "at") %in% names(x))) {
     warning("input does not have appropriate column names for transmat,
@@ -37,7 +42,13 @@ get.transmat.phylo <- function(x, vertex.exit.times) {
     vertex.exit.times <- NULL
   }
   # find roots (infectors that never appear as sus)
-  v <- setdiff(unique(tm$inf), unique(tm$sus))
+  if(by_areas == "all"){
+    v <- setdiff(unique(tm$inf), unique(tm$sus))
+  }
+  if(by_areas == "region"){
+    v <- setdiff(unique(tm$inf), unique(tm$sus))
+    v <- v[v < max_value]
+  }
   if (length(v) > 1) {
     message("found multiple trees, returning a list of ", length(v),
             "phylo objects")
@@ -53,7 +64,9 @@ get.transmat.phylo <- function(x, vertex.exit.times) {
       }
       # call as.phylo on the subset of the edgelist
       get.transmat.phylo(tm[sub_rows, , drop = FALSE],
-                         vertex.exit.times = vertex.exit.times)
+                         vertex.exit.times = vertex.exit.times,
+                         by_areas = by_areas,
+                         max_value = max_value)
       if (exists("subtm")){
         subtm <- rbind(subtm, tm[sub_rows, , drop = FALSE])
       }else{
@@ -196,7 +209,7 @@ create_inf_csv <- function(tm, time_tr, prefix = NULL){
     filename <- paste(prefix, "inf.csv", sep = "_")
   }
 
-  write_csv(all_data, filename)
+  write.csv(x = all_data, file = filename, row.names = FALSE)
 }
 
 
@@ -252,7 +265,7 @@ create_sample_csv <- function(tm, time_seq, seq_count, prefix = NULL){
   }
 
 
-  write_csv(all_data, filename)
+  write.csv(x = all_data, file = filename, row.names = FALSE)
 
 }
 

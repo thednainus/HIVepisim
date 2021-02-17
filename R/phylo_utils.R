@@ -5,16 +5,10 @@
 #'              labeling. This is a specific function that requires simulations
 #'              using EpiModel using the package HIVepisim (this package)
 #'
-#' @param x An object of class \code{"transmat"}, the output from
-#'        \code{\link{get_transmat}}.
+#' @inheritParams get.transmat.phylo
 #' @param format If format = "origin" return tip in the form of ID_global or ID_region.
-#'    If format = "migrant" return tip in the form of ID_1, ID_2, ID_21, ID_12
-#' @param vertex.exit.times  optional numeric vector providing the time of
-#'        departure of vertices, to be used to scale the lengths of branches
-#'        reaching to the tips. Index position on vector corresponds to network
-#'        id. NA indicates no departure, so branch will extend to the end of the
-#'        tree.
-#' @param ...  further arguments (unused)
+#'        If format = "migrant" return tip in the form of ID_1, ID_2, ID_21, ID_12
+
 #'
 #' @details
 #' This code was build using the algorithm as in \code{\link{as.phylo.transmat}}.
@@ -53,11 +47,16 @@
 #' This script will specifically work with the package HIVepisim.
 #'
 #' @export
-toPhylo_transmatOrigin <- function(x, format = "migrant",
+toPhylo_transmatOrigin <- function(x,
+                                   format = "migrant",
+                                   by_areas = "region",
+                                   max_value = NULL,
                                    collapse.singles,
                                    vertex.exit.times,
                               ...) {
-  format <-  format
+  format <- format
+  by_areas <-  by_areas
+  max_value <- max_value
 
   if (!missing(collapse.singles)) {
     warning("the 'collapse.singles' argument to as.phylo.transmat is no longer
@@ -75,7 +74,13 @@ toPhylo_transmatOrigin <- function(x, format = "migrant",
     vertex.exit.times <- NULL
   }
   # find roots (infectors that never appear as sus)
-  v <- setdiff(unique(tm$inf), unique(tm$sus))
+  if(by_areas == "all"){
+    v <- setdiff(unique(tm$inf), unique(tm$sus))
+  }
+  if(by_areas == "region"){
+    v <- setdiff(unique(tm$inf), unique(tm$sus))
+    v <- v[v < max_value]
+  }
   if (length(v) > 1) {
     message("found multiple trees, returning a list of ", length(v),
             "phylo objects")
@@ -90,8 +95,11 @@ toPhylo_transmatOrigin <- function(x, format = "migrant",
         toFind <- c(toFind[-1], tm$sus[which(tm$inf == i)])
       }
       # call as.phylo on the subset of the edgelist
-      toPhylo_transmatOrigin(tm[sub_rows, , drop = FALSE], format = format,
-                        vertex.exit.times = vertex.exit.times)
+      toPhylo_transmatOrigin(tm[sub_rows, , drop = FALSE],
+                             format = format,
+                             by_areas = by_areas,
+                             max_value = max_value,
+                             vertex.exit.times = vertex.exit.times)
 
     })
     names(sub_phylos) <- paste("seed", v, sep = "_")

@@ -1,6 +1,6 @@
 library(EpiModel)
 library(HIVepisim)
-library(EpiModelHPC)
+#library(EpiModelHPC)
 
 rm(list = ls())
 
@@ -15,7 +15,7 @@ time.unit <- 1
 ages <- 18:80
 
 # numner of years to simulate
-years = 5
+years = 20
 
 
 # Age-specific mortality rates for MALES for the UK in 2018
@@ -224,6 +224,16 @@ durs
 #a1.rate = 3.798435e-05,
 #a2.rate = 3.798435e-05 * 0.0645
 #m21.rate = 0.00129
+
+# parameters from epimodelHIV param_msm
+# hiv.test.rate = 0.01325 per week. Per day will be 0.01325/7
+# test.window.int = 21/7 per week. Per day will be 21
+# tx.init.prob = 0.092 per week, tx.init.prob = 0.092/7 per day
+# tx.halt.prob = 0.0102 per week, tx.halt.prob = 0.0102/7 per day
+# tx.reinit.prob = 0.00066 per week, tx.reinit.prob = 0.00066 per day
+# a1.rate = 0.00052 per week, a1.rate = 0.00052/7 per day
+# a2.rate = 0.00052 per week, a2.rate = 0.00052 per day
+
 param <- param.net(time.unit = time.unit,
                    groups = 1,
                    stage_prog_rate1 = 1/((3.32 * 365) / time.unit),
@@ -233,12 +243,12 @@ param <- param.net(time.unit = time.unit,
                    f2 = 0.19,
                    f3 = 0.05,
                    f4 = 0,
-                   hiv.test.rate = 0.01325,
-                   test.window.int = 21/7,
-                   tx.init.prob = 0.092,
-                   tx.halt.prob = 0.0102,
-                   tx.reinit.prob = 0.00066,
-                   trans.r =5e-05,
+                   hiv.test.rate = 0.01325/7,
+                   test.window.int = 21,
+                   tx.init.prob = 0.092/7,
+                   tx.halt.prob = 0.0102/7,
+                   tx.reinit.prob = 0.00066/7,
+                   trans.r =3e-04,
                    ws0 = 1,
                    ws1 = 0.1,
                    ws2 = 0.1,
@@ -251,15 +261,15 @@ param <- param.net(time.unit = time.unit,
                    wr2 = 10,
                    aids.mr = 1/((5.06 * 365) / time.unit),
                    asmr = dr_vec,
-                   a1.rate = 0.00052,
-                   a2.rate = 0.00052,
+                   a1.rate = 0.00052/7,
+                   a2.rate = 0.00052/7,
                    arrival.age = 18,
                    m12.rate = 0.00016125,
                    m21.rate = 0.00016125)
 
 init <- init.net()
 #6752
-control <- control.net(type = NULL, nsteps = 1 + (365 * years), start = 1,nsims = 1,
+control <- control.net(type = NULL, nsteps = 365 * years, start = 1, nsims = 1,
                        ncores = 1, resimulate.network = TRUE, tergmLite = TRUE,
                        initialize.FUN = initialize_mig,
                        resim_nets.FUN = resim_nets,
@@ -280,6 +290,7 @@ control <- control.net(type = NULL, nsteps = 1 + (365 * years), start = 1,nsims 
 
 sim <- netsim(est, param, init, control)
 
+plot(sim, y = c("a1.flow", "a2.flow"), qnts = 1, legend = TRUE)
 plot(sim, y = c("i.num.pop1", "i.num.pop2"), qnts = 1, legend = TRUE)
 plot(sim, y = "i.num.pop2", qnts = 1, legend = TRUE)
 plot(sim, y = "i.num.pop1", qnts = 1, legend = TRUE)
@@ -290,6 +301,7 @@ plot(sim, y = "s.num.pop1", qnts = 1, legend = TRUE)
 plot(sim, y = c("i.prev.pop1", "i.prev.pop2"), qnts = 1, legend = TRUE)
 plot(sim, y = "i.prev.pop2", qnts = 1, legend = TRUE)
 plot(sim, y = "i.prev.pop1", qnts = 1, legend = TRUE)
+plot(sim, y = c("nArrivals_mig1", "nArrivals_mig2"), qnts = 1, legend = TRUE)
 plot(sim, y = "nArrivals_mig1", qnts = 1, legend = TRUE)
 plot(sim, y = "nArrivals_mig2", qnts = 1, legend = TRUE)
 

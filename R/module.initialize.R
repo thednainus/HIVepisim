@@ -77,6 +77,28 @@ initialize_mig <- function(x, param, init, control, s) {
     # Summary Stats -----------------------------------------------------------
     dat <- do.call(control[["prevalence.FUN"]], list(dat, at = 1))
 
+    # set initial conditions for arrivals and migrations in the epi vector
+    dat <- set_epi(dat, "a1.flow", at, 0)
+    dat <- set_epi(dat, "a2.flow", at, 0)
+
+    dat <- set_epi(dat, "nArrivals_mig1", at, 0)
+    dat <- set_epi(dat, "nArrivals_mig2", at, 0)
+
+    dat <- set_epi(dat, "dall.flow", at, 0)
+    dat <- set_epi(dat, "daids.flow", at, 0)
+    dat <- set_epi(dat, "dhiv.flow", at, 0)
+
+    dat <- set_epi(dat, "mean.tx.on", at, 0)
+    dat <- set_epi(dat, "mean.tx.off", at, 0)
+    dat <- set_epi(dat, "newDx", at, 0)
+    dat <- set_epi(dat, "new.aids.tot", at, 0)
+
+    dat <- set_epi(dat, "incid.all", at, 0)
+    dat <- set_epi(dat, "incid.pop1", at, 0)
+    dat <- set_epi(dat, "incid.pop2", at, 0)
+    dat <- set_epi(dat, "tot.tests", at, 0)
+    dat <- set_epi(dat, "tot.neg.tests", at, 0)
+
 
     # Restart/Reinit Simulations ----------------------------------------------
   } else if (control$start > 1) {

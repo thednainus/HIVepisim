@@ -7,6 +7,8 @@
 toPhylo_transmatOrigin(
   x,
   format = "migrant",
+  by_areas = "region",
+  max_value = NULL,
   collapse.singles,
   vertex.exit.times,
   ...
@@ -19,13 +21,17 @@ toPhylo_transmatOrigin(
 \item{format}{If format = "origin" return tip in the form of ID_global or ID_region.
 If format = "migrant" return tip in the form of ID_1, ID_2, ID_21, ID_12}
 
+\item{by_areas}{by_areas = "all" if interested in all seeds, or by_areas = "region"
+if interested in seeds for region only.}
+
+\item{max_value}{max value for comparison to select the seed values. It will
+select only seed values less than max_value for seeds from region only.}
+
 \item{vertex.exit.times}{optional numeric vector providing the time of
 departure of vertices, to be used to scale the lengths of branches
 reaching to the tips. Index position on vector corresponds to network
 id. NA indicates no departure, so branch will extend to the end of the
 tree.}
-
-\item{...}{further arguments (unused)}
 }
 \description{
 Converts the edgelist matrix in the \code{transmat} object into

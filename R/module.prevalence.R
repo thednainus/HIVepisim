@@ -30,6 +30,7 @@ prevalence_mig <- function(dat, at) {
   diag.status <- get_attr(dat, "diag.status")
   diag.stage <- get_attr(dat, "diag.stage")
   diag.time <- get_attr(dat, "diag.time")
+  diag.time <- abs(diag.time)
   aids.time <- get_attr(dat, "aids.time")
   infTime <- get_attr(dat, "infTime")
   age <- get_attr(dat, "age")
