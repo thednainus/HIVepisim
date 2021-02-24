@@ -236,6 +236,7 @@ durs
 
 param <- param.net(time.unit = time.unit,
                    groups = 1,
+                   stage_prog_rate0 = 1/((0.5 * 365) / time.unit),
                    stage_prog_rate1 = 1/((3.32 * 365) / time.unit),
                    stage_prog_rate2 = 1/((2.7 * 365) / time.unit),
                    stage_prog_rate3 = 1/((5.5 * 365) / time.unit),
@@ -304,6 +305,11 @@ plot(sim, y = "i.prev.pop1", qnts = 1, legend = TRUE)
 plot(sim, y = c("nArrivals_mig1", "nArrivals_mig2"), qnts = 1, legend = TRUE)
 plot(sim, y = "nArrivals_mig1", qnts = 1, legend = TRUE)
 plot(sim, y = "nArrivals_mig2", qnts = 1, legend = TRUE)
+
+plot(sim, y = c("incid.pop1", "incid.pop2"), qnts = 1, legend = TRUE)
+plot(sim, y = c("i.num.pop1", "i.num.pop2"), qnts = 1, legend = TRUE)
+plot(sim, y = "incid.all", qnts = 1, legend = TRUE)
+
 
 
 

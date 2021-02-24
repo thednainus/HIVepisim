@@ -37,6 +37,7 @@ hivprogress_msm <- function(dat, at) {
   tx.status <- get_attr(dat, "tx.status")
 
   # Parameters -------------
+  stage_prog_rate0 <- get_param(dat, "stage_prog_rate0")
   stage_prog_rate1 <- get_param(dat, "stage_prog_rate1")
   stage_prog_rate2 <- get_param(dat, "stage_prog_rate2")
   stage_prog_rate3 <- get_param(dat, "stage_prog_rate3")
@@ -58,13 +59,16 @@ hivprogress_msm <- function(dat, at) {
   # Stage 0 the acute and early HIV infection
 
   idsStage0 <- which(active == 1 & stage == 0 & tx.status == 0)
+  # ids that will progress to another stage following probabilities f1,f2,f3 and f4
+  newidsStage0 <- idsStage0[rbinom(length(idsStage0), 1, stage_prog_rate0) == 1]
+
   # new ids that will progress from stage 0 to stages 1 or stage 2 or stage 3 or stage 4
   # this is following Cori et al 2015
-  stages <- sample(x = 1:4, size = length(idsStage0),
+  stages <- sample(x = 1:4, size = length(newidsStage0),
                    replace = TRUE, prob = c(f1, f2, f3, f4))
 
-  stage[idsStage0] <- stages
-  stage.time[idsStage0] <- 1
+  stage[newidsStage0] <- stages
+  stage.time[newidsStage0] <- 1
 
 
   # Change from stage 1 to stage 2 of HIV infection following Cori et al. 2015

@@ -144,8 +144,8 @@ hivtrans_mig <- function(dat, at) {
       dat <- set_attr(dat, "status", status)
 
       nInf <- length(idsNewInf)
-      nInf.pop1 <- length(origin[status == 'i' & origin == "region"])
-      nInf.pop2 <- length(origin[status == 'i' & origin == "global"])
+      nInf.pop1 <- sum(origin[idsNewInf] == "region")
+      nInf.pop2 <- sum(origin[idsNewInf] == "global")
     }# end some discordant edges condition
   } # end some active discordant nodes condition
 

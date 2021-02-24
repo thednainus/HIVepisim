@@ -20,14 +20,15 @@ create_inf_csv(tm, time_tr = 1, prefix="test")
 # file with
 create_sample_csv(tm, time_seq = 3652, seq_count = 1, prefix = "test")
 
+
 # if using the list of transmission matrix by seed
- lapply(tm2, function(x) create_inf_csv(x, time_tr = 1, prefix=names(x)))
 
  for(x in 1:length(tm2)){
    print(names(tm2[x]))
+   print(paste(output_dir, names(tm2[x]), sep =""))
 
-   create_inf_csv(tm2[[x]], time_tr = 1, prefix=names(tm2[x]))
-   create_sample_csv(tm2[[x]], time_seq = 3652, seq_count = 1, prefix = names(tm2[x]))
+   create_inf_csv(tm2[[x]], time_tr = 1, prefix=paste(output_dir, names(tm2[x]), sep =""))
+   create_sample_csv(tm2[[x]], time_seq = 3652, seq_count = 1, prefix = paste(output_dir, names(tm2[x]), sep =""))
  }
 
  # TO DO: Run bash script to run VirusTreeSimulator
