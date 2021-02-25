@@ -28,7 +28,6 @@ hivprogress_msm <- function(dat, at) {
   # Attributes ----------
   active <- get_attr(dat, "active")
   status <- get_attr(dat, "status")
-  time.since.inf <- at - get_attr(dat, "infTime")
   cuml.time.on.tx <- get_attr(dat, "cuml.time.on.tx")
   cuml.time.off.tx <- get_attr(dat, "cuml.time.off.tx")
   stage <- get_attr(dat, "stage")
@@ -90,8 +89,8 @@ hivprogress_msm <- function(dat, at) {
   # Change stage to AIDS
   # Change from stage 3 to stage 4 (in Cori et al 2015)
   # an individual will only change to AIDS if not on treatment
-  aids.tx.naive <- which(active == 1 & status == 1 & cuml.time.on.tx == 0 & stage == 3)
-  aids.off.tx <- which(active == 1 & status == 1 & tx.status == 0 & cuml.time.off.tx > 0 & stage == 3)
+  aids.tx.naive <- which(active == 1 & status == "i" & cuml.time.on.tx == 0 & stage == 3)
+  aids.off.tx <- which(active == 1 & status == "i" & tx.status == 0 & cuml.time.off.tx > 0 & stage == 3)
   isAIDS <- c(aids.tx.naive, aids.off.tx)
 
   newidsAIDS <- isAIDS[rbinom(length(isAIDS), 1, stage_prog_rate3) == 1]

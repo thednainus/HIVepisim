@@ -42,7 +42,7 @@ hivtx_msm <- function(dat, at) {
 
 
   ## Initiation -----
-  tx.init.elig <- which(status == 1  &
+  tx.init.elig <- which(status == "i"  &
                           tx.status == 0  &
                           diag.status == 1  &
                           cuml.time.on.tx == 0 )

@@ -19,6 +19,7 @@ nwupdate_mig <- function(dat, at) {
   status <- get_attr(dat, "status")
   infTime <- get_attr(dat, "infTime")
   active <- get_attr(dat, "active")
+  risk.group <- get_attr(dat, "risk.group")
   entrTime <- get_attr(dat, "entrTime")
   exitTime <- get_attr(dat, "exitTime")
   migrationTime <- get_attr(dat, "migrationTime")
@@ -144,6 +145,16 @@ nwupdate_mig <- function(dat, at) {
   #if(at == final_step){
   #  save_origin(dat)
   #}
+
+  #save risk.group data proportion at each time step
+  #to check that 20% of population is in risk group 2
+
+  risk_group1 <- length(active[risk.group == 1])
+  risk_group2 <- length(active[risk.group == 2])
+
+  risk_group_data <- data.frame(at, risk_group1, risk_group2)
+
+  write.csv(risk_group_data, file = "risk_group_info.csv", row.names = FALSE, append = TRUE)
 
 
 

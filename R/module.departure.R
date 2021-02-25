@@ -44,7 +44,7 @@ departure_mig <- function(dat, at) {
 
   # AIDS-related departures -----------------------------------------------------
   nDepartures.aids <- 0
-  idsElig.aids <- which(active == 1 & stage == "4")
+  idsElig.aids <- which(active == 1 & stage == 4)
   nElig.aids <- length(idsElig.aids)
   if (nElig.aids > 0) {
     vecDepartures.aids <- which(rbinom(nElig.aids, 1, rates.aids) == 1)

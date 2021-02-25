@@ -30,7 +30,7 @@ prevalence_mig <- function(dat, at) {
   diag.status <- get_attr(dat, "diag.status")
   diag.stage <- get_attr(dat, "diag.stage")
   diag.time <- get_attr(dat, "diag.time")
-  diag.time <- abs(diag.time)
+  #diag.time <- abs(diag.time)
   aids.time <- get_attr(dat, "aids.time")
   infTime <- get_attr(dat, "infTime")
   age <- get_attr(dat, "age")
@@ -109,7 +109,7 @@ prevalence_mig <- function(dat, at) {
 
   # HIV stage
   dat <- set_epi(dat, "hstage0.all", at, sum(stage == 0 & diag.time >= 2 & active == 1, na.rm = TRUE) /
-                                         sum(status == "i" & diag.time >= 2 & active == 1, na.rm = TRUE))
+                   sum(status == "i" & diag.time >= 2 & active == 1, na.rm = TRUE))
   dat <- set_epi(dat, "hstage0.pop1", at, sum(stage == 0 & diag.time >= 2 & active == 1 & origin == "region", na.rm = TRUE) /
                    sum(status == "i" & diag.time >= 2 & active == 1 & origin == "region", na.rm = TRUE))
   dat <- set_epi(dat, "hstage0.pop2", at, sum(stage == 0 & diag.time >= 2 & active == 1 & origin == "global", na.rm = TRUE) /

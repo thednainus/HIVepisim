@@ -114,8 +114,12 @@ nw
 
 
 # Create vector of risk groups
-riskGroupVector1 <- rep(1:2, each = n_pop1/2)
-riskGroupVector2 <- rep(1:2, each = n_pop1/2)
+# 20% of population will be on risk group 2
+riskGroupVector1 <- sample(x = 1:2, size = n_pop1, replace = TRUE, prob = c(0.8, 0.2))
+riskGroupVector2 <- sample(x = 1:2, size = n_pop2, replace = TRUE, prob = c(0.8, 0.2))
+
+#riskGroupVector1 <- rep(1:2, each = n_pop1/2)
+#riskGroupVector2 <- rep(1:2, each = n_pop2/2)
 
 riskGroupVector <- c(riskGroupVector1, riskGroupVector2)
 table(riskGroupVector)
@@ -189,7 +193,7 @@ coef.diss
 # Fit the model
 # # Fit the TERGM
 est <- netest(nw, formation, target.stats, coef.diss)
-save(est, file = "fit.rda")
+#save(est, file = "fit.rda")
 
 # Model diagnostics
 # Simulate time series to examine timed edgelist
@@ -249,7 +253,7 @@ param <- param.net(time.unit = time.unit,
                    tx.init.prob = 0.092/7,
                    tx.halt.prob = 0.0102/7,
                    tx.reinit.prob = 0.00066/7,
-                   trans.r =3e-04,
+                   trans.r =1e-04,
                    ws0 = 1,
                    ws1 = 0.1,
                    ws2 = 0.1,
@@ -309,9 +313,13 @@ plot(sim, y = "nArrivals_mig2", qnts = 1, legend = TRUE)
 plot(sim, y = c("incid.pop1", "incid.pop2"), qnts = 1, legend = TRUE)
 plot(sim, y = c("i.num.pop1", "i.num.pop2"), qnts = 1, legend = TRUE)
 plot(sim, y = "incid.all", qnts = 1, legend = TRUE)
-
-
-
+plot(sim, y = "tot.neg.tests", qnts = 1, legend = TRUE)
+plot(sim, y = "newDx", qnts = 1, legend = TRUE)
+plot(sim, y= c("hstage0.pop1", "hstage1.pop1", "hstage2.pop1", "hstage3.pop1", "hstage.aids.pop1"), qnts = 1, legend = TRUE)
+plot(sim, y= c("hstage0.pop2", "hstage1.pop2", "hstage2.pop2", "hstage3.pop2", "hstage.aids.pop2"), qnts = 1, legend = TRUE)
+plot(sim, y = "hstage3.all", qnts = 1, legend = TRUE)
+plot(sim, y = "hstage3.pop1", qnts = 1, legend = TRUE)
+plot(sim, y = "hstage3.pop2", qnts = 1, legend = TRUE)
 
 
 quartz()

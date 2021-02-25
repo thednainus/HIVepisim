@@ -49,7 +49,7 @@ hivtest_msm <- function(dat, at) {
 
   tstAll <- idsTstGen
 
-  tstPos <- tstAll[status[tstAll] == 1 & infTime[tstAll] <= at - twind.int]
+  tstPos <- tstAll[status[tstAll] == "i" & infTime[tstAll] <= at - twind.int]
   tstNeg <- setdiff(tstAll, tstPos)
 
   # Outputs  -----
