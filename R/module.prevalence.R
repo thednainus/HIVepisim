@@ -108,45 +108,45 @@ prevalence_mig <- function(dat, at) {
 
 
   # HIV stage
-  dat <- set_epi(dat, "hstage0.all", at, sum(stage == 0 & diag.time >= 2 & active == 1, na.rm = TRUE) /
+  dat <- set_epi(dat, "hstage0.all", at, sum((stage == 0 & diag.time >= 2 & active == 1), na.rm = TRUE) /
+                   sum((status == "i" & diag.time >= 2 & active == 1), na.rm = TRUE))
+  dat <- set_epi(dat, "hstage0.pop1", at, sum((stage == 0 & diag.time >= 2 & active == 1 & origin == "region"), na.rm = TRUE) /
+                   sum((status == "i" & diag.time >= 2 & active == 1 & origin == "region"), na.rm = TRUE))
+  dat <- set_epi(dat, "hstage0.pop2", at, sum((stage == 0 & diag.time >= 2 & active == 1 & origin == "global"), na.rm = TRUE) /
+                   sum((status == "i" & diag.time >= 2 & active == 1 & origin == "global"), na.rm = TRUE))
+
+
+
+  dat <- set_epi(dat, "hstage1.all", at, sum((stage == 1 & diag.time >= 2 & active == 1), na.rm = TRUE) /
+                   sum((status == "i" & diag.time >= 2 & active == 1), na.rm = TRUE))
+  dat <- set_epi(dat, "hstage1.pop1", at, sum((stage == 1 & diag.time >= 2 & active == 1 & origin == "region"), na.rm = TRUE) /
+                   sum((status == "i" & diag.time >= 2 & active == 1 & origin == "region"), na.rm = TRUE))
+  dat <- set_epi(dat, "hstage1.pop2", at, sum((stage == 1 & diag.time >= 2 & active == 1 & origin == "global"), na.rm = TRUE) /
+                   sum((status == "i" & diag.time >= 2 & active == 1 & origin == "global"), na.rm = TRUE))
+
+
+  dat <- set_epi(dat, "hstage2.all", at, sum((stage == 2 & diag.time >= 2 & active == 1), na.rm = TRUE) /
+                   sum((status == "i" & diag.time >= 2 & active == 1), na.rm = TRUE))
+  dat <- set_epi(dat, "hstage2.pop1", at, sum((stage == 2 & diag.time >= 2 & active == 1 & origin == "region"), na.rm = TRUE) /
+                   sum((status == "i" & diag.time >= 2 & active == 1 & origin == "region"), na.rm = TRUE))
+  dat <- set_epi(dat, "hstage2.pop2", at, sum((stage == 2 & diag.time >= 2 & active == 1 & origin == "global"), na.rm = TRUE) /
+                   sum((status == "i" & diag.time >= 2 & active == 1 & origin == "global"), na.rm = TRUE))
+
+
+
+  dat <- set_epi(dat, "hstage3.all", at, sum((stage == 3 & diag.time >= 2 & active == 1), na.rm = TRUE) /
                    sum(status == "i" & diag.time >= 2 & active == 1, na.rm = TRUE))
-  dat <- set_epi(dat, "hstage0.pop1", at, sum(stage == 0 & diag.time >= 2 & active == 1 & origin == "region", na.rm = TRUE) /
-                   sum(status == "i" & diag.time >= 2 & active == 1 & origin == "region", na.rm = TRUE))
-  dat <- set_epi(dat, "hstage0.pop2", at, sum(stage == 0 & diag.time >= 2 & active == 1 & origin == "global", na.rm = TRUE) /
-                   sum(status == "i" & diag.time >= 2 & active == 1 & origin == "global", na.rm = TRUE))
+  dat <- set_epi(dat, "hstage3.pop1", at, sum((stage == 3 & diag.time >= 2 & active == 1) & origin == "region", na.rm = TRUE) /
+                   sum((status == "i" & diag.time >= 2 & active == 1 & origin == "region"), na.rm = TRUE))
+  dat <- set_epi(dat, "hstage3.pop2", at, sum((stage == 3 & diag.time >= 2 & active == 1 & origin == "global"), na.rm = TRUE) /
+                   sum((status == "i" & diag.time >= 2 & active == 1 & origin == "global"), na.rm = TRUE))
 
-
-
-  dat <- set_epi(dat, "hstage1.all", at, sum(stage == 1 & diag.time >= 2 & active == 1, na.rm = TRUE) /
-                   sum(status == "i" & diag.time >= 2 & active == 1, na.rm = TRUE))
-  dat <- set_epi(dat, "hstage1.pop1", at, sum(stage == 1 & diag.time >= 2 & active == 1 & origin == "region", na.rm = TRUE) /
-                   sum(status == "i" & diag.time >= 2 & active == 1 & origin == "region", na.rm = TRUE))
-  dat <- set_epi(dat, "hstage1.pop2", at, sum(stage == 1 & diag.time >= 2 & active == 1 & origin == "global", na.rm = TRUE) /
-                   sum(status == "i" & diag.time >= 2 & active == 1 & origin == "global", na.rm = TRUE))
-
-
-  dat <- set_epi(dat, "hstage2.all", at, sum(stage == 2 & diag.time >= 2 & active == 1, na.rm = TRUE) /
-                   sum(status == "i" & diag.time >= 2 & active == 1, na.rm = TRUE))
-  dat <- set_epi(dat, "hstage2.pop1", at, sum(stage == 2 & diag.time >= 2 & active == 1 & origin == "region", na.rm = TRUE) /
-                   sum(status == "i" & diag.time >= 2 & active == 1 & origin == "region", na.rm = TRUE))
-  dat <- set_epi(dat, "hstage2.pop2", at, sum(stage == 2 & diag.time >= 2 & active == 1 & origin == "global", na.rm = TRUE) /
-                   sum(status == "i" & diag.time >= 2 & active == 1 & origin == "global", na.rm = TRUE))
-
-
-
-  dat <- set_epi(dat, "hstage3.all", at, sum(stage == 3 & diag.time >= 2 & active == 1, na.rm = TRUE) /
-                   sum(status == "i" & diag.time >= 2 & active == 1, na.rm = TRUE))
-  dat <- set_epi(dat, "hstage3.pop1", at, sum(stage == 3 & diag.time >= 2 & active == 1 & origin == "region", na.rm = TRUE) /
-                   sum(status == "i" & diag.time >= 2 & active == 1 & origin == "region", na.rm = TRUE))
-  dat <- set_epi(dat, "hstage3.pop2", at, sum(stage == 3 & diag.time >= 2 & active == 1 & origin == "global", na.rm = TRUE) /
-                   sum(status == "i" & diag.time >= 2 & active == 1 & origin == "global", na.rm = TRUE))
-
-  dat <- set_epi(dat, "hstage.aids.all", at, sum(stage == 4 & diag.time >= 2 & active == 1, na.rm = TRUE) /
-                   sum(status == "i" & diag.time >= 2 & active == 1, na.rm = TRUE))
-  dat <- set_epi(dat, "hstage.aids.pop1", at, sum(stage == 4 & diag.time >= 2 & active == 1 & origin == "region", na.rm = TRUE) /
-                   sum(status == "i" & diag.time >= 2 & active == 1 & origin == "region", na.rm = TRUE))
-  dat <- set_epi(dat, "hstage.aids.pop2", at, sum(stage == 4 & diag.time >= 2 & active == 1 & origin == "global", na.rm = TRUE) /
-                   sum(status == "i" & diag.time >= 2 & active == 1 & origin == "global", na.rm = TRUE))
+  dat <- set_epi(dat, "hstage.aids.all", at, sum((stage == 4 & diag.time >= 2 & active == 1), na.rm = TRUE) /
+                   sum((status == "i" & diag.time >= 2 & active == 1), na.rm = TRUE))
+  dat <- set_epi(dat, "hstage.aids.pop1", at, sum((stage == 4 & diag.time >= 2 & active == 1 & origin == "region"), na.rm = TRUE) /
+                   sum((status == "i" & diag.time >= 2 & active == 1 & origin == "region"), na.rm = TRUE))
+  dat <- set_epi(dat, "hstage.aids.pop2", at, sum((stage == 4 & diag.time >= 2 & active == 1 & origin == "global"), na.rm = TRUE) /
+                   sum((status == "i" & diag.time >= 2 & active == 1 & origin == "global"), na.rm = TRUE))
 
 
   return(dat)

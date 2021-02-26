@@ -165,6 +165,52 @@ save_origin <- function(dat, prefix = NULL){
 }
 
 
+#' Save id and time of individuals that departure the network
+#'
+#' @description It aims to save the ID and time of infected individual that
+#'  departure the network via natural or HIV related cause.
+#'
+#' @inheritParams EpiModel::arrivals.net
+#' @inheritParams create_sample_csv
+#'
+#' @details
+#' If a prefix is not provided, csv file will be saved as departure_IDs.csv
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' TO DO
+save_departures <- function(dat, departures, at, prefix = NULL){
+  active <- get_attr(dat, "active")
+  status <- get_attr(dat, "status")
+  uid <- get_attr(dat, "uid")
+
+  status_dep <- status[departures]
+
+  if(any(status_dep == "i")){
+    #active_test <- active[departures]
+    infID <- uid[departures]
+    time <- at
+
+    #inf_time_df <- data.frame(time, infID, active_teste, status_dep)
+    inf_time_df <- data.frame(time, infID, status_dep)
+    inf_time_df <- subset(inf_time_df, status_dep == "i")
+
+    if(is.null(prefix)){
+      filename <- "departure_IDs.csv"
+    } else {
+      filename <- paste(prefix, "departure_IDs.csv", sep = "_")
+    }
+
+    write.table(inf_time_df, file = filename, append = TRUE, sep = ",",
+                row.names = FALSE, col.names = !file.exists(filename))
+  }
+
+
+}
+
+
 #' Create transmission matrix csv
 #'
 #' @description Create a transmission matrix file to be used with the

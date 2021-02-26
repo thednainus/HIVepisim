@@ -250,10 +250,11 @@ param <- param.net(time.unit = time.unit,
                    f4 = 0,
                    hiv.test.rate = 0.01325/7,
                    test.window.int = 21,
+                   art_start = 5 * 365,
                    tx.init.prob = 0.092/7,
                    tx.halt.prob = 0.0102/7,
                    tx.reinit.prob = 0.00066/7,
-                   trans.r =1e-04,
+                   trans.r = 0.04,
                    ws0 = 1,
                    ws1 = 0.1,
                    ws2 = 0.1,
@@ -295,6 +296,7 @@ control <- control.net(type = NULL, nsteps = 365 * years, start = 1, nsims = 1,
 
 sim <- netsim(est, param, init, control)
 
+
 plot(sim, y = c("a1.flow", "a2.flow"), qnts = 1, legend = TRUE)
 plot(sim, y = c("i.num.pop1", "i.num.pop2"), qnts = 1, legend = TRUE)
 plot(sim, y = "i.num.pop2", qnts = 1, legend = TRUE)
@@ -317,9 +319,12 @@ plot(sim, y = "tot.neg.tests", qnts = 1, legend = TRUE)
 plot(sim, y = "newDx", qnts = 1, legend = TRUE)
 plot(sim, y= c("hstage0.pop1", "hstage1.pop1", "hstage2.pop1", "hstage3.pop1", "hstage.aids.pop1"), qnts = 1, legend = TRUE)
 plot(sim, y= c("hstage0.pop2", "hstage1.pop2", "hstage2.pop2", "hstage3.pop2", "hstage.aids.pop2"), qnts = 1, legend = TRUE)
-plot(sim, y = "hstage3.all", qnts = 1, legend = TRUE)
-plot(sim, y = "hstage3.pop1", qnts = 1, legend = TRUE)
-plot(sim, y = "hstage3.pop2", qnts = 1, legend = TRUE)
+plot(sim, y = c("hstage0.all","hstage0.pop1", "hstage0.pop2"), qnts = 1, legend = TRUE)
+plot(sim, y = c("hstage1.all","hstage1.pop1", "hstage1.pop2"), qnts = 1, legend = TRUE)
+plot(sim, y = c("hstage2.all","hstage2.pop1", "hstage2.pop2"), qnts = 1, legend = TRUE)
+plot(sim, y = c("hstage3.all","hstage3.pop1", "hstage3.pop2"), qnts = 1, legend = TRUE)
+plot(sim, y = c("hstage.aids.all","hstage.aids.pop1", "hstage.aids.pop2"), qnts = 1, legend = TRUE)
+
 
 
 quartz()

@@ -66,24 +66,17 @@ hivprogress_msm <- function(dat, at) {
   stages <- sample(x = 1:4, size = length(newidsStage0),
                    replace = TRUE, prob = c(f1, f2, f3, f4))
 
-  stage[newidsStage0] <- stages
-  stage.time[newidsStage0] <- 1
-
 
   # Change from stage 1 to stage 2 of HIV infection following Cori et al. 2015
   idsStage1 <- which(active == 1 & stage == 1 & tx.status == 0)
   newidsStage2 <- idsStage1[rbinom(length(idsStage1), 1, stage_prog_rate1) == 1]
 
-  stage[newidsStage2] <- 2
-  stage.time[newidsStage2] <- 1
 
 
   # Change from stage 2 to stage 3 of HIV infection following Cori et al. 2015
   idsStage2 <- which(active == 1 & stage == 2 & tx.status == 0)
   newidsStage3 <- idsStage2[rbinom(length(idsStage2), 1, stage_prog_rate2) == 1]
 
-  stage[newidsStage3] <- 3
-  stage.time[newidsStage3] <- 1
 
 
   # Change stage to AIDS
@@ -95,9 +88,24 @@ hivprogress_msm <- function(dat, at) {
 
   newidsAIDS <- isAIDS[rbinom(length(isAIDS), 1, stage_prog_rate3) == 1]
 
-  stage[isAIDS] <- 4
-  stage.time[isAIDS] <- 1
-  aids.time[isAIDS] <- at
+  #stage[isAIDS] <- 4
+  #stage.time[isAIDS] <- 1
+  #aids.time[isAIDS] <- at
+
+
+  # change stage accordingly
+  stage[newidsStage0] <- stages
+  stage.time[newidsStage0] <- 1
+
+  stage[newidsStage2] <- 2
+  stage.time[newidsStage2] <- 1
+
+  stage[newidsStage3] <- 3
+  stage.time[newidsStage3] <- 1
+
+  stage[newidsAIDS] <- 4
+  stage.time[newidsAIDS] <- 1
+  aids.time[newidsAIDS] <- at
 
 
 

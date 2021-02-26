@@ -133,7 +133,7 @@ hivtrans_mig <- function(dat, at) {
 
       # Transmission from infected person --------------------------------------
 
-      transmit <- rbinom(nrow(del), 1, (del$trans.r*365)/time.unit)
+      transmit <- rbinom(nrow(del), 1, del$trans.r)
       del <- del[which(transmit == 1), ]
 
       # Look up new ids if any transmissions occurred
