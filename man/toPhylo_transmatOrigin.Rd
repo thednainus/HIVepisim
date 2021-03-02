@@ -9,6 +9,7 @@ toPhylo_transmatOrigin(
   format = "migrant",
   by_areas = "region",
   max_value = NULL,
+  tips_only = TRUE,
   collapse.singles,
   vertex.exit.times,
   ...
@@ -26,6 +27,9 @@ if interested in seeds for region only.}
 
 \item{max_value}{max value for comparison to select the seed values. It will
 select only seed values less than max_value for seeds from region only.}
+
+\item{tips_only}{tips_only = TRUE returns only the tip names of the phylogenetic tree,
+tips_only = FALSE returns the phylogenetic tree.}
 
 \item{vertex.exit.times}{optional numeric vector providing the time of
 departure of vertices, to be used to scale the lengths of branches

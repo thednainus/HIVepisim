@@ -258,7 +258,7 @@ init_status_mig <- function(dat) {
     dat <- set_attr(dat, "tx.init.time", rep(NA, num.all))
 
     dat <- set_attr(dat, "count.trans", rep(0, num.all))
-    dat <- set_attr(dat, "num.neg.tests", rep(0, num.all))
+    #dat <- set_attr(dat, "num.neg.tests", rep(0, num.all))
 
 
   return(dat)

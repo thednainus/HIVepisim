@@ -6,7 +6,7 @@ Author: Fabricia F. Nascimento
 Maintainer: Fabricia F. Nascimento <thednainus@yahoo.com>
 Description: Network-based modeling of HIV transmission in MSM using R package 
     EpiModel.
-Requires: EpiModel
+Requires: EpiModel, DescTools, stringr
 License: LGPL
 Encoding: UTF-8
 LazyData: true

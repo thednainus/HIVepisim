@@ -8,7 +8,8 @@
 #' @inheritParams get.transmat.phylo
 #' @param format If format = "origin" return tip in the form of ID_global or ID_region.
 #'        If format = "migrant" return tip in the form of ID_1, ID_2, ID_21, ID_12
-
+#' @param tips_only tips_only = TRUE returns only the tip names of the phylogenetic tree,
+#'        tips_only = FALSE returns the phylogenetic tree.
 #'
 #' @details
 #' This code was build using the algorithm as in \code{\link{as.phylo.transmat}}.
@@ -51,12 +52,14 @@ toPhylo_transmatOrigin <- function(x,
                                    format = "migrant",
                                    by_areas = "region",
                                    max_value = NULL,
+                                   tips_only = TRUE,
                                    collapse.singles,
                                    vertex.exit.times,
                               ...) {
   format <- format
   by_areas <-  by_areas
   max_value <- max_value
+  tips_only <- tips_only
 
   if (!missing(collapse.singles)) {
     warning("the 'collapse.singles' argument to as.phylo.transmat is no longer
@@ -99,6 +102,7 @@ toPhylo_transmatOrigin <- function(x,
                              format = format,
                              by_areas = by_areas,
                              max_value = max_value,
+                             tips_only = tips_only,
                              vertex.exit.times = vertex.exit.times)
 
     })
@@ -107,144 +111,149 @@ toPhylo_transmatOrigin <- function(x,
     return(sub_phylos)
   }
 
-  el <- cbind(tm$inf, tm$sus)
-  origNodes <- unique(as.vector(el))
 
-  if (!is.null(vertex.exit.times)) {
-    if (length(origNodes) > length(vertex.exit.times) | any(origNodes > length(vertex.exit.times))) {
-      stop("Vertex ids in edgelist imply a larger network size than vertex.exit.times")
+    el <- cbind(tm$inf, tm$sus)
+    origNodes <- unique(as.vector(el))
+
+    if (!is.null(vertex.exit.times)) {
+      if (length(origNodes) > length(vertex.exit.times) | any(origNodes > length(vertex.exit.times))) {
+        stop("Vertex ids in edgelist imply a larger network size than vertex.exit.times")
+      }
     }
-  }
 
-  if (format == "origin"){
-    el_ori <- cbind(at = tm$at,
-                    inf = tm$inf,
-                    sus = tm$sus,
-                    inf_ori = paste(tm$inf, tm$infOrigin, sep = "_"),
-                    sus_ori = paste(tm$sus, tm$susOrigin, sep = "_"))
-  }
-
-  if (format == "migrant"){
-    el_ori <- cbind(at = tm$at,
-                    inf = tm$inf,
-                    sus = tm$sus,
-                    inf_ori = paste(tm$inf, tm$infMigrant, sep = "_"),
-                    sus_ori = paste(tm$sus, tm$susMigrant, sep = "_"))
-  }
-
-
-  # get tip names in the form of inf_infOri or sus_susOri
-  tipNamesOri <- unique(as.vector(el_ori[,c(4:5)]))
-  # get tip names only without the origin. This will allow to determine duplications
-  # when a tip was region and changed to global (or vice versa, for example)
-  # or when using the different values for the "migrant" option (that can be 1
-  # for region, 2 for global, 21 indicating a global that migrated to region and
-  # 12 indicating a region that migrated to global)
-  tip_names <- unlist(lapply(tipNamesOri, function(x) str_split(string = x, pattern = "_")[[1]][1]))
-  # get the duplicated
-  dup_tip <- tip_names[duplicated(tip_names)]
-
-  if(length(dup_tip) > 0){
-    tip_origin_names <- get_newTip_names(dup_tip, el_ori)
-    final_tip_names <- replace_dups(dup_tip, origNodes, tipNamesOri, tip_origin_names, tip_names)
-  } else {
-    final_tip_names <- tipNamesOri
-  }
-
-
-  # translate ids in el to sequential integers starting from one
-  el[, 1] <- match(el[, 1], origNodes)
-  el[, 2] <- match(el[, 2], origNodes)
-
-
-  maxTip <- max(el)  # need to know what phylo node ids will start
-
-  maxTime <- max(x$at) + 1
-  if (!is.null(vertex.exit.times)) {
-    maxTime <- max(maxTime, vertex.exit.times, na.rm = TRUE)
-  }
-  # create new ids for phyloNodes
-  phyloNodes <- seq(from = maxTip + 1, length.out = length(origNodes) - 1)
-  Nnode <- length(phyloNodes)
-  # create labels for each phylo node based on infector id
-  #phylo.label <- tm$inf
-  # this is an alternate label form like i_j
-  #phylo.label <- sapply(1:length(phyloNodes),function(r) {
-  #  paste(tm[r,"inf"],tm[r,"infOrigin"],sep="_")
-  #})
-  phylo.label <- sapply(1:length(phyloNodes),function(r) {
-    paste(tm[r,"inf"],tm[r,"sus"],sep="_")
-  })
-
-  # set default durations
-  # since we don't know how long the graph vertices live, assume entire duration
-  durations <- rep(NA, length(phyloNodes) * 2)
-  tipExitTimes <- rep(maxTime, maxTip)
-  if (!is.null(vertex.exit.times)) {
-    # replace any NA values with max time
-    vertex.exit.times[is.na(vertex.exit.times)] <- maxTime + 1
-    # copy the vertex exit times into the appropriate positions in the
-    # durations array
-    durations[seq_len(maxTip)] <- vertex.exit.times[origNodes]
-    # reorder the vertex.exit times to match new ids of tips
-    tipExitTimes <- vertex.exit.times[origNodes]
-  }
-
-  # create a new edgelist by stepping through the existing edgelist
-  # and creating the new links from phylo nodes to graph vertices (tips)
-  # and from phylo node to phylo node
-  # have to do this as progressive modifications
-
-  # assume at least one xmit has occured
-  # create the phylo node linking to the first
-  # infector and infectee
-  phyloEl <- rbind(cbind(phyloNodes[1], el[1, 1]),
-                   cbind(phyloNodes[1], el[1, 2]))
-
-  durations[1] <- tipExitTimes[el[1, 1]] - tm[["at"]][1]
-  durations[2] <- tipExitTimes[el[1, 2]] - tm[["at"]][1]
-
-  phyloN <- 1
-  # loop over remaining rows
-  if (nrow(el) > 1) {
-    for (r in 2:nrow(el)) {
-      # find id of infector
-      infector <- el[r, 1]
-      # find the phylo row of phylo node corresponding to the infector
-      phyNRow <- which(phyloEl[, 2] == infector)
-      # replace the infector with a new phylo node
-      phyloEl[phyNRow, 2] <- phyloNodes[phyloN + 1]
-      # link the new phylo node to the infector
-      phyloEl <- rbind(phyloEl, cbind(phyloNodes[phyloN + 1], infector))
-      # link the new phylo node to the infectee (tip)
-      phyloEl <- rbind(phyloEl, cbind(phyloNodes[phyloN + 1], el[r, 2]))
-
-      # update the timing on the replaced row that linked to tip
-      durations[phyNRow] <-
-        durations[phyNRow] - (tipExitTimes[infector] - tm[["at"]][r])
-      # add timings for new rows equal to remaining time
-      # infector
-      durations[nrow(phyloEl) - 1] <- tipExitTimes[infector] - tm[["at"]][r]
-      # infectee
-      durations[nrow(phyloEl)] <- tipExitTimes[el[r, 2]] - tm[["at"]][r]
-
-
-      # increment the phylo node counter
-      phyloN <- phyloN + 1
+    if (format == "origin"){
+      el_ori <- cbind(at = tm$at,
+                      inf = tm$inf,
+                      sus = tm$sus,
+                      inf_ori = paste(tm$inf, tm$infOrigin, sep = "_"),
+                      sus_ori = paste(tm$sus, tm$susOrigin, sep = "_"))
     }
+
+    if (format == "migrant"){
+      el_ori <- cbind(at = tm$at,
+                      inf = tm$inf,
+                      sus = tm$sus,
+                      inf_ori = paste(tm$inf, tm$infMigrant, sep = "_"),
+                      sus_ori = paste(tm$sus, tm$susMigrant, sep = "_"))
+    }
+
+
+    # get tip names in the form of inf_infOri or sus_susOri
+    tipNamesOri <- unique(as.vector(el_ori[,c(4:5)]))
+    # get tip names only without the origin. This will allow to determine duplications
+    # when a tip was region and changed to global (or vice versa, for example)
+    # or when using the different values for the "migrant" option (that can be 1
+    # for region, 2 for global, 21 indicating a global that migrated to region and
+    # 12 indicating a region that migrated to global)
+    tip_names <- unlist(lapply(tipNamesOri, function(x) str_split(string = x, pattern = "_")[[1]][1]))
+    # get the duplicated
+    dup_tip <- tip_names[duplicated(tip_names)]
+
+    if(length(dup_tip) > 0){
+      tip_origin_names <- get_newTip_names(dup_tip, el_ori)
+      final_tip_names <- replace_dups(dup_tip, origNodes, tipNamesOri, tip_origin_names, tip_names)
+    } else {
+      final_tip_names <- tipNamesOri
+    }
+
+    if(tips_only == FALSE){
+
+      # translate ids in el to sequential integers starting from one
+      el[, 1] <- match(el[, 1], origNodes)
+      el[, 2] <- match(el[, 2], origNodes)
+
+
+      maxTip <- max(el)  # need to know what phylo node ids will start
+
+      maxTime <- max(x$at) + 1
+      if (!is.null(vertex.exit.times)) {
+        maxTime <- max(maxTime, vertex.exit.times, na.rm = TRUE)
+      }
+      # create new ids for phyloNodes
+      phyloNodes <- seq(from = maxTip + 1, length.out = length(origNodes) - 1)
+      Nnode <- length(phyloNodes)
+      # create labels for each phylo node based on infector id
+      #phylo.label <- tm$inf
+      # this is an alternate label form like i_j
+      #phylo.label <- sapply(1:length(phyloNodes),function(r) {
+      #  paste(tm[r,"inf"],tm[r,"infOrigin"],sep="_")
+      #})
+      phylo.label <- sapply(1:length(phyloNodes),function(r) {
+        paste(tm[r,"inf"],tm[r,"sus"],sep="_")
+      })
+
+      # set default durations
+      # since we don't know how long the graph vertices live, assume entire duration
+      durations <- rep(NA, length(phyloNodes) * 2)
+      tipExitTimes <- rep(maxTime, maxTip)
+      if (!is.null(vertex.exit.times)) {
+        # replace any NA values with max time
+        vertex.exit.times[is.na(vertex.exit.times)] <- maxTime + 1
+        # copy the vertex exit times into the appropriate positions in the
+        # durations array
+        durations[seq_len(maxTip)] <- vertex.exit.times[origNodes]
+        # reorder the vertex.exit times to match new ids of tips
+        tipExitTimes <- vertex.exit.times[origNodes]
+      }
+
+      # create a new edgelist by stepping through the existing edgelist
+      # and creating the new links from phylo nodes to graph vertices (tips)
+      # and from phylo node to phylo node
+      # have to do this as progressive modifications
+
+      # assume at least one xmit has occured
+      # create the phylo node linking to the first
+      # infector and infectee
+      phyloEl <- rbind(cbind(phyloNodes[1], el[1, 1]),
+                       cbind(phyloNodes[1], el[1, 2]))
+
+      durations[1] <- tipExitTimes[el[1, 1]] - tm[["at"]][1]
+      durations[2] <- tipExitTimes[el[1, 2]] - tm[["at"]][1]
+
+      phyloN <- 1
+      # loop over remaining rows
+      if (nrow(el) > 1) {
+        for (r in 2:nrow(el)) {
+          # find id of infector
+          infector <- el[r, 1]
+          # find the phylo row of phylo node corresponding to the infector
+          phyNRow <- which(phyloEl[, 2] == infector)
+          # replace the infector with a new phylo node
+          phyloEl[phyNRow, 2] <- phyloNodes[phyloN + 1]
+          # link the new phylo node to the infector
+          phyloEl <- rbind(phyloEl, cbind(phyloNodes[phyloN + 1], infector))
+          # link the new phylo node to the infectee (tip)
+          phyloEl <- rbind(phyloEl, cbind(phyloNodes[phyloN + 1], el[r, 2]))
+
+          # update the timing on the replaced row that linked to tip
+          durations[phyNRow] <-
+            durations[phyNRow] - (tipExitTimes[infector] - tm[["at"]][r])
+          # add timings for new rows equal to remaining time
+          # infector
+          durations[nrow(phyloEl) - 1] <- tipExitTimes[infector] - tm[["at"]][r]
+          # infectee
+          durations[nrow(phyloEl)] <- tipExitTimes[el[r, 2]] - tm[["at"]][r]
+
+
+          # increment the phylo node counter
+          phyloN <- phyloN + 1
+        }
+      }
+
+      # format the output
+      out <- list()
+      out[["edge"]] <- phyloEl
+      out[["Nnode"]] <- Nnode  # number of non-tip nodes
+      out[["tip.label"]] <- final_tip_names
+      out[["node.label"]] <- phylo.label
+      out[["root.edge"]] <- x$at[1] # have to assume sim started at 0
+      out[["edge.length"]] <- durations
+
+      class(out) <- "phylo"
+      return(out)
+    } else{
+    return(final_tip_names)
   }
-
-  # format the output
-  out <- list()
-  out[["edge"]] <- phyloEl
-  out[["Nnode"]] <- Nnode  # number of non-tip nodes
-  out[["tip.label"]] <- final_tip_names
-  out[["node.label"]] <- phylo.label
-  out[["root.edge"]] <- x$at[1] # have to assume sim started at 0
-  out[["edge.length"]] <- durations
-
-  class(out) <- "phylo"
-  return(out)
 }
 
 

@@ -20,9 +20,9 @@ parameters <- "-demoModel Constant -N0 1"
 
 
 
-get_tm <- function(list_dirs){
+get_tm <- function(list_dirs, years = 40, area = "region", max_value = 501){
 
-  for(x in 1:length(list_dirs, time_seq = 40 * 365, area = "region", max_value = 501)){
+  for(x in 1:length(list_dirs, time_seq = years * 365, area = area, max_value = max_value)){
 
     dir_names <- dir(list_dirs[x], pattern = "*.pbs", full.names = TRUE)
 
@@ -41,9 +41,11 @@ get_tm <- function(list_dirs){
       sim_df <- as.data.frame(sim)
       #get total number of people living with HIV at end of simulation
       totalPLWHIV <- sim_df$i.num.pop1[tail(sim_df$time, n=1)]
+      PLWHIV <- paste("PLWHIV", totalPLWHIV, sep="_")
       #get number of new infections per year
-      infected_ind <- split(sim_df$i.num.pop1, ceiling(seq_along(sim_df$i.num.pop1)/365))
-      total_n_years <- length(infected_ind)
+      newinf_per_year  <- sum(sim_df$incid.pop1)/years
+      newinf <- paste("newinf", newinf_per_year, sep="_")
+
       tm <- get_transmat(sim)
       # get transmat by seed
       # here I only get the ones that started in region
@@ -54,6 +56,7 @@ get_tm <- function(list_dirs){
         for(x in 1:length(tm2)){
           #print(names(tm2[x]))
           output <- paste(output_name, names(tm2[x]), sep ="/")
+          output <- paste(output, PLWHIV, newinf, sep = "_")
 
           #inf file name for VirusTreeSimulator
           inf_file <- paste(output, "_inf.csv", sep = "")

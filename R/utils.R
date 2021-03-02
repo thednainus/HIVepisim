@@ -172,6 +172,7 @@ save_origin <- function(dat, prefix = NULL){
 #'
 #' @inheritParams EpiModel::arrivals.net
 #' @inheritParams create_sample_csv
+#' @param departures ids of departures
 #'
 #' @details
 #' If a prefix is not provided, csv file will be saved as departure_IDs.csv

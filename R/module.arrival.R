@@ -44,7 +44,6 @@ arrivals_mig <- function(dat, at){
   if (nOld1 > 0) {
     nArrivals1 <- rbinom(1, nOld1, a1.rate)
     if (nArrivals1 > 0) {
-      #dat <- append_core_attr(dat, at, nArrivals1)
       dat <- append_core_attr_mig(dat, at, nArrivals1)
       dat <- append_attr(dat, "status", "s", nArrivals1)
       dat <- append_attr(dat, "infTime", NA, nArrivals1)
@@ -53,7 +52,7 @@ arrivals_mig <- function(dat, at){
       dat <- append_attr(dat, "count.trans", 0, nArrivals1)
       risk.group <- sample(1:2, nArrivals1, replace = TRUE, prob = c(0.8, 0.2))
       dat <- append_attr(dat, "risk.group", risk.group, nArrivals1)
-      dat <- append_attr(dat, "num.neg.tests", 0, nArrivals1)
+      #dat <- append_attr(dat, "num.neg.tests", 0, nArrivals1)
       dat <- append_attr(dat, "origin", "region", nArrivals1)
       dat <- append_attr(dat, "migrant", 1, nArrivals1)
       dat <- append_attr(dat, "stage", 0, nArrivals1)
@@ -68,7 +67,6 @@ arrivals_mig <- function(dat, at){
       dat <- append_attr(dat, "tx.period.first", NA, nArrivals1)
       dat <- append_attr(dat, "tx.period.last", NA, nArrivals1)
       dat <- append_attr(dat, "tx.init.time", NA, nArrivals1)
-      #dat <- append_attr(dat, "migrationTime", NA, nArrivals1)
     }
   }
 
@@ -77,7 +75,6 @@ arrivals_mig <- function(dat, at){
   if (nOld2 > 0) {
     nArrivals2 <- rbinom(1, nOld2, a2.rate)
     if (nArrivals2 > 0) {
-      #dat <- append_core_attr(dat, at, nArrivals2)
       dat <- append_core_attr_mig(dat, at, nArrivals2)
       dat <- append_attr(dat, "status", "s", nArrivals2)
       dat <- append_attr(dat, "infTime", NA, nArrivals2)
@@ -86,7 +83,7 @@ arrivals_mig <- function(dat, at){
       dat <- append_attr(dat, "count.trans", 0, nArrivals2)
       risk.group <- sample(1:2, nArrivals2, replace = TRUE, prob = c(0.8, 0.2))
       dat <- append_attr(dat, "risk.group", risk.group, nArrivals2)
-      dat <- append_attr(dat, "num.neg.tests", 0, nArrivals2)
+      #dat <- append_attr(dat, "num.neg.tests", 0, nArrivals2)
       dat <- append_attr(dat, "origin", "global", nArrivals2)
       dat <- append_attr(dat, "migrant", 2, nArrivals2)
       dat <- append_attr(dat, "stage", 0, nArrivals2)
@@ -101,7 +98,6 @@ arrivals_mig <- function(dat, at){
       dat <- append_attr(dat, "tx.period.first", NA, nArrivals2)
       dat <- append_attr(dat, "tx.period.last", NA, nArrivals2)
       dat <- append_attr(dat, "tx.init.time", NA, nArrivals2)
-      #dat <- append_attr(dat, "migrationTime", NA, nArrivals2)
     }
   }
 

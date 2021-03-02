@@ -10,6 +10,8 @@ save_departures(dat, departures, at, prefix = NULL)
 \item{dat}{Master list object containing a \code{networkDynamic} object and
 other initialization information passed from \code{\link[EpiModel]{netsim}}.}
 
+\item{departures}{ids of departures}
+
 \item{at}{Current time step.}
 
 \item{prefix}{Text for prefix to use when saving filename.}
