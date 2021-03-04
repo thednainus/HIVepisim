@@ -28,7 +28,11 @@ transphylo <- toPhylo_transmatOrigin(tm,
                                      max_value = NULL,
                                      tips_only = TRUE)
 
-
+transphylo <- toPhylo_transmatOrigin(tm,
+                                     format = "migrant",
+                                     by_areas = "all",
+                                     max_value = NULL,
+                                     tips_only = FALSE)
 
 
 

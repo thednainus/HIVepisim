@@ -4,7 +4,10 @@ library(HIVepisim)
 
 
 
-sim <- readRDS("Analyses/sim_for_tests.RDS")
+#sim <- readRDS("Analyses/sim_for_tests.RDS")
+sim <- readRDS("Analyses/Preliminary_results/results_tergmLite4/run_2/results_sim.RDS")
+sim <- readRDS("Analyses/Preliminary_results/results_tergmLite1/run_2/results_sim.RDS")
+sim <- readRDS("Analyses/Preliminary_results/results_tergmLite8/run_2/results_sim.RDS")
 
 tm <- get_transmat(sim)
 # to make sure that transmission only happens between individuals from same origin

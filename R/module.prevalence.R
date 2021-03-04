@@ -40,9 +40,13 @@ prevalence_mig <- function(dat, at) {
     dat <- set_epi(dat, "nArrivals_mig1", at, 0)
     dat <- set_epi(dat, "nArrivals_mig2", at, 0)
 
-    dat <- set_epi(dat, "dall.flow", at, 0)
-    dat <- set_epi(dat, "daids.flow", at, 0)
-    dat <- set_epi(dat, "dhiv.flow", at, 0)
+    dat <- set_epi(dat, "dall_pop1.flow", at, 0)
+    dat <- set_epi(dat, "daids_pop1.flow", at, 0)
+    dat <- set_epi(dat, "dhiv_pop1.flow", at, 0)
+
+    dat <- set_epi(dat, "dall_pop2.flow", at, 0)
+    dat <- set_epi(dat, "daids_pop2.flow", at, 0)
+    dat <- set_epi(dat, "dhiv_pop2.flow", at, 0)
 
     dat <- set_epi(dat, "mean.tx.on", at, 0)
     dat <- set_epi(dat, "mean.tx.off", at, 0)

@@ -15,7 +15,7 @@ time.unit <- 1
 ages <- 18:80
 
 # numner of years to simulate
-years = 20
+years = 40
 
 
 # Age-specific mortality rates for MALES for the UK in 2018
@@ -47,7 +47,7 @@ data.frame(ages, dr_vec)
 #plot(ages, dr_vec, type = "o", xlab = "age", ylab = "Mortality Rate")
 
 # Initialize network
-n_pop1 = 500
+n_pop1 = 1000
 n_pop2 = 2000
 #n_pop1 = 10
 #n_pop2 = 10
@@ -72,13 +72,13 @@ nw <- set_vertex_attribute(nw, "origin", originVec)
 
 # Create vector of diagnose statuses
 diagStatusVec1 <- rep(0, n_pop1)
-init.Infected1 <- sample(1:n_pop1,2)
+init.Infected1 <- sample(1:n_pop1,4)
 #init.Infected1 <- sample(1:n_pop1, 0.4 * n_pop1)
 diagStatusVec1[init.Infected1] <- 1
 
 
 diagStatusVec2 <- rep(0, n_pop2)
-init.Infected2 <- sample(1:n_pop2, 4)
+init.Infected2 <- sample(1:n_pop2, 10)
 #init.Infected2 <- sample(1:n_pop2, 0.4 * n_pop2)
 diagStatusVec2[init.Infected2] <- 1
 
@@ -250,11 +250,11 @@ param <- param.net(time.unit = time.unit,
                    f4 = 0,
                    hiv.test.rate = 0.01325/7,
                    test.window.int = 21,
-                   art_start = 5 * 365,
+                   art_start = 24 * 365,
                    tx.init.prob = 0.092/7,
                    tx.halt.prob = 0.0102/7,
                    tx.reinit.prob = 0.00066/7,
-                   trans.r = 0.001,
+                   trans.r = 0.08,
                    ws0 = 1,
                    ws1 = 0.1,
                    ws2 = 0.1,
@@ -262,16 +262,16 @@ param <- param.net(time.unit = time.unit,
                    ws4 = 0.3,
                    wc1 = 1,
                    wc2 = 0.5,
-                   wc3 = 0.05,
+                   wc3 = 0.0525,
                    wr1 = 1,
                    wr2 = 10,
                    aids.mr = 1/((5.06 * 365) / time.unit),
                    asmr = dr_vec,
-                   a1.rate = 0.007/7,
-                   a2.rate = 0.007/7,
+                   a1.rate = 0.00003,
+                   a2.rate = 0.00005,
                    arrival.age = 18,
-                   m12.rate = 0.00016125,
-                   m21.rate = 0.00016125)
+                   m12.rate = 0,
+                   m21.rate = 0)
 
 init <- init.net()
 #6752
@@ -296,9 +296,18 @@ control <- control.net(type = NULL, nsteps = 365 * years, start = 1, nsims = 1,
 
 sim <- netsim(est, param, init, control)
 
+simdf <- as.data.frame(sim)
+plot(simdf$time, simdf$a1.flow)
+plot(simdf$time, simdf$a2.flow)
+plot(simdf$time, simdf$i.num.pop1/simdf$num.pop1)
+plot(simdf$time, simdf$i.num.pop2/simdf$num.pop2)
 
 plot(sim, y = c("a1.flow", "a2.flow"), qnts = 1, legend = TRUE)
+plot(sim, y = "a1.flow", qnts = 1, legend = TRUE)
+plot(sim, y = "a2.flow", qnts = 1, legend = TRUE)
 plot(sim, y = c("i.num.pop1", "i.num.pop2"), qnts = 1, legend = TRUE)
+plot(sim, y = "i.num.pop1", qnts = 1, legend = TRUE)
+plot(sim, y = "i.num.pop2", qnts = 1, legend = TRUE)
 plot(sim, y = c("num.pop1", "num.pop2"), qnts = 1, legend = TRUE)
 plot(sim, y = c("s.num.pop1", "s.num.pop2"), qnts = 1, legend = TRUE)
 plot(sim, y = c("i.prev.pop1", "i.prev.pop2"), qnts = 1, legend = TRUE)
