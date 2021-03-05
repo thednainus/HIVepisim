@@ -111,7 +111,7 @@ toPhylo_transmatOrigin <- function(x,
     return(sub_phylos)
   }
 
-
+  if(length(v > 1)){
     el <- cbind(tm$inf, tm$sus)
     origNodes <- unique(as.vector(el))
 
@@ -253,6 +253,7 @@ toPhylo_transmatOrigin <- function(x,
       return(out)
     } else{
     return(final_tip_names)
+    }
   }
 }
 

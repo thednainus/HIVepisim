@@ -114,7 +114,7 @@ hivprogress_msm <- function(dat, at) {
   dat <- set_attr(dat, "stage.time", stage.time)
   dat <- set_attr(dat, "aids.time", aids.time)
 
-  dat <- set_epi(dat, "new.aids.tot", at, length(isAIDS))
+  #dat <- set_epi(dat, "new.aids.tot", at, length(isAIDS))
 
 
   return(dat)

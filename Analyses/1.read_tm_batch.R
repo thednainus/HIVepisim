@@ -4,6 +4,7 @@
 library(EpiModel)
 library(HIVepisim)
 library(DescTools)
+library(stringr)
 
 # This function will generate input file to be used with program
 # VirusTreeSimulator
@@ -22,20 +23,24 @@ parameters <- "-demoModel Constant -N0 1"
 
 get_tm <- function(list_dirs, years = 40, area = "region", max_value = 501){
 
-  for(x in 1:length(list_dirs, time_seq = years * 365, area = area, max_value = max_value)){
+  for(x in 1:length(list_dirs)){
 
-    dir_names <- dir(list_dirs[x], pattern = "*.pbs", full.names = TRUE)
+    dir_names <- dir(list_dirs[x], pattern = "run*", full.names = TRUE)
 
-    pathname <- SplitPath(dir_names[x])$fullpath
-    output_name <- paste(pathname, "output", sep="")
-
-    #Create directory named output if it does not exist
-    if (!dir.exists(output_name)) {
-      dir.create(output_name)
-    }
 
     for (n in 1:length(dir_names)){
+      pathname <- SplitPath(dir_names[n])$normpath
+      output_name <- paste(pathname, "output", sep="/")
+
+      #Create directory named output if it does not exist
+      if (!dir.exists(output_name)) {
+        dir.create(output_name)
+      }
+
       rds_file <- list.files(dir_names[n], pattern = "*.RDS", full.names = TRUE)
+
+      # get list of infected departures
+      dep <- read.csv(list.files(dir_names[n], pattern = "*.csv", full.names = TRUE))
 
       sim <- readRDS(rds_file)
       sim_df <- as.data.frame(sim)
@@ -51,12 +56,15 @@ get_tm <- function(list_dirs, years = 40, area = "region", max_value = 501){
       # here I only get the ones that started in region
       # later check all trees
       tm2 <- get.transmat.phylo(tm, by_areas = area, max_value = max_value)
+      seed_names <- names(tm2)
       # if using the list of transmission matrix by seed
       if(!is.null(tm2)){
         for(x in 1:length(tm2)){
           #print(names(tm2[x]))
           output <- paste(output_name, names(tm2[x]), sep ="/")
           output <- paste(output, PLWHIV, newinf, sep = "_")
+
+
 
           #inf file name for VirusTreeSimulator
           inf_file <- paste(output, "_inf.csv", sep = "")
@@ -65,14 +73,22 @@ get_tm <- function(list_dirs, years = 40, area = "region", max_value = 501){
 
           create_inf_csv(tm2[[x]],
                         time_tr = 1,
-                        prefix=paste(output_name, names(tm2[x]), sep ="/"))
+                        prefix=output)
+
+          IDPOP <- union(tm2[[x]]$inf, tm2[[x]]$sus)
+
+          #reorder dep$infID to IDPO
+          index <- match(IDPOP, dep$infID)
+          time_seqs <- dep$time[index]
+          time_seqs[is.na(time_seqs)] <- years * 365
+
           create_sample_csv(tm2[[x]],
-                            time_seq = time_seq,
+                            time_seq = time_seqs,
                             seq_count = 1,
-                            prefix = paste(output_name, names(tm2[x]), sep ="/"))
+                            prefix = output)
 
           #Create directory named VTS (for VirusTreeSimulator) if it does not exist
-          output_name_vts <- paste(pathname, "output/vts/", sep = "")
+          output_name_vts <- paste(pathname, "output/vts/", sep = "/")
           if (!dir.exists(output_name_vts)) {
             dir.create(output_name_vts)
           }
@@ -83,6 +99,15 @@ get_tm <- function(list_dirs, years = 40, area = "region", max_value = 501){
           # Run VirusTreeSimulator
           cmd <- paste(Software, parameters, inf_file, sample_file, prefix_vts, sep = " ")
           system(cmd)
+
+          # change tip names to the format ID_migrant
+          tip_names <- toPhylo_transmatOrigin(tm2[[x]], format = "migrant",
+                                              by_areas = area, max_value = max_value,
+                                              tips_only = TRUE)
+          pattern = "_1_simple.nex"
+          seed_name_tm <- strsplit(seed_names[x], split = "_")[[1]][2]
+          seed_name_tm <- paste("ID", seed_name_tm, sep = "_")
+          vts_tree <- read.nexus(paste(prefix_vts, seed_name_tm, pattern, sep=""))
 
           # run VirusTreeSimulator
         }
@@ -95,7 +120,7 @@ get_tm <- function(list_dirs, years = 40, area = "region", max_value = 501){
 # of interest "3124512[10].pbs"
 # These are the directory generated when submitting array jobs in the
 # Imperial College cluster.
-list_dirs <- dir("Analyses/Preliminary_results/500pop", full.names = TRUE)
+list_dirs <- dir("Analyses/Preliminary_results", full.names = TRUE)
 get_tm(list_dirs)
 
 

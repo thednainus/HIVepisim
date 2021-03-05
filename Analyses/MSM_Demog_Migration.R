@@ -15,7 +15,7 @@ time.unit <- 1
 ages <- 18:80
 
 # numner of years to simulate
-years = 40
+years = 80
 
 
 # Age-specific mortality rates for MALES for the UK in 2018
@@ -301,15 +301,19 @@ plot(simdf$time, simdf$a1.flow)
 plot(simdf$time, simdf$a2.flow)
 plot(simdf$time, simdf$i.num.pop1/simdf$num.pop1)
 plot(simdf$time, simdf$i.num.pop2/simdf$num.pop2)
+plot(simdf$time, simdf$i.num.pop1)
+plot(simdf$time, simdf$i.num.pop2)
 
 plot(sim, y = c("a1.flow", "a2.flow"), qnts = 1, legend = TRUE)
 plot(sim, y = "a1.flow", qnts = 1, legend = TRUE)
 plot(sim, y = "a2.flow", qnts = 1, legend = TRUE)
-plot(sim, y = c("i.num.pop1", "i.num.pop2"), qnts = 1, legend = TRUE)
+plot(sim, y = c("i.num.pop1", "s.num.pop1"), qnts = 1, legend = TRUE)
+plot(sim, y = c("i.num.pop2", "s.num.pop2"), qnts = 1, legend = TRUE)
 plot(sim, y = "i.num.pop1", qnts = 1, legend = TRUE)
 plot(sim, y = "i.num.pop2", qnts = 1, legend = TRUE)
 plot(sim, y = c("num.pop1", "num.pop2"), qnts = 1, legend = TRUE)
-plot(sim, y = c("s.num.pop1", "s.num.pop2"), qnts = 1, legend = TRUE)
+plot(sim, y = c("s.num.pop2", "i.num.pop2"), qnts = 1, legend = TRUE)
+plot(sim, y = c("s.num.pop1", "i.num.pop1"), qnts = 1, legend = TRUE)
 plot(sim, y = c("i.prev.pop1", "i.prev.pop2"), qnts = 1, legend = TRUE)
 plot(sim, y = "i.prev.pop2", qnts = 1, legend = TRUE)
 plot(sim, y = "i.prev.pop1", qnts = 1, legend = TRUE)

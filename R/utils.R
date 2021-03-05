@@ -259,10 +259,6 @@ create_inf_csv <- function(tm, time_tr, prefix = NULL){
   write.csv(x = all_data, file = filename, row.names = FALSE)
 }
 
-
-
-
-
 #' Get sample csv file
 #'
 #' @param tm Transmission matrix as returned using the function \link[EpiModel]{get_transmat}
