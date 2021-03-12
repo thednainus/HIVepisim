@@ -404,3 +404,60 @@ replace_dups <- function(dup_tip, origNodes, tipNamesOri, tip_names_toInsert, ti
 
   return(tipNamesOri2)
 }
+
+
+#' Title Scale branch length from a phylogeentic tree
+#'
+#' @param tree a phylo object
+#' @param scale numeric value to convert branch length
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' # TO DO!
+convert_branches <- function(tree, scale = 1/365){
+
+  #convert branch lengths from days to years ----
+  tree$edge.length <- tree$edge.length * scale
+
+  if(!is.null(tree$root.edge)){
+    tree$root.edge <- tree$root.edge * scale
+  }
+
+  return(tree)
+}
+
+
+#' Reorder tip names
+#'
+#' Function to reorder the tip names of a phylogenetic tree.
+#'
+#' @param tip_names_migrant Tip names in the form of ID_migrant
+#' @param tip_names_vts Tip names as returned by using the VirusTreeSimulator.
+#'
+#' @details Vector of tip_names_migrant will be reordered according to
+#'    vector tip_names_vts.
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' #TO DO!
+reorder_tip_names <- function(tip_names_migrant, tip_names_vts){
+  # Get tip names in the form of ID_migrant
+  tip_names_migrant_ID <- str_match(string = tip_names_migrant, pattern = "\\d+")
+  tip_names_vts_ID <- str_match(string = tip_names_vts, pattern = "\\d+")
+
+  # reorder ID names
+  # Saving indixes for how to reorder `tip_names_migrant_ID` to match `tip_names_vts_ID`
+  reorder_idx <- match(tip_names_vts_ID, tip_names_migrant_ID)
+
+  # Reordering the tip_names_migrant_ID  to match the order of the tip_names_ID vector
+  reordered_tip_names <- tip_names_migrant[reorder_idx]
+
+  return(reordered_tip_names)
+}
+
+
+

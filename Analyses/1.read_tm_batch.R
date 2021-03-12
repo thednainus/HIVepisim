@@ -5,6 +5,7 @@ library(EpiModel)
 library(HIVepisim)
 library(DescTools)
 library(stringr)
+library(ape)
 
 # This function will generate input file to be used with program
 # VirusTreeSimulator
@@ -77,7 +78,7 @@ get_tm <- function(list_dirs, years = 40, area = "region", max_value = 501){
 
           IDPOP <- union(tm2[[x]]$inf, tm2[[x]]$sus)
 
-          #reorder dep$infID to IDPO
+          #match IDs from phylogenetic tree to the departure.csv file
           index <- match(IDPOP, dep$infID)
           time_seqs <- dep$time[index]
           time_seqs[is.na(time_seqs)] <- years * 365
@@ -100,7 +101,7 @@ get_tm <- function(list_dirs, years = 40, area = "region", max_value = 501){
           cmd <- paste(Software, parameters, inf_file, sample_file, prefix_vts, sep = " ")
           system(cmd)
 
-          # change tip names to the format ID_migrant
+          # Get tip names in the form of ID_migrant
           tip_names <- toPhylo_transmatOrigin(tm2[[x]], format = "migrant",
                                               by_areas = area, max_value = max_value,
                                               tips_only = TRUE)
@@ -109,7 +110,19 @@ get_tm <- function(list_dirs, years = 40, area = "region", max_value = 501){
           seed_name_tm <- paste("ID", seed_name_tm, sep = "_")
           vts_tree <- read.nexus(paste(prefix_vts, seed_name_tm, pattern, sep=""))
 
-          # run VirusTreeSimulator
+          # convert branch lengths from days to years
+          tree_years <- convert_branches(tree = vts_tree, scale = 1/365)
+
+          #get tip names from VirusTreeSimulato tree
+          tip_names_vts <- tree_years$tip.label
+
+          # Change tip names from vts format to ID_migrant format
+          # change the tips names returned by VirusTreeSimulator to those tip_names
+          # in the form of ID_migrant
+          tree_years$tip.label <- reorder_tip_names(tip_names, tip_names_vts)
+
+          # save tree to simulate sequence alignment using Python script
+          write.nexus(phy = tree_years, file = paste(prefix_vts, seed_name_tm, "_migrant_years", pattern, sep=""))
         }
       }
     }
@@ -124,7 +137,7 @@ list_dirs <- dir("Analyses/Preliminary_results", full.names = TRUE)
 get_tm(list_dirs)
 
 
-# Run VirusTreeSimulator on output imput files generated with this script
+
 
 
 

@@ -25,7 +25,7 @@ nwupdate_mig <- function(dat, at) {
   migrants <- get_attr(dat, "migrant")
   origin <- get_attr(dat, "origin")
 
-  #final_step <- get_control(dat, "nsteps")
+  final_step <- get_control(dat, "nsteps")
 
   statOnNw <- "status" %in% dat$temp$nwterms
   resimulate.network <- get_control(dat, "resimulate.network")
@@ -145,9 +145,9 @@ nwupdate_mig <- function(dat, at) {
 
 
   # save final list of infected individuals and origin
-  #if(at == final_step){
-  #  save_origin(dat)
-  #}
+  if(at == final_step){
+    save_stage(dat)
+  }
 
 
   ## Copy static attributes to network object

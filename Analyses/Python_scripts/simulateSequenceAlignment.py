@@ -16,7 +16,7 @@ for filename in my_files:
     # values of -s0.0028 based on paper by Patino-Galindo and Gonzalez-Candelas 2017
     # values of -t8.75 based on Chen et al 2004
     # Updated these values based on sequences for San Diego + background sequences
-    cmd = ['/Applications/Seq-Gen-1.3.4/source/seq-gen', '-mHKY', '-l3012', '-t8.75', '-f0.389,0.165,0.228,0.218', '-s0.0028', '-n1', '-of', filename]
+    cmd = ['/Applications/Seq-Gen-1.3.4/source/seq-gen', '-mHKY', '-l100', '-t8.75', '-f0.389,0.165,0.228,0.218', '-s0.0028', '-n1', '-of', filename]
     run = subprocess.Popen(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     stdout,stderr = run.communicate()
     #print stdout

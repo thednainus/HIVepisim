@@ -126,42 +126,45 @@ update_uids <- function(dat, n.new) {
 
 
 
-#' Save origin of nodes in the network at final step
+#' Save stageof HIV infection of nodes in the network at final step
 #'
 #' @description At the final step of network simulation, it will save the IDs of
-#'    infected nodes and their origin. Origin can take the value of region or
-#'    global.
+#'    infected nodes and their stage of HIV infection.
 #'
 #' @inheritParams EpiModel::arrivals.net
 #' @inheritParams create_sample_csv
 #'
 #' @details
-#' If a prefix is not provided, csv file will be saved as infected_origin.csv
+#' If a prefix is not provided, csv file will be saved as stage_and_IDs.csv
 #'
 #' @return
 #' @export
 #'
 #' @examples
 #' TO DO
-save_origin <- function(dat, prefix = NULL){
+save_stage <- function(dat, prefix = NULL){
   active <- get_attr(dat, "active")
-  origin <- get_attr(dat, "origin")
   status <- get_attr(dat, "status")
+  stage <- get_attr(dat, "stage")
   uid <- get_attr(dat, "uid")
 
-  infID <- uid[active == 1 & status == "i"]
-  infIDindex <- match(infID, uid)
-  infOrigin <- origin[infIDindex]
+  status_inf_index <- which(status == "i" & active == 1)
+  status_inf <- status[status_inf_index]
+  stage_inf <- stage[status_inf_index]
 
-  inf_df <- data.frame(infID, infOrigin)
+  if(length(status_inf_index) > 0){
+    active_test <- active[status_inf_index]
+    infID <- uid[status_inf_index]
 
-  if(is.null(prefix)){
-    filename <- "infected_origin.csv"
-  } else {
-    filename <- paste(prefix, "infected_origin.csv", sep = "_")
+    inf_stage_df <- data.frame(infID, active_test, status_inf, stage_inf)
+
+    if(is.null(prefix)){
+      filename <- "stage_and_IDs.csv"
+    } else {
+      filename <- paste(prefix, "stage_and_IDs.csv", sep = "_")
+    }
+    write.csv(inf_stage_df, file = filename, row.names = FALSE)
   }
-
-  write.csv(inf_df, file = filename, row.names = FALSE)
 }
 
 
@@ -185,9 +188,11 @@ save_origin <- function(dat, prefix = NULL){
 save_departures <- function(dat, departures, at, prefix = NULL){
   active <- get_attr(dat, "active")
   status <- get_attr(dat, "status")
+  stage <- get_attr(dat, "stage")
   uid <- get_attr(dat, "uid")
 
   status_dep <- status[departures]
+  stage_dep <- stage[departures]
 
   if(any(status_dep == "i")){
     #active_test <- active[departures]
@@ -195,7 +200,7 @@ save_departures <- function(dat, departures, at, prefix = NULL){
     time <- at
 
     #inf_time_df <- data.frame(time, infID, active_teste, status_dep)
-    inf_time_df <- data.frame(time, infID, status_dep)
+    inf_time_df <- data.frame(time, infID, status_dep, stage_dep)
     inf_time_df <- subset(inf_time_df, status_dep == "i")
 
     if(is.null(prefix)){
@@ -379,5 +384,55 @@ delete_edges <- function(el, vid) {
   }
 
   return(new.el)
+}
+
+
+#' @export
+cd4s <- function(stage){
+
+  if (stage==0) return(1e3)
+  if (stage==1) return(750)
+  if (stage==2) return(400)
+  if (stage==3) return(300)
+  if (stage==4) return(100)
+}
+
+
+#' Get CD4s by node IDs
+#'
+#' @param df_actives dataframe of IDs that were active at the end of a simulation
+#'    and stages of HIV infection.
+#' @param df_departures dataframe of IDs that departed the network before end of
+#'    simulation and stages of HIV infection
+#'
+#' @return
+#' @export
+#'
+get_cd4s <- function(df_actives, df_departures){
+
+  df_actives["cd4s"] <- unlist(lapply(df_actives$stage_inf, function(x) cd4s(x)))
+  #cd4s of active nodes at the end of simulation
+  active_cd4s <- df_actives$cd4s
+  active_cd4s_IDs <- setNames(active_cd4s, df_actives$infID)
+
+  df_departures["cd4s"] <- unlist(lapply(df_departures$stage_dep, function(x) cd4s(x)))
+  dep_cd4s <- df_departures$cd4s
+  dep_cd4s_IDs <- setNames(dep_cd4s, df_departures$infID)
+
+  index1 <- match(IDPOP, names(active_cd4s_IDs))
+  cd4s1 <- active_cd4s_IDs[index1]
+  index2 <- match(IDPOP, names(dep_cd4s_IDs))
+  cd4s2 <- dep_cd4s_IDs[index2]
+
+  index_tmp <- index1
+  index_tmp[is.na(index_tmp)] <- index2[!is.na(index2)]
+  #get cds4
+  cd4s_tmp <- cd4s1
+
+  cd4s_tmp[is.na(cd4s_tmp)] <- cd4s2[!is.na(cd4s2)]
+  names(cd4s_tmp)[is.na(names(cd4s_tmp))] <- names(cd4s2)[!is.na(names(cd4s2))]
+
+  return(cd4s_tmp)
+
 }
 

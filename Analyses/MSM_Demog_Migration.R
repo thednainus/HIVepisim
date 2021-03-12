@@ -15,7 +15,7 @@ time.unit <- 1
 ages <- 18:80
 
 # numner of years to simulate
-years = 80
+years = 40
 
 
 # Age-specific mortality rates for MALES for the UK in 2018
@@ -49,8 +49,8 @@ data.frame(ages, dr_vec)
 # Initialize network
 n_pop1 = 1000
 n_pop2 = 2000
-#n_pop1 = 10
-#n_pop2 = 10
+#n_pop1 = 50
+#n_pop2 = 50
 n_total = n_pop1 + n_pop2
 #n <- 50000
 nw <- network_initialize(n_total)
@@ -72,13 +72,15 @@ nw <- set_vertex_attribute(nw, "origin", originVec)
 
 # Create vector of diagnose statuses
 diagStatusVec1 <- rep(0, n_pop1)
-init.Infected1 <- sample(1:n_pop1,4)
+n_inf_pop1 <- 4
+init.Infected1 <- sample(1:n_pop1, n_inf_pop1)
 #init.Infected1 <- sample(1:n_pop1, 0.4 * n_pop1)
 diagStatusVec1[init.Infected1] <- 1
 
 
 diagStatusVec2 <- rep(0, n_pop2)
-init.Infected2 <- sample(1:n_pop2, 10)
+n_inf_pop2 <- 10
+init.Infected2 <- sample(1:n_pop2, n_inf_pop2)
 #init.Infected2 <- sample(1:n_pop2, 0.4 * n_pop2)
 diagStatusVec2[init.Infected2] <- 1
 
@@ -296,6 +298,7 @@ control <- control.net(type = NULL, nsteps = 365 * years, start = 1, nsims = 1,
 
 sim <- netsim(est, param, init, control)
 
+# Plot epidemiological quantities of interest ----
 simdf <- as.data.frame(sim)
 plot(simdf$time, simdf$a1.flow)
 plot(simdf$time, simdf$a2.flow)
@@ -335,61 +338,27 @@ plot(sim, y = c("hstage.aids.pop1", "hstage.aids.pop2"), qnts = 1, legend = TRUE
 
 
 
-quartz()
-
-par(mfrow = c(1, 1))
-plot(sim, y = "i.num.pop2", qnts = 1, main = "Total Prevalence", mean.col = 3, qnts.col = 3)
-plot(sim_notergmLite, y = "i.num.pop2", qnts = 1, mean.col = 6, qnts.col = 6, add = TRUE)
-legend("topleft", c("tergmLite", "No tergmLite"), lwd = 3, col = c(3, 6), bty = "n")
-
-
-
-print(date())
-sim <- netsim(est, param, init, control)
-print(date())
-
-sim <- netsim_hpc(x = "fit.rda", param = param, init = init, control = control,
-                   cp.save.int = 100, save.min = TRUE,save.max = TRUE,
-                   compress = TRUE, verbose = TRUE)
-
-sim <- netsim_hpc(x = "data/sim1/sim.cp.rda", param = param, init = init, control = control,
-                  cp.save.int = 100, save.min = TRUE,save.max = TRUE,
-                  compress = TRUE, verbose = TRUE)
-
-load("data/sim1/sim.cp.rda")
+# ndtv plots ----
+# this plot will only work if setting in control tergmLite = TRUE
+# note that creating this plot can be computationally intensive
+# so best is to use a small size population or check
+# the ndtv package for option to save larger network sizes.
+#library(ndtv)
+#slice.par<-list(start=1,end=31,interval=1,
+#                aggregate.dur=1,rule="earliest")
 
 
-# Simulation plot ----
-plot(sim, qnts = 1)
-
-# Mean age summary statistic
-plot(sim, y = "age.mean")
-
-# Export data to data frame
-df <- as.data.frame(sim, out = "mean")
-head(df$age.mean)
-tail(df$age.mean)
-
-# Population size over time
-plot(sim, y = "num")
-
-# Deaths per day
-plot(sim, y = c("hstage1", "hstage2", "hstage3"), qnts = FALSE, legend = TRUE)
-plot(sim, y = "hstage0")
-
-plot(sim, y = "i.prev")
-plot(sim, y = "nNew")
-plot(sim, y = "incid")
+#sim_ani<-compute.animation(sim$network$sim1[[1]],
+#                           default.dist=3,
+#                           slice.par=slice.par,
+#                           animation.mode='MDSJ',
+#                           verbose=FALSE)
 
 
-# Transmission matrix ----
-tm <- get_transmat(sim)
-transphylo <- as.phylo.transmat(tm)
-tmbytree <- get.transmat.phylo(tm)
-# to make sure that transmission only happens between individuals from same origin
-test <- tm[tm$infOrigin != tm$susOrigin,]
-
-origin_inf <- read.csv("infected_origin.csv")
-
-transphylo[[1]]$tip.label %in% origin_inf$infID
+#render.d3movie(sim_ani,vertex.col="global_track",
+#               edge.col="darkgray",
+#               displaylabels=TRUE,label.cex=.6,
+#               label.col="blue", verbose=FALSE,
+#               main='Simulation interactions',
+#               output.mode = 'htmlWidget')
 
