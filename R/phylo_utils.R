@@ -111,7 +111,7 @@ toPhylo_transmatOrigin <- function(x,
     return(sub_phylos)
   }
 
-  if(length(v > 1)){
+  if(length(v) >= 1){
     el <- cbind(tm$inf, tm$sus)
     origNodes <- unique(as.vector(el))
 
@@ -147,7 +147,9 @@ toPhylo_transmatOrigin <- function(x,
     # 12 indicating a region that migrated to global)
     tip_names <- unlist(lapply(tipNamesOri, function(x) str_split(string = x, pattern = "_")[[1]][1]))
     # get the duplicated
-    dup_tip <- tip_names[duplicated(tip_names)]
+    # add unique function to get only one value per duplicated
+    # fromLast = TRUE gets the first value of the duplicated
+    dup_tip <- unique(tip_names[duplicated(tip_names, fromLast = TRUE)])
 
     if(length(dup_tip) > 0){
       tip_origin_names <- get_newTip_names(dup_tip, el_ori)
@@ -386,21 +388,34 @@ replace_dups <- function(dup_tip, origNodes, tipNamesOri, tip_names_toInsert, ti
   #index to add tip name(s) in relation to the original vector of vertex IDs
   # origNodes does not have any duplicates
   index_to_add <- match(dup_tip, origNodes)
-  # subtract 1 of the indext to use with function append
+  # subtract 1 of the index to use with function append
   # append is an R function that will append a value after the index value of
   # interest
-  index_to_add <- index_to_add - 1
+  index_to_add2 <- index_to_add - 1
   # This if will only check for consistency. If this does not hold, I coded
   # something not right.
-  if(length(tip_names_toInsert) != length(index_to_add)){
-    stop("length of `tip_names_toInsert` should be the same as `index_to_add`")
+  if(length(tip_names_toInsert) != length(index_to_add2)){
+    stop("length of `tip_names_toInsert` should be the same as `index_to_add2`")
   }
-  while(length(index_to_add) > 0){
-    tipNamesOri2 <- append(x = tipNamesOri, values = tip_names_toInsert[1], after = index_to_add[1])
+  sink( file = 'test.txt' , append = TRUE)
+  while(length(index_to_add2) > 0){
+    print("tipNamesOri")
+    print(tipNamesOri[1:100])
+    tipNamesOri2 <- append(x = tipNamesOri, values = tip_names_toInsert[1], after = index_to_add2[1])
+    print("tipNamesOri2")
+    print(tipNamesOri2[1:100])
+    print("origNodes")
+    print(origNodes[1:100])
+    print("tip_names_toInsert[1]")
+    print(tip_names_toInsert[1])
+    print("index_to_add2[1]")
+    print(index_to_add2[1])
     tipNamesOri <- tipNamesOri2
-    index_to_add <- index_to_add[-1]
+    index_to_add2 <- index_to_add2[-1]
     tip_names_toInsert <- tip_names_toInsert[-1]
+
   }
+  sink()
 
   return(tipNamesOri2)
 }
