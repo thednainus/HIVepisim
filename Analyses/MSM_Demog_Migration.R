@@ -47,10 +47,10 @@ data.frame(ages, dr_vec)
 #plot(ages, dr_vec, type = "o", xlab = "age", ylab = "Mortality Rate")
 
 # Initialize network
-n_pop1 = 10000
-n_pop2 = 50000
-#n_pop1 = 1000
-#n_pop2 = 2000
+#n_pop1 = 10000
+#n_pop2 = 50000
+n_pop1 = 1000
+n_pop2 = 2000
 #n_pop1 = 50
 #n_pop2 = 50
 n_total = n_pop1 + n_pop2
@@ -274,8 +274,8 @@ param <- param.net(time.unit = time.unit,
                    a1.rate = 0.00003,
                    a2.rate = 0.00005,
                    arrival.age = 18,
-                   m12.rate = 0,
-                   m21.rate = 0)
+                   m12.rate = 0.000129,
+                   m21.rate = 0.000129)
 
 init <- init.net()
 #6752

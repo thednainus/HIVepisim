@@ -68,9 +68,9 @@ if(!is.null(tm2)){
                                         tips_only = TRUE)
 
     # check number of individual within "region"
-    # region is code as 1
+    # region is code as 1 and 21
     tip_names_migrant_ID <- unlist(lapply(tip_names, function(x) str_split(x, "_")[[1]][2]))
-    total_tips_region <- sum(tip_names_migrant_ID == "1")
+    total_tips_region <- sum(tip_names_migrant_ID == "1" | tip_names_migrant_ID == "21")
 
     if(total_tips_region >= 100){
 
@@ -134,8 +134,9 @@ if(!is.null(tm2)){
 
       # Remove sequences from "global" -----
       # to calculate infector probability
-
-      migrant_ID <- ifelse(unlist(lapply(tree_years$tip.label, function(x) str_split(x, "_")[[1]][2])) != 1, TRUE, FALSE)
+      migrant_ID <- unlist(lapply(tree_years$tip.label,
+                                  function(x) ifelse(str_split(x, "_")[[1]][2] == 1 | str_split(x, "_")[[1]][2] == 21,
+                                                     FALSE, TRUE)))
       migrant_ID <- setNames(migrant_ID, tree_years$tip.label)
       toDrop <- migrant_ID[migrant_ID == TRUE]
       region_only_tree <- drop.tip(tree_years, names(toDrop))

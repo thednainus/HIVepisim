@@ -7,7 +7,7 @@ library(ape)
 #file name to load W
 #type if W is calculated on TRUE or ESTIMATED tree
 #tree to get number of tips
-#simulatation type: to keep track of transmission rate and migration rate
+#simulation type: to keep track of transmission rate and migration rate
 
 sumW <- function(file_name, type, tree, sim_type){
   load(file_name)
@@ -34,6 +34,39 @@ sumW <- function(file_name, type, tree, sim_type){
     results <- c(sim_type, type, taxa_size, sumW, countW)
 
   }
+
+
+
+}
+
+#tm is the transmission matrix
+#W_true is the infector probability estimated on the true trees
+#seed ID is the ID number of the seed (seed is the individual that started the
+# transmission)
+#MH is maximum heigh used to calculate W_true
+validadeW <- function(tm, W_true, seed_ID, MH){
+  #get seed name
+  IDnumber <- str_split(string = seed_ID, pattern = "_")[[1]][2]
+  IDnumber <- paste("seed", IDnumber, sep = "_")
+
+  #get tm by seed
+  tm_seed <- tm[[IDnumber]]
+
+  #add time in years
+  tm_seed["time_years"] <- tm_seed["at"] * 1/365
+
+  #subset tm to maximum height
+  tm_mh <- subset(tm_seed, time_years >= MH)
+
+  #tm_mh$sus is the recipient
+  #tm_mh$inf is the donor
+
+  #convert W_true to dataframe
+  W <- as.data.frame(W_true)
+  W["donor_ID"] <- unlist(lapply(W$donor, function(x) str_split(x, pattern = "_")[[1]][1]))
+  W["recip_ID"] <- unlist(lapply(W$recip, function(x) str_split(x, pattern = "_")[[1]][1]))
+
+
 
 
 
@@ -89,8 +122,11 @@ for(x in list_dirs){
 
 
 
+
       print(W_files_onTrue[i])
       print(W_files_onEstimated[i])
+
+
 
 
 

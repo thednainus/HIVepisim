@@ -73,8 +73,7 @@ for(ali in list_files){
 
   #drop tips of the tree that are from "global"
   # to calculate infector probability
-
-  migrant_ID <- ifelse(unlist(lapply(dated_tree$tip.label, function(x) str_split(x, "_")[[1]][2])) != 1, TRUE, FALSE)
+  migrant_ID <- unlist(lapply(dated_tree$tip.label, function(x) ifelse(str_split(x, "_")[[1]][2] == 1 | str_split(x, "_")[[1]][2] == 21, FALSE, TRUE)))
   migrant_ID <- setNames(migrant_ID, dated_tree$tip.label)
   toDrop <- migrant_ID[migrant_ID == TRUE]
   region_only_dated_tree <- drop.tip(dated_tree, names(toDrop))
