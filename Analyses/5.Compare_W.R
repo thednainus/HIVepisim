@@ -65,8 +65,19 @@ validadeW <- function(tm, W_true, seed_ID, MH){
   W <- as.data.frame(W_true)
   W["donor_ID"] <- unlist(lapply(W$donor, function(x) str_split(x, pattern = "_")[[1]][1]))
   W["recip_ID"] <- unlist(lapply(W$recip, function(x) str_split(x, pattern = "_")[[1]][1]))
+  W["Code"] <- "W on true"
+
+  Wsub <- data.frame(donor_ID = W$donor_ID, recip_ID = W$recip_ID,
+                     infectorProbability = W$infectorProbability, Code = W$Code)
+
+  tm <- data.frame(donor_ID = tm_mh$inf, recip_ID = tm_mh$sus,
+                     infectorProbability = 1, Code = "True transmission")
 
 
+  #merge Wsub and tm dataframes
+  all_data <- rbind(Wsub, tm)
+
+  all_data[duplicated(all_data), by = all_data$Code]
 
 
 
