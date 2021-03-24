@@ -31,7 +31,7 @@ max_value <-  NULL
 # year of last sample dates in simulations
 last_sample_date <- 2021
 #maximum height
-MH <- 10
+MH <- 20
 
 #Create directory named output if it does not exist
 if (!dir.exists("output")) {
@@ -85,7 +85,10 @@ if(!is.null(tm2)){
 
       create_inf_csv(tm2[[x]], time_tr = 1, prefix=output)
 
-      IDPOP <- union(tm2[[x]]$inf, tm2[[x]]$sus)
+
+      el <- cbind(tm2[[x]]$inf, tm2[[x]]$sus)
+      IDPOP <- unique(as.vector(el))
+
 
       #match IDs from phylogenetic tree to the departure.csv file
       index <- match(IDPOP, dep$infID)
@@ -140,7 +143,7 @@ if(!is.null(tm2)){
 
 
       # Calculate infector probability ----
-      all_cd4s <- get_cd4s(df_actives = stages, df_departures = dep)
+      all_cd4s <- get_cd4s(IDPOP = IDPOP, df_actives = stages, df_departures = dep)
       names(all_cd4s) <- tip_names
 
       #get ehi (early HIV infection)

@@ -47,8 +47,10 @@ data.frame(ages, dr_vec)
 #plot(ages, dr_vec, type = "o", xlab = "age", ylab = "Mortality Rate")
 
 # Initialize network
-n_pop1 = 1000
-n_pop2 = 2000
+n_pop1 = 10000
+n_pop2 = 50000
+#n_pop1 = 1000
+#n_pop2 = 2000
 #n_pop1 = 50
 #n_pop2 = 50
 n_total = n_pop1 + n_pop2

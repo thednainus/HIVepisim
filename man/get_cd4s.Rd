@@ -4,7 +4,7 @@
 \alias{get_cd4s}
 \title{Get CD4s by node IDs}
 \usage{
-get_cd4s(df_actives, df_departures)
+get_cd4s(IDPOP, df_actives, df_departures)
 }
 \arguments{
 \item{df_actives}{dataframe of IDs that were active at the end of a simulation

@@ -408,7 +408,7 @@ cd4s <- function(stage){
 #' @return
 #' @export
 #'
-get_cd4s <- function(df_actives, df_departures){
+get_cd4s <- function(IDPOP, df_actives, df_departures){
 
   df_actives["cd4s"] <- unlist(lapply(df_actives$stage_inf, function(x) cd4s(x)))
   #cd4s of active nodes at the end of simulation
