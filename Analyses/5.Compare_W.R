@@ -39,49 +39,6 @@ sumW <- function(file_name, type, tree, sim_type){
 
 }
 
-#tm is the transmission matrix
-#W_true is the infector probability estimated on the true trees
-#seed ID is the ID number of the seed (seed is the individual that started the
-# transmission)
-#MH is maximum heigh used to calculate W_true
-validadeW <- function(tm, W_true, seed_ID, MH){
-  #get seed name
-  IDnumber <- str_split(string = seed_ID, pattern = "_")[[1]][2]
-  IDnumber <- paste("seed", IDnumber, sep = "_")
-
-  #get tm by seed
-  tm_seed <- tm[[IDnumber]]
-
-  #add time in years
-  tm_seed["time_years"] <- tm_seed["at"] * 1/365
-
-  #subset tm to maximum height
-  tm_mh <- subset(tm_seed, time_years >= MH)
-
-  #tm_mh$sus is the recipient
-  #tm_mh$inf is the donor
-
-  #convert W_true to dataframe
-  W <- as.data.frame(W_true)
-  W["donor_ID"] <- unlist(lapply(W$donor, function(x) str_split(x, pattern = "_")[[1]][1]))
-  W["recip_ID"] <- unlist(lapply(W$recip, function(x) str_split(x, pattern = "_")[[1]][1]))
-  W["Code"] <- "W on true"
-
-  Wsub <- data.frame(donor_ID = W$donor_ID, recip_ID = W$recip_ID,
-                     infectorProbability = W$infectorProbability, Code = W$Code)
-
-  tm <- data.frame(donor_ID = tm_mh$inf, recip_ID = tm_mh$sus,
-                     infectorProbability = 1, Code = "True transmission")
-
-
-  #merge Wsub and tm dataframes
-  all_data <- rbind(Wsub, tm)
-
-  all_data[duplicated(all_data), by = all_data$Code]
-
-
-
-}
 
 #get true number of infector probabilities
 
@@ -90,6 +47,7 @@ load("Analyses/Preliminary_results/results_tergmLite1/run_1/output/vts/W/ID_413_
 
 # list directories for each run
 list_dirs <- dir("Analyses/Preliminary_results", full.names = TRUE)
+#list_dirs <- dir("Analyses/Preliminary_results/10000pop/", full.names = TRUE)
 
 W_onTrue <- paste("/output/vts/W")
 W_onEstimated <- paste("/output/vts/W_estimated")
@@ -97,6 +55,7 @@ W_onEstimated <- paste("/output/vts/W_estimated")
 for(x in list_dirs){
   #list dirs for each run
   dir_names <- dir(list_dirs[x], pattern = "run*", full.names = TRUE)
+
 
 
   for(y in dir_names){

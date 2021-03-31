@@ -318,7 +318,9 @@ get_newTip_names <- function(dup_tip, el_ori){
     #get the row of interest
     row_int <- mapply(oldest_time, dup_rows, get_last_time, SIMPLIFY = FALSE)
 
-    tip_origin_names <- unname(mapply(name_of_tips, dup_tip, row_int))
+    # here get unique values because we can still observe at a same time point a
+    # transmission by a same node (individual)
+    tip_origin_names <- unique(unlist(unname(mapply(name_of_tips, dup_tip, row_int))))
   }
 
   return(tip_origin_names)
@@ -397,25 +399,25 @@ replace_dups <- function(dup_tip, origNodes, tipNamesOri, tip_names_toInsert, ti
   if(length(tip_names_toInsert) != length(index_to_add2)){
     stop("length of `tip_names_toInsert` should be the same as `index_to_add2`")
   }
-  sink( file = 'test.txt' , append = TRUE)
+  #sink( file = 'test.txt' , append = TRUE)
   while(length(index_to_add2) > 0){
-    print("tipNamesOri")
-    print(tipNamesOri[1:100])
+    #print("tipNamesOri")
+    #print(tipNamesOri[1:100])
     tipNamesOri2 <- append(x = tipNamesOri, values = tip_names_toInsert[1], after = index_to_add2[1])
-    print("tipNamesOri2")
-    print(tipNamesOri2[1:100])
-    print("origNodes")
-    print(origNodes[1:100])
-    print("tip_names_toInsert[1]")
-    print(tip_names_toInsert[1])
-    print("index_to_add2[1]")
-    print(index_to_add2[1])
+    #print("tipNamesOri2")
+    #print(tipNamesOri2[1:100])
+    #print("origNodes")
+    #print(origNodes[1:100])
+    #print("tip_names_toInsert[1]")
+    #print(tip_names_toInsert[1])
+    #print("index_to_add2[1]")
+    #print(index_to_add2[1])
     tipNamesOri <- tipNamesOri2
     index_to_add2 <- index_to_add2[-1]
     tip_names_toInsert <- tip_names_toInsert[-1]
 
   }
-  sink()
+  #sink()
 
   return(tipNamesOri2)
 }
