@@ -5,17 +5,23 @@
 \title{Title Validate infector probability calculation}
 \usage{
 validadeW(
+  sim,
+  run,
   tm,
   W_true,
   W_estimated,
   seed_ID,
   MH,
   true_tree,
-  estimated_tree,
   prefix = NULL
 )
 }
 \arguments{
+\item{sim}{Simulation number to know the parameter values that network was
+simulated}
+
+\item{run}{Run number}
+
 \item{tm}{Transmission matrix per seed}
 
 \item{W_true}{Infector probability calculated on the true trees}
@@ -25,10 +31,10 @@ transmissions; it is the initial infected node in the simulations.}
 
 \item{MH}{maximum height in which infector probabilities were calculated}
 
+\item{true_tree}{object of class phylo}
+
 \item{prefix}{prefix to save results. If prefix = NULL, results will be saved
 on file W_on_true.csv.}
-
-\item{tree}{object of class phylo}
 }
 \value{
 a data frame of 1 row with the following values:

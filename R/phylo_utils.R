@@ -48,23 +48,12 @@
 #' This script will specifically work with the package HIVepisim.
 #'
 #' @export
-toPhylo_transmatOrigin <- function(x,
-                                   format = "migrant",
-                                   by_areas = "region",
-                                   max_value = NULL,
-                                   tips_only = TRUE,
-                                   collapse.singles,
-                                   vertex.exit.times,
-                              ...) {
+get_tip_names <- function(x, format = "migrant", by_areas = "region",
+                          max_value = NULL, tips_only = TRUE) {
   format <- format
   by_areas <-  by_areas
   max_value <- max_value
   tips_only <- tips_only
-
-  if (!missing(collapse.singles)) {
-    warning("the 'collapse.singles' argument to as.phylo.transmat is no longer
-            supported and will be ignored")
-  }
 
   # if not named properly, assume inf, sus at
   if (!all(c("inf", "sus", "at") %in% names(x))) {
@@ -73,9 +62,7 @@ toPhylo_transmatOrigin <- function(x,
     names(x) <- c("inf", "sus", "at")
   }
   tm <- x
-  if (missing(vertex.exit.times)) {
-    vertex.exit.times <- NULL
-  }
+
   # find roots (infectors that never appear as sus)
   if(by_areas == "all"){
     v <- setdiff(unique(tm$inf), unique(tm$sus))
@@ -84,42 +71,10 @@ toPhylo_transmatOrigin <- function(x,
     v <- setdiff(unique(tm$inf), unique(tm$sus))
     v <- v[v < max_value]
   }
-  if (length(v) > 1) {
-    message("found multiple trees, returning a list of ", length(v),
-            "phylo objects")
-    # need to extract the portions of the edgelist and call seperately
-    sub_phylos <- lapply(v, function(v_sub) {
-      # walk down the list to find elements below v_sub
-      sub_rows <- which(tm$inf == v_sub)
-      toFind <- v_sub
-      while (length(toFind) > 0) {
-        i <- toFind[1]
-        sub_rows <- unique(c(sub_rows, which(tm$inf == i)))
-        toFind <- c(toFind[-1], tm$sus[which(tm$inf == i)])
-      }
-      # call as.phylo on the subset of the edgelist
-      toPhylo_transmatOrigin(tm[sub_rows, , drop = FALSE],
-                             format = format,
-                             by_areas = by_areas,
-                             max_value = max_value,
-                             tips_only = tips_only,
-                             vertex.exit.times = vertex.exit.times)
-
-    })
-    names(sub_phylos) <- paste("seed", v, sep = "_")
-    class(sub_phylos) <- c("multiPhylo", class(sub_phylos))
-    return(sub_phylos)
-  }
 
   if(length(v) >= 1){
     el <- cbind(tm$inf, tm$sus)
     origNodes <- unique(as.vector(el))
-
-    if (!is.null(vertex.exit.times)) {
-      if (length(origNodes) > length(vertex.exit.times) | any(origNodes > length(vertex.exit.times))) {
-        stop("Vertex ids in edgelist imply a larger network size than vertex.exit.times")
-      }
-    }
 
     if (format == "origin"){
       el_ori <- cbind(at = tm$at,
@@ -158,104 +113,7 @@ toPhylo_transmatOrigin <- function(x,
       final_tip_names <- tipNamesOri
     }
 
-    if(tips_only == FALSE){
-
-      # translate ids in el to sequential integers starting from one
-      el[, 1] <- match(el[, 1], origNodes)
-      el[, 2] <- match(el[, 2], origNodes)
-
-
-      maxTip <- max(el)  # need to know what phylo node ids will start
-
-      maxTime <- max(x$at) + 1
-      if (!is.null(vertex.exit.times)) {
-        maxTime <- max(maxTime, vertex.exit.times, na.rm = TRUE)
-      }
-      # create new ids for phyloNodes
-      phyloNodes <- seq(from = maxTip + 1, length.out = length(origNodes) - 1)
-      Nnode <- length(phyloNodes)
-      # create labels for each phylo node based on infector id
-      #phylo.label <- tm$inf
-      # this is an alternate label form like i_j
-      #phylo.label <- sapply(1:length(phyloNodes),function(r) {
-      #  paste(tm[r,"inf"],tm[r,"infOrigin"],sep="_")
-      #})
-      phylo.label <- sapply(1:length(phyloNodes),function(r) {
-        paste(tm[r,"inf"],tm[r,"sus"],sep="_")
-      })
-
-      # set default durations
-      # since we don't know how long the graph vertices live, assume entire duration
-      durations <- rep(NA, length(phyloNodes) * 2)
-      tipExitTimes <- rep(maxTime, maxTip)
-      if (!is.null(vertex.exit.times)) {
-        # replace any NA values with max time
-        vertex.exit.times[is.na(vertex.exit.times)] <- maxTime + 1
-        # copy the vertex exit times into the appropriate positions in the
-        # durations array
-        durations[seq_len(maxTip)] <- vertex.exit.times[origNodes]
-        # reorder the vertex.exit times to match new ids of tips
-        tipExitTimes <- vertex.exit.times[origNodes]
-      }
-
-      # create a new edgelist by stepping through the existing edgelist
-      # and creating the new links from phylo nodes to graph vertices (tips)
-      # and from phylo node to phylo node
-      # have to do this as progressive modifications
-
-      # assume at least one xmit has occured
-      # create the phylo node linking to the first
-      # infector and infectee
-      phyloEl <- rbind(cbind(phyloNodes[1], el[1, 1]),
-                       cbind(phyloNodes[1], el[1, 2]))
-
-      durations[1] <- tipExitTimes[el[1, 1]] - tm[["at"]][1]
-      durations[2] <- tipExitTimes[el[1, 2]] - tm[["at"]][1]
-
-      phyloN <- 1
-      # loop over remaining rows
-      if (nrow(el) > 1) {
-        for (r in 2:nrow(el)) {
-          # find id of infector
-          infector <- el[r, 1]
-          # find the phylo row of phylo node corresponding to the infector
-          phyNRow <- which(phyloEl[, 2] == infector)
-          # replace the infector with a new phylo node
-          phyloEl[phyNRow, 2] <- phyloNodes[phyloN + 1]
-          # link the new phylo node to the infector
-          phyloEl <- rbind(phyloEl, cbind(phyloNodes[phyloN + 1], infector))
-          # link the new phylo node to the infectee (tip)
-          phyloEl <- rbind(phyloEl, cbind(phyloNodes[phyloN + 1], el[r, 2]))
-
-          # update the timing on the replaced row that linked to tip
-          durations[phyNRow] <-
-            durations[phyNRow] - (tipExitTimes[infector] - tm[["at"]][r])
-          # add timings for new rows equal to remaining time
-          # infector
-          durations[nrow(phyloEl) - 1] <- tipExitTimes[infector] - tm[["at"]][r]
-          # infectee
-          durations[nrow(phyloEl)] <- tipExitTimes[el[r, 2]] - tm[["at"]][r]
-
-
-          # increment the phylo node counter
-          phyloN <- phyloN + 1
-        }
-      }
-
-      # format the output
-      out <- list()
-      out[["edge"]] <- phyloEl
-      out[["Nnode"]] <- Nnode  # number of non-tip nodes
-      out[["tip.label"]] <- final_tip_names
-      out[["node.label"]] <- phylo.label
-      out[["root.edge"]] <- x$at[1] # have to assume sim started at 0
-      out[["edge.length"]] <- durations
-
-      class(out) <- "phylo"
-      return(out)
-    } else{
     return(final_tip_names)
-    }
   }
 }
 
@@ -474,6 +332,66 @@ reorder_tip_names <- function(tip_names_migrant, tip_names_vts){
   reordered_tip_names <- tip_names_migrant[reorder_idx]
 
   return(reordered_tip_names)
+}
+
+
+#' Merge phylogenetic trees into a single tree
+#'
+#' Merge 2 or more phylogenetic trees into a single phylogenetic tree
+#'
+#' @param trees list of phylogenetic trees
+#'
+#' @return merged trees as object of class phylo
+#' @export
+#'
+merge_trees <- function(trees){
+
+
+  #merge initial 2 trees
+  treesxy <- bind.tree(trees[[1]], trees[[2]], position = trees[[1]]$root.edge)
+
+  #number of trees to be added to the merged tree
+  n_trees <- length(trees) - 2
+
+  if(n_trees > 0){
+    #index to merge next tree
+    index_count <- 3
+    while(length(trees) - 2 > 0){
+      tree <- trees[[3]]
+
+      #add small branch length so as to correctly merge the next tree
+      tree$root.edge <- tree$root.edge + 0.0001
+      treesxy$root.edge <- 0.0001
+
+      #merge tree
+      new_tree <- bind.tree(treesxy, tree, position = treesxy$root.edge)
+      treesxy <- new_tree
+      trees <- trees[-3]
+      index_count <- index_count + 1
+    }
+  }
+
+  return(treesxy)
+}
+
+
+#' Add root edge to phylogenetic tree
+#'
+#' @param tree object of class Phylo
+#' @param total_sim_steps scalar for the total number of steps of network simulations
+#'
+#' @return
+#' @export
+#'
+add_root_edge <- function(tree, total_sim_steps){
+
+  #max_edge <- max(distRoot(tree))
+  max_edge <- max(get_all_distances_to_root(tree))
+  tree_root.edge <- (total_sim_steps - max_edge) + 7665
+  tree$root.edge <- tree_root.edge
+
+  return(tree)
+
 }
 
 

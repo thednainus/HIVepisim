@@ -49,8 +49,8 @@ data.frame(ages, dr_vec)
 # Initialize network
 #n_pop1 = 10000
 #n_pop2 = 50000
-n_pop1 = 1000
-n_pop2 = 2000
+n_pop1 = 10000
+n_pop2 = 100000
 #n_pop1 = 50
 #n_pop2 = 50
 n_total = n_pop1 + n_pop2
@@ -74,14 +74,14 @@ nw <- set_vertex_attribute(nw, "origin", originVec)
 
 # Create vector of diagnose statuses
 diagStatusVec1 <- rep(0, n_pop1)
-n_inf_pop1 <- 4
+n_inf_pop1 <- 10
 init.Infected1 <- sample(1:n_pop1, n_inf_pop1)
 #init.Infected1 <- sample(1:n_pop1, 0.4 * n_pop1)
 diagStatusVec1[init.Infected1] <- 1
 
 
 diagStatusVec2 <- rep(0, n_pop2)
-n_inf_pop2 <- 10
+n_inf_pop2 <- 50
 init.Infected2 <- sample(1:n_pop2, n_inf_pop2)
 #init.Infected2 <- sample(1:n_pop2, 0.4 * n_pop2)
 diagStatusVec2[init.Infected2] <- 1
@@ -189,6 +189,7 @@ target.stats
 #coef.diss <- dissolution_coefs(~offset(edges), 200, mean(dr_vec))
 #durs <- c(60, 60, 2)
 durs <- c(23.7, 23.7, 2)
+#durs <- c(23.7 *1.5, 23.7 *1.5, 2)
 coef.diss <- dissolution_coefs(~offset(edges) +
                                  offset(nodemix("origin", levels2 = c(1, 2))),
                                duration = durs, d.rate = mean(dr_vec))
@@ -196,7 +197,8 @@ coef.diss
 
 # Fit the model
 # # Fit the TERGM
-est <- netest(nw, formation, target.stats, coef.diss)
+est <- netest(nw, formation, target.stats, coef.diss, edapprox = FALSE)
+
 #save(est, file = "fit.rda")
 
 # Model diagnostics
@@ -240,10 +242,20 @@ durs
 # tx.halt.prob = 0.0102 per week, tx.halt.prob = 0.0102/7 per day
 # tx.reinit.prob = 0.00066 per week, tx.reinit.prob = 0.00066 per day
 # a1.rate = 0.00052 per week, a1.rate = 0.00052/7 per day
-# a2.rate = 0.00052 per week, a2.rate = 0.00052 per day
+# a2.rate = 0.00052 per week, a2.rate = 0.00052/7 per day
+# a2.rate = 0.00005 per week
+# art_start = 24 * 365
+
+#in weeks
+#art_start <- 24 * 52
+#in days
+art_start <- 24 * 365
+#art_start <- 14 * 365
+
 
 param <- param.net(time.unit = time.unit,
                    groups = 1,
+                   act.rate = 0.6,
                    stage_prog_rate0 = 1/((0.5 * 365) / time.unit),
                    stage_prog_rate1 = 1/((3.32 * 365) / time.unit),
                    stage_prog_rate2 = 1/((2.7 * 365) / time.unit),
@@ -252,13 +264,13 @@ param <- param.net(time.unit = time.unit,
                    f2 = 0.19,
                    f3 = 0.05,
                    f4 = 0,
-                   hiv.test.rate = 0.01325/7,
-                   test.window.int = 21,
-                   art_start = 24 * 365,
-                   tx.init.prob = 0.092/7,
-                   tx.halt.prob = 0.0102/7,
-                   tx.reinit.prob = 0.00066/7,
-                   trans.r = 0.08,
+                   hiv.test.rate = (0.01325/7) * time.unit,
+                   test.window.int = 21 / time.unit,
+                   art_start = art_start,
+                   tx.init.prob = (0.092/7) * time.unit,
+                   tx.halt.prob = (0.0102/7) * time.unit,
+                   tx.reinit.prob = (0.00066/7) * time.unit,
+                   trans.r = 0.058,
                    ws0 = 1,
                    ws1 = 0.1,
                    ws2 = 0.1,
@@ -266,20 +278,26 @@ param <- param.net(time.unit = time.unit,
                    ws4 = 0.3,
                    wc1 = 1,
                    wc2 = 0.5,
-                   wc3 = 0.0525,
+                   wc3 = 0.05,
                    wr1 = 1,
                    wr2 = 10,
                    aids.mr = 1/((5.06 * 365) / time.unit),
                    asmr = dr_vec,
-                   a1.rate = 0.00003,
-                   a2.rate = 0.00005,
+                   a1.rate = 0.00015 * time.unit,
+                   a2.rate = 0.0001 * time.unit,
                    arrival.age = 18,
-                   m12.rate = 0.000129,
-                   m21.rate = 0.000129)
+                   m12.rate = 0,
+                   m21.rate = 0)
 
 init <- init.net()
-#6752
-control <- control.net(type = NULL, nsteps = 365 * years, start = 1, nsims = 1,
+
+#in weeks
+#nsteps = years * 52
+# in days
+nsteps = years * 365
+
+
+control <- control.net(type = NULL, nsteps = nsteps, start = 1, nsims = 1,
                        ncores = 1, resimulate.network = TRUE, tergmLite = TRUE,
                        initialize.FUN = initialize_mig,
                        resim_nets.FUN = resim_nets,
@@ -300,6 +318,7 @@ control <- control.net(type = NULL, nsteps = 365 * years, start = 1, nsims = 1,
 
 sim <- netsim(est, param, init, control)
 
+sim <- readRDS("results_sim.RDS")
 # Plot epidemiological quantities of interest ----
 simdf <- as.data.frame(sim)
 plot(simdf$time, simdf$a1.flow)
@@ -309,11 +328,18 @@ plot(simdf$time, simdf$i.num.pop2/simdf$num.pop2)
 plot(simdf$time, simdf$i.num.pop1)
 plot(simdf$time, simdf$i.num.pop2)
 
+plot(sim, y = c("i.num.pop1", "i.num.pop2"), qnts = 1, legend = TRUE)
+
+plot(sim, y = c("dall_pop1.flow", "dall_pop2.flow"), qnts = 1, legend = TRUE)
+plot(sim, y = c("daids_pop1.flow", "daids_pop2.flow"), qnts = 1, legend = TRUE)
+plot(sim, y = c("dhiv_pop1.flow", "dhiv_pop2.flow"), qnts = 1, legend = TRUE)
+
 plot(sim, y = c("a1.flow", "a2.flow"), qnts = 1, legend = TRUE)
 plot(sim, y = "a1.flow", qnts = 1, legend = TRUE)
 plot(sim, y = "a2.flow", qnts = 1, legend = TRUE)
 plot(sim, y = c("i.num.pop1", "s.num.pop1"), qnts = 1, legend = TRUE)
 plot(sim, y = c("i.num.pop2", "s.num.pop2"), qnts = 1, legend = TRUE)
+plot(sim, y = c("i.num.pop1", "s.num.pop1","i.num.pop2", "s.num.pop2"), qnts = 1, legend = TRUE)
 plot(sim, y = "i.num.pop1", qnts = 1, legend = TRUE)
 plot(sim, y = "i.num.pop2", qnts = 1, legend = TRUE)
 plot(sim, y = c("num.pop1", "num.pop2"), qnts = 1, legend = TRUE)

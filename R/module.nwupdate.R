@@ -71,6 +71,10 @@ nwupdate_mig <- function(dat, at) {
 
   ## Departures----------
   if (length(departures) > 0) {
+    #if("i" %in% dat$attr$status[departures]){
+      #browser()
+    #}
+
     # save a csv file for time of departure and ID of infected individual that
     # is not in the network anymore
     # to be used with phylogenetics for getting time of terminal branch correctly.

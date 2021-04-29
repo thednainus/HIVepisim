@@ -146,17 +146,19 @@ save_stage <- function(dat, prefix = NULL){
   active <- get_attr(dat, "active")
   status <- get_attr(dat, "status")
   stage <- get_attr(dat, "stage")
+  diag.status <- get_attr(dat, "diag.status")
   uid <- get_attr(dat, "uid")
 
   status_inf_index <- which(status == "i" & active == 1)
   status_inf <- status[status_inf_index]
   stage_inf <- stage[status_inf_index]
+  diag.status_inf <- diag.status[status_inf_index]
 
   if(length(status_inf_index) > 0){
     active_test <- active[status_inf_index]
     infID <- uid[status_inf_index]
 
-    inf_stage_df <- data.frame(infID, active_test, status_inf, stage_inf)
+    inf_stage_df <- data.frame(infID, active_test, status_inf, stage_inf, diag.status_inf)
 
     if(is.null(prefix)){
       filename <- "stage_and_IDs.csv"
@@ -190,9 +192,11 @@ save_departures <- function(dat, departures, at, prefix = NULL){
   status <- get_attr(dat, "status")
   stage <- get_attr(dat, "stage")
   uid <- get_attr(dat, "uid")
+  origin <- get_attr(dat, "origin")
 
   status_dep <- status[departures]
   stage_dep <- stage[departures]
+  origin_dep <- origin[departures]
 
   if(any(status_dep == "i")){
     #active_test <- active[departures]
@@ -200,7 +204,7 @@ save_departures <- function(dat, departures, at, prefix = NULL){
     time <- at
 
     #inf_time_df <- data.frame(time, infID, active_teste, status_dep)
-    inf_time_df <- data.frame(time, infID, status_dep, stage_dep)
+    inf_time_df <- data.frame(time, infID, status_dep, stage_dep, origin_dep)
     inf_time_df <- subset(inf_time_df, status_dep == "i")
 
     if(is.null(prefix)){
@@ -240,8 +244,8 @@ create_inf_csv <- function(tm, time_tr, prefix = NULL){
   seed_names <- setdiff(unique(tm$inf), unique(tm$sus))
 
   if(length(time_tr) == 1){
-    seed_idtr <- data.frame(seed_names, rep(NA, length(seed_names)), rep(time_tr, length(seed_names)))
-  }else if(length(time_tr) == length(seed_names)){
+    seed_idtr <- data.frame(seed_names, rep(NA, length(seed_names)), rep(0, length(seed_names)))
+  }else if(length(time_tr)!= 1 & length(time_tr) == length(seed_names)){
     seed_idtr <- data.frame(seed_names, rep(NA, length(seed_names)), time_tr)
   }else{
     stop("`time_tr` should be of length 1 or length of number of seeds")

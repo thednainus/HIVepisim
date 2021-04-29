@@ -63,13 +63,14 @@ for(ali in list_files){
 
 
 
-  if(length(sampleTimes) != length(mltree$tip.label)){
-    stop("length of sampleTimes and tip_label should be the same")
+  #if(length(sampleTimes) != length(mltree$tip.label)){
+  #  stop("length of sampleTimes and tip_label should be the same")
 
-  }
+  #}
 
   #run treedater
   dated_tree <- dater(tre = mltree, sts = sampleTimes[mltree$tip.label], s = 1000)
+
 
   #drop tips of the tree that are from "global"
   # to calculate infector probability
@@ -102,7 +103,7 @@ for(ali in list_files){
   }
 
   W_filename <- paste("output/vts/W_estimated/", ali_ID_name, "migrant_years_1_simple_estimated", ".RData", sep="")
-  save(years, MH, max_value, last_sample_date, tm, tm2, region_only_dated_tree,
+  save(years, MH, max_value, last_sample_date, tm, region_only_dated_tree,
        sampleTimes, all_cd4s, ehis, newinf_per_year, totalPLWHIV, W_estimated,
        file = W_filename)
 }

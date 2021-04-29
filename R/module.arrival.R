@@ -44,6 +44,7 @@ arrivals_mig <- function(dat, at){
   if (nOld1 > 0) {
     nArrivals1 <- rbinom(1, nOld1, a1.rate)
     if (nArrivals1 > 0) {
+      #browser()
       dat <- append_core_attr_mig(dat, at, nArrivals1)
       dat <- append_attr(dat, "status", "s", nArrivals1)
       dat <- append_attr(dat, "infTime", NA, nArrivals1)
@@ -75,6 +76,7 @@ arrivals_mig <- function(dat, at){
   if (nOld2 > 0) {
     nArrivals2 <- rbinom(1, nOld2, a2.rate)
     if (nArrivals2 > 0) {
+      #browser()
       dat <- append_core_attr_mig(dat, at, nArrivals2)
       dat <- append_attr(dat, "status", "s", nArrivals2)
       dat <- append_attr(dat, "infTime", NA, nArrivals2)

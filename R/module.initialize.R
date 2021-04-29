@@ -212,7 +212,7 @@ init_status_mig <- function(dat) {
     dat <- set_attr(dat, "infTime", infTime)
 
 
-    min.hiv.time <- round(6.4 + 6.4)
+    #min.hiv.time <- round(6.4 + 6.4)
     dat <- set_attr(dat, "stage", rep(NA, num.all))
     dat <- set_attr(dat, "stage.time", rep(NA, num.all))
     dat <- set_attr(dat, "aids.time", rep(NA, num.all))
@@ -220,7 +220,8 @@ init_status_mig <- function(dat) {
     stage[idsInf] <- 0
     dat <- set_attr(dat, "stage", stage)
     stage.time <- get_attr(dat, "stage.time")
-    stage.time[idsInf] <- infTime[idsInf] - min.hiv.time
+    #stage.time[idsInf] <- infTime[idsInf] - min.hiv.time
+    stage.time[idsInf] <- infTime[idsInf]
     dat <- set_attr(dat, "stage.time", stage.time)
 
 

@@ -73,7 +73,7 @@ prevalence_mig <- function(dat, at) {
 
 
   #susceptibles
-  dat <- set_epi(dat, "s.num.all", at, sum(active == 1 & status == "s", na.rm = TRUE))
+  dat <- set_epi(dat, "s.num", at, sum(active == 1 & status == "s", na.rm = TRUE))
   dat <- set_epi(dat, "s.num.pop1", at, sum(active == 1 & status == "s" & origin == "region", na.rm = TRUE))
   dat <- set_epi(dat, "s.num.pop2", at, sum(active == 1 & status == "s" & origin == "global", na.rm = TRUE))
 
@@ -85,7 +85,7 @@ prevalence_mig <- function(dat, at) {
 
 
   #infected
-  dat <- set_epi(dat, "i.num.all", at, sum(active == 1 & status == "i", na.rm = TRUE))
+  dat <- set_epi(dat, "i.num", at, sum(active == 1 & status == "i", na.rm = TRUE))
   dat <- set_epi(dat, "i.num.pop1", at, sum(active == 1 & status == "i" & origin == "region", na.rm = TRUE))
   dat <- set_epi(dat, "i.num.pop2", at, sum(active == 1 & status == "i" & origin == "global", na.rm = TRUE))
 
@@ -98,14 +98,18 @@ prevalence_mig <- function(dat, at) {
 
 
   # Prevalence
-  #dat <- set_epi(dat, "i.prev.all", at, dat$epi$i.num.all[at] / dat$epi$num[at])
-  dat <- set_epi(dat, "i.prev.pop1", at, dat$epi$i.num.pop1[at] / dat$epi$num.pop1[at])
-  dat <- set_epi(dat, "i.prev.pop2", at, dat$epi$i.num.pop2[at] / dat$epi$num.pop2[at])
+  #dat <- set_epi(dat, "i.prev.all", at, sum(active == 1 & status == "i", na.rm = TRUE) / sum(active == 1))
+  dat <- set_epi(dat, "i.prev.pop1", at, sum(active == 1 & status == "i" & origin == "region", na.rm = TRUE) /
+                   sum(active == 1 & origin == "region"))
+  dat <- set_epi(dat, "i.prev.pop2", at, sum(active == 1 & status == "i" & origin == "global", na.rm = TRUE) /
+                   sum(active == 1 & origin == "global"))
 
 
   #dat <- set_epi(dat, "i.prev.dx.all", at, dat$epi$i.num.dx.all[at] / dat$epi$num[at])
-  dat <- set_epi(dat, "i.prev.dx.pop1", at, dat$epi$i.num.dx.pop1[at] / dat$epi$num.pop1[at])
-  dat <- set_epi(dat, "i.prev.dx.pop2", at, dat$epi$i.num.dx.pop2[at] / dat$epi$num.pop2[at])
+  dat <- set_epi(dat, "i.prev.dx.pop1", at, sum(active == 1 & diag.status == 1 & origin == "region", na.rm = TRUE) /
+                   sum(active == 1 & origin == "region"))
+  dat <- set_epi(dat, "i.prev.dx.pop2", at, sum(active == 1 & status == "i" & origin == "global", na.rm = TRUE) /
+                   sum(active == 1 & origin == "global"))
 
 
   # HIV stage

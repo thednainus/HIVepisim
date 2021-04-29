@@ -23,6 +23,7 @@ departure_mig <- function(dat, at) {
   stage <- get_attr(dat, "stage")
   origin <- get_attr(dat, "origin")
   exitTime <- get_attr(dat, "exitTime")
+  age <- get_attr(dat, "age")
   rates.all <- get_param(dat, "asmr")
   rates.aids <- get_param(dat, "aids.mr")
 
@@ -32,15 +33,24 @@ departure_mig <- function(dat, at) {
   idsDpt.pop2 <- NULL
   idsDpt.aids.pop2 <- NULL
 
+
   # Departures (not HIV-related: population 1) --------------------------------------------------
   nDepartures.pop1 <- 0
   idsElig.pop1 <- which(active == 1 & origin == "region")
   nElig.pop1 <- length(idsElig.pop1)
+
+  whole_ages_of_elig1 <- pmin(ceiling(age[idsElig.pop1]), 80)
+  drates_of_elig1 <- rates.all[whole_ages_of_elig1 - 18 + 1] #to use the correct index
+
   if (nElig.pop1 > 0) {
-    vecDepartures.pop1 <- which(rbinom(nElig.pop1, 1, rates.all) == 1)
+    vecDepartures.pop1 <- which(rbinom(nElig.pop1, 1, drates_of_elig1) == 1)
     if (length(vecDepartures.pop1) > 0) {
+      #browser()
       idsDpt.pop1 <- idsElig.pop1[vecDepartures.pop1]
       nDepartures.pop1 <- length(idsDpt.pop1)
+      if("i" %in% dat$attr$status[idsDpt.pop1]){
+        #browser()
+      }
       active[idsDpt.pop1] <- 0
       exitTime[idsDpt.pop1] <- at
     }
@@ -50,13 +60,21 @@ departure_mig <- function(dat, at) {
   nDepartures.pop2 <- 0
   idsElig.pop2 <- which(active == 1 & origin == "global")
   nElig.pop2 <- length(idsElig.pop2)
+
+  whole_ages_of_elig2 <- pmin(ceiling(age[idsElig.pop2]), 80)
+  drates_of_elig2 <- rates.all[whole_ages_of_elig2 - 18 + 1] #to use the correct index
+
   if (nElig.pop2 > 0) {
-    vecDepartures.pop2 <- which(rbinom(nElig.pop2, 1, rates.all) == 1)
+    vecDepartures.pop2 <- which(rbinom(nElig.pop2, 1, drates_of_elig2) == 1)
     if (length(vecDepartures.pop2) > 0) {
+      #browser()
       idsDpt.pop2 <- idsElig.pop2[vecDepartures.pop2]
       nDepartures.pop2 <- length(idsDpt.pop2)
       active[idsDpt.pop2] <- 0
       exitTime[idsDpt.pop2] <- at
+      if("i" %in% dat$attr$status[idsDpt.pop2]){
+        #browser()
+      }
     }
   }
 
@@ -68,6 +86,7 @@ departure_mig <- function(dat, at) {
   if (nElig.aids.pop1 > 0) {
     vecDepartures.aids.pop1 <- which(rbinom(nElig.aids.pop1, 1, rates.aids) == 1)
     if (length(vecDepartures.aids.pop1) > 0) {
+      #browser()
       idsDpt.aids.pop1 <- idsElig.aids.pop1[vecDepartures.aids.pop1]
       nDepartures.aids.pop1 <- length(idsDpt.aids.pop1)
       active[idsDpt.aids.pop1] <- 0
@@ -82,6 +101,7 @@ departure_mig <- function(dat, at) {
   if (nElig.aids.pop2 > 0) {
     vecDepartures.aids.pop2 <- which(rbinom(nElig.aids.pop2, 1, rates.aids) == 1)
     if (length(vecDepartures.aids.pop2) > 0) {
+      #browser()
       idsDpt.aids.pop2 <- idsElig.aids.pop2[vecDepartures.aids.pop2]
       nDepartures.aids.pop2 <- length(idsDpt.aids.pop2)
       active[idsDpt.aids.pop2] <- 0

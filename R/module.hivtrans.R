@@ -42,7 +42,8 @@ hivtrans_mig <- function(dat, at) {
   # Parameters ------
   # baseline for transmission rate
   trans.r <- get_param(dat, "trans.r")
-  time.unit <- get_param(dat, "time.unit")
+  #time.unit <- get_param(dat, "time.unit")
+  actRate <- get_param(dat, "act.rate")
 
   # transmission risk ratio by stage of HIV infection
   ws0 <- get_param(dat, "ws0")
@@ -75,6 +76,8 @@ hivtrans_mig <- function(dat, at) {
   nInf.pop1 <- 0
   nInf.pop2 <- 0
 
+  #browser()
+
   if (nElig > 0 && nElig < nActive) {
 
     ## Look up discordant edgelist ##
@@ -101,6 +104,8 @@ hivtrans_mig <- function(dat, at) {
       del$susOrigin <- origin[del$sus]
       del$susMigrant <- migrant[del$sus]
       del$susStatus <- status[del$sus]
+
+      del$act.rate <- actRate
 
 
       # Set parameters on discordant edgelist data frame
@@ -130,18 +135,21 @@ hivtrans_mig <- function(dat, at) {
       del$trans.r[del$risk.group == 1] <- del$trans.r[del$risk.group == 1] * wr1
       del$trans.r[del$risk.group == 2] <- del$trans.r[del$risk.group == 2] * wr2
 
+      del$finalProb <- 1 - (1 - del$trans.r)^del$act.rate
+
 
       # Transmission from infected person --------------------------------------
 
-      transmit <- rbinom(nrow(del), 1, del$trans.r)
+      #transmit <- rbinom(nrow(del), 1, del$trans.r)
+      transmit <- rbinom(nrow(del), 1, del$finalProb)
       del <- del[which(transmit == 1), ]
 
       # Look up new ids if any transmissions occurred
       ## Update Nodal Attr
       idsNewInf <- unique(del$sus)
-      status <- get_attr(dat, "status")
-      status[idsNewInf] <- "i"
-      dat <- set_attr(dat, "status", status)
+      #status <- get_attr(dat, "status")
+      #status[idsNewInf] <- "i"
+      #dat <- set_attr(dat, "status", status)
 
       nInf <- length(idsNewInf)
       nInf.pop1 <- sum(origin[idsNewInf] == "region")
