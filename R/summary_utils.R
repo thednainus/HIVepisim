@@ -95,7 +95,9 @@ get_epi_data <- function(list_dirs){
 }
 
 
+#' Get rates to construct ROC curve
 #'
+#' Get false positive rates and true positive rate for ROC curves
 #'
 #' @param threshold list object with threshold values rangng from 0 to 1
 #' @param df_true data.frame object for the infector probability and the true
@@ -108,7 +110,6 @@ get_epi_data <- function(list_dirs){
 #' @return data.frame object for values of threshold, true positive rate (TPR)
 #'    and false positive rate (FPR).
 #' @export
-#'
 get_rates <- function(threshold, df_true){
 
   df_true["pred"] <- ifelse(df_true$infectorProbability >= threshold, "1", "0")

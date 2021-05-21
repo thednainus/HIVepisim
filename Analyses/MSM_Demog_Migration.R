@@ -47,10 +47,12 @@ data.frame(ages, dr_vec)
 #plot(ages, dr_vec, type = "o", xlab = "age", ylab = "Mortality Rate")
 
 # Initialize network
-#n_pop1 = 10000
-#n_pop2 = 50000
-n_pop1 = 10000
-n_pop2 = 100000
+#n_pop1 = 50000
+#n_pop2 = 300000
+n_pop1 = 1000
+n_pop2 = 2000
+#n_pop1 = 5
+#n_pop2 = 5
 #n_pop1 = 50
 #n_pop2 = 50
 n_total = n_pop1 + n_pop2
@@ -74,14 +76,14 @@ nw <- set_vertex_attribute(nw, "origin", originVec)
 
 # Create vector of diagnose statuses
 diagStatusVec1 <- rep(0, n_pop1)
-n_inf_pop1 <- 10
+n_inf_pop1 <- 4
 init.Infected1 <- sample(1:n_pop1, n_inf_pop1)
 #init.Infected1 <- sample(1:n_pop1, 0.4 * n_pop1)
 diagStatusVec1[init.Infected1] <- 1
 
 
 diagStatusVec2 <- rep(0, n_pop2)
-n_inf_pop2 <- 50
+n_inf_pop2 <- 10
 init.Infected2 <- sample(1:n_pop2, n_inf_pop2)
 #init.Infected2 <- sample(1:n_pop2, 0.4 * n_pop2)
 diagStatusVec2[init.Infected2] <- 1
@@ -166,7 +168,10 @@ nw
 # to know the other of terms you can type
 # summary(nw ~ nodemix("origin"))
 formation <- ~edges + nodemix("origin", levels2 = c(1, 2))
-#formation <- ~edges + nodemix("origin", levels2 = c(1, 2)) + concurrent(by="origin")
+
+# CHECK how to specify degree and concurrent for both populations
+#formation <- ~edges + nodemix("origin", levels2 = c(1, 2)) + degree(0, by = "origin") +
+#  concurrent(by="origin")
 #formation <- ~edges
 
 # Target statistics
@@ -174,14 +179,16 @@ formation <- ~edges + nodemix("origin", levels2 = c(1, 2))
 # target.stats below is including nodemix for global.global and region.region
 #overall edges = 250; edges b/t global.global = 200; edges b/t global.region = 0
 # then edges b/t global.region.region = 250 - 150 - 0 = 100
-target.stats <- c((0.04 * n_pop1/2 + 0.04 * n_pop2/2), 0.04 * n_pop1/2, 0)
-#target.stats <- c((0.04 * n_pop1/2 + 0.04 * n_pop2/2),
-#                  0.04 * n_pop1/2,
+target.stats <- c((0.04 * n_pop1/2 + 0.04 * n_pop2/2), 0.04 * n_pop2/2, 0)
+
+#target.stats <- c((0.2 * n_pop1/2 + 0.2 * n_pop2/2),
+#                  0.2 * n_pop2/2,
 #                  0,
-#                  0.538 * n_pop1,
-#                  0.538 * n_pop2)
-#target.stats <- c(9, 4, 0)
-# target.stat below is for ~edges only
+#                  0.8 * n_pop2,
+#                  0.8 * n_pop1,
+#                  0,
+#                  0)
+
 target.stats
 
 # Dissolution  model
@@ -189,22 +196,41 @@ target.stats
 #coef.diss <- dissolution_coefs(~offset(edges), 200, mean(dr_vec))
 #durs <- c(60, 60, 2)
 durs <- c(23.7, 23.7, 2)
-#durs <- c(23.7 *1.5, 23.7 *1.5, 2)
 coef.diss <- dissolution_coefs(~offset(edges) +
-                                 offset(nodemix("origin", levels2 = c(1, 2))),
+                               offset(nodemix("origin", levels2 = c(1, 2))),
                                duration = durs, d.rate = mean(dr_vec))
 coef.diss
 
 # Fit the model
 # # Fit the TERGM
-est <- netest(nw, formation, target.stats, coef.diss, edapprox = FALSE)
+# to simulate large networks
+#est <- netest(nw, formation, target.stats, coef.diss, edapprox = TRUE,
+#              set.control.ergm = control.ergm(MCMC.burnin=1e7, MCMC.interval=1e7,
+#                                              MCMC.samplesize=20000,
+#                                              init.MPLE.samplesize = 1e8,
+#                                              SAN.control = control.san(SAN.nsteps = 1e8)
+#                                              ))
+
+est <- netest(nw, formation, target.stats, coef.diss, edapprox = TRUE)
+
 
 #save(est, file = "fit.rda")
 
 # Model diagnostics
 # Simulate time series to examine timed edgelist
+# to simulate large networks
+#dx <- netdx(est, nsims = 1, nsteps = 1000, keep.tedgelist = TRUE,
+#            set.control.ergm = control.simulate.ergm(MCMC.init.maxchanges = 1e8,
+#                                                     MCMC.burnin.min= 1.5e5,
+#                                                     MCMC.burnin.max =1.5e5))
+
+
 dx <- netdx(est, nsims = 1, nsteps = 1000, keep.tedgelist = TRUE)
 
+#dx <- netdx(est, nsims = 1, nsteps = 1000, keep.tedgelist = TRUE,
+#            nwstats.formula = ~edges + nodemix("origin", levels2 = c(1, 2)) + degree(0:3, by = "origin"))
+#dx
+#plot(dx)
 # Extract timed-edgelist
 te <- as.data.frame(dx)
 head(te)
@@ -255,7 +281,7 @@ art_start <- 24 * 365
 
 param <- param.net(time.unit = time.unit,
                    groups = 1,
-                   act.rate = 0.6,
+                   act.rate = 0.60,
                    stage_prog_rate0 = 1/((0.5 * 365) / time.unit),
                    stage_prog_rate1 = 1/((3.32 * 365) / time.unit),
                    stage_prog_rate2 = 1/((2.7 * 365) / time.unit),
@@ -270,7 +296,7 @@ param <- param.net(time.unit = time.unit,
                    tx.init.prob = (0.092/7) * time.unit,
                    tx.halt.prob = (0.0102/7) * time.unit,
                    tx.reinit.prob = (0.00066/7) * time.unit,
-                   trans.r = 0.058,
+                   trans.r = 0.07,
                    ws0 = 1,
                    ws1 = 0.1,
                    ws2 = 0.1,
@@ -283,8 +309,8 @@ param <- param.net(time.unit = time.unit,
                    wr2 = 10,
                    aids.mr = 1/((5.06 * 365) / time.unit),
                    asmr = dr_vec,
-                   a1.rate = 0.00015 * time.unit,
-                   a2.rate = 0.0001 * time.unit,
+                   a1.rate = 0.000025 * time.unit,
+                   a2.rate = 0.00002 * time.unit,
                    arrival.age = 18,
                    m12.rate = 0,
                    m21.rate = 0)
@@ -298,7 +324,7 @@ nsteps = years * 365
 
 
 control <- control.net(type = NULL, nsteps = nsteps, start = 1, nsims = 1,
-                       ncores = 1, resimulate.network = TRUE, tergmLite = TRUE,
+                       ncores = 1, resimulate.network = TRUE, tergmLite = FALSE,
                        initialize.FUN = initialize_mig,
                        resim_nets.FUN = resim_nets,
                        hivtest.FUN = hivtest_msm,
@@ -317,6 +343,7 @@ control <- control.net(type = NULL, nsteps = nsteps, start = 1, nsims = 1,
                        verbose = TRUE)
 
 sim <- netsim(est, param, init, control)
+
 
 sim <- readRDS("results_sim.RDS")
 # Plot epidemiological quantities of interest ----
@@ -371,22 +398,40 @@ plot(sim, y = c("hstage.aids.pop1", "hstage.aids.pop2"), qnts = 1, legend = TRUE
 # note that creating this plot can be computationally intensive
 # so best is to use a small size population or check
 # the ndtv package for option to save larger network sizes.
-#library(ndtv)
-#slice.par<-list(start=1,end=31,interval=1,
-#                aggregate.dur=1,rule="earliest")
+library(ndtv)
+slice.par<-list(start=1,end=31,interval=1,
+                aggregate.dur=1,rule="earliest")
 
 
-#sim_ani<-compute.animation(sim$network$sim1[[1]],
-#                           default.dist=3,
-#                           slice.par=slice.par,
-#                           animation.mode='MDSJ',
-#                           verbose=FALSE)
+sim_ani<-compute.animation(sim$network$sim1[[1]],
+                           default.dist=3,
+                           slice.par=slice.par,
+                           animation.mode='MDSJ',
+                           verbose=FALSE)
 
 
-#render.d3movie(sim_ani,vertex.col="global_track",
-#               edge.col="darkgray",
-#               displaylabels=TRUE,label.cex=.6,
-#               label.col="blue", verbose=FALSE,
-#               main='Simulation interactions',
-#               output.mode = 'htmlWidget')
+render.d3movie(sim_ani,vertex.col="global_track",
+               edge.col="black", edge.lwd = 2,
+               displaylabels=TRUE,label.cex=1,
+               vertex.cex = 4,
+               label.col="blue", verbose=FALSE,
+               main='Simulation interactions',
+               output.mode = 'htmlWidget')
+
+ani_global <- render.animation(sim_ani,vertex.col="global_track",
+                             edge.col="black", edge.lwd = 2,
+                             displaylabels=TRUE,label.cex=1,
+                             vertex.cex = 4,
+                             label.col="blue", verbose=FALSE,
+                             main='Simulation interactions',
+                             output.mode = 'htmlWidget')
+
+
+saveGIF(render.animation(sim_ani,vertex.col="global_track",
+                         edge.col="black", edge.lwd = 2,
+                         displaylabels=TRUE,label.cex=1,
+                         vertex.cex = 4,
+                         label.col="blue", verbose=FALSE,
+                         main='Simulation interactions',
+                         output.mode = 'htmlWidget'), "ani_global.gif")
 

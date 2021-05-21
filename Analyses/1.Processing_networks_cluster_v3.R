@@ -14,7 +14,7 @@ library(dplyr)
 
 #getwd()
 # [1] "/Users/user/Desktop/Imperial/newHIVproject-01Aug2020/R_projects/HIVepisim"
-setwd("../Preliminary_results_cherry/results_tergmLite7/run20_1")
+#setwd("Analyses/Preliminary_results/results_tergmLite4/run_8/")
 
 # This function will generate input file to be used with program
 # VirusTreeSimulator
@@ -24,8 +24,8 @@ setwd("../Preliminary_results_cherry/results_tergmLite7/run20_1")
 # and will save results to the directory "output"
 
 # Location for VirusTreeSimulator. It should be changed to the correct location on your computer.
-#Software <- "java -jar ../../Programs/VirusTreeSimulator-master/out/artifacts/VirusTreeSimulator_jar/VirusTreeSimulator.jar"
-Software <- "java -jar /Applications/VirusTreeSimulator/VirusTreeSimulator-master/out/artifacts/VirusTreeSimulator_jar/VirusTreeSimulator.jar"
+Software <- "java -jar VirusTreeSimulator-master/out/artifacts/VirusTreeSimulator_jar/VirusTreeSimulator.jar"
+#Software <- "java -jar /Applications/VirusTreeSimulator/VirusTreeSimulator-master/out/artifacts/VirusTreeSimulator_jar/VirusTreeSimulator.jar"
 #parameter for VirusTreeSimulator
 parameters <- "-demoModel Constant -N0 1"
 
@@ -148,52 +148,29 @@ if(!is.null(tm)){
   toDrop <- all_IDs[all_IDs == TRUE]
   only_active_tree <- drop.tip(tree_years, names(toDrop))
 
-  # save tree to simulate sequence alignment
+  # save tree to simulate sequence alignment using Python script
   tree_filename <- paste(prefix_vts, "_merged_trees_onlyactive.tre", sep="")
   write.tree(phy = only_active_tree, file = tree_filename)
 
 
-  # drop the IDs of individuals that have not been diagnosed
-  migrant_IDs <- as.numeric(unlist(lapply(only_active_tree$tip.label, function(x) str_split(x, "_")[[1]][1])))
-  active_diagStatus <- subset(stages, diag.status_inf == 0)
-  migrant_IDs <- migrant_IDs %in% active_diagStatus$infID
-  migrant_IDs <- setNames(migrant_IDs, only_active_tree$tip.label)
-  toDrop <- migrant_IDs[migrant_IDs == TRUE]
-  only_active_tree_diag <- drop.tip(only_active_tree, names(toDrop))
-
-  # save tree to simulate sequence alignment
-  tree_filename <- paste(prefix_vts, "_merged_trees_onlyactive_diag.tre", sep="")
-  write.tree(phy = only_active_tree_diag, file = tree_filename)
-
-
   # Remove sequences from "global" -----
   # to calculate infector probability
-  # keep this commented in case I decided to check a tree with all tips in it
-  # (all from region including diagnosed and not-diagnosed)
-  #migrant_ID <- unlist(lapply(only_active_tree$tip.label,
-  #                            function(x) ifelse(str_split(x, "_")[[1]][2] == "1" | str_split(x, "_")[[1]][2] == "21",
-  #                                               FALSE, TRUE)))
-  #migrant_ID <- setNames(migrant_ID, only_active_tree$tip.label)
-  #toDrop <- migrant_ID[migrant_ID == TRUE]
-  #region_only_tree <- drop.tip(only_active_tree, names(toDrop))
-
-  # Remove sequences from "global" -----
-  # to calculate infector probability
-  migrant_ID <- unlist(lapply(only_active_tree_diag$tip.label,
+  migrant_ID <- unlist(lapply(only_active_tree$tip.label,
                               function(x) ifelse(str_split(x, "_")[[1]][2] == "1" | str_split(x, "_")[[1]][2] == "21",
                                                  FALSE, TRUE)))
-  migrant_ID <- setNames(migrant_ID, only_active_tree_diag$tip.label)
+  migrant_ID <- setNames(migrant_ID, only_active_tree$tip.label)
   toDrop <- migrant_ID[migrant_ID == TRUE]
-  region_only_tree <- drop.tip(only_active_tree_diag, names(toDrop))
+  region_only_tree <- drop.tip(only_active_tree, names(toDrop))
 
-  # drop the ones that have not been diagnosed
+
+
+# drop the ones that have not been diagnosed -----
   migrant_IDs <- as.numeric(unlist(lapply(tree_years$tip.label, function(x) str_split(x, "_")[[1]][1])))
   active_diagStatus <- subset(stages, diag.status_inf == 0)
   migrant_IDs <- migrant_IDs %in% active_diagStatus$infID
   migrant_IDs <- setNames(migrant_IDs, tree_years$tip.label)
   toDrop <- migrant_IDs[migrant_IDs == TRUE]
   only_active_tree_diag <- drop.tip(region_only_tree, names(toDrop))
-
 
 
 
@@ -227,9 +204,9 @@ if(!is.null(tm)){
   # numberPeopleLivingWithHIV: scalar
   # numberNewInfectionsPerYear: scalar
 
-  W <- phylo.source.attribution.hiv.msm( only_active_tree, sampleTimes[only_active_tree$tip.label],
-                                         cd4s = all_cd4s[only_active_tree$tip.label],
-                                         ehi = ehis[only_active_tree$tip.label],
+  W <- phylo.source.attribution.hiv.msm( region_only_tree, sampleTimes[region_only_tree$tip.label],
+                                         cd4s = all_cd4s[region_only_tree$tip.label],
+                                         ehi = ehis[region_only_tree$tip.label],
                                          numberPeopleLivingWithHIV  = totalPLWHIV,
                                          numberNewInfectionsPerYear = newinf_per_year,
                                          maxHeight = years,
@@ -246,8 +223,8 @@ if(!is.null(tm)){
                                          treeErrorTol = Inf)
 
   #newtree resampled tree
-  n <- as.integer(length(only_active_tree$tip.label) * 0.5)
-  newtree <- keep.tip( only_active_tree, sample( only_active_tree$tip.label,
+  n <- as.integer(length(region_only_tree$tip.label) * 0.15)
+  newtree <- keep.tip( region_only_tree, sample( region_only_tree$tip.label,
                                                  size = n , replace=FALSE))
 
   # save tree to simulate sequence alignment using Python script
@@ -265,8 +242,9 @@ if(!is.null(tm)){
                                          treeErrorTol = Inf)
 
 
-  #newtree resampled tree for diagnosed+region only tree
-  n1 <- as.integer(length(only_active_tree_diag$tip.label) * 0.1)
+
+#newtree resampled tree for diagnosed+region only tree
+  n1 <- as.integer(length(only_active_tree_diag$tip.label) * 0.15)
   newtree1 <- keep.tip( only_active_tree_diag, sample( only_active_tree_diag$tip.label,
                                                  size = n1 , replace=FALSE))
 
@@ -293,24 +271,26 @@ if(!is.null(tm)){
   }
 
   W_filename <- paste("output/vts/W/", "merged_trees", "_migrant_years_1_simple", ".RData", sep="")
-  save(years, max_value, last_sample_date, tm, tree_years, region_only_tree, only_active_tree_diag,
-       sampleTimes,all_cd4s, ehis, newinf_per_year, totalPLWHIV, W,W1, W2, W3, newtree, newtree1,
+  save(years, max_value, last_sample_date, tm, tree_years, region_only_tree, only_active_tree_diag, sampleTimes,
+       all_cd4s, ehis, newinf_per_year, totalPLWHIV, W, W1, W2, W3, newtree, newtree1,
        file = W_filename)
 
+  prefix = "results"
   summaryW2(sim = "1", run = "1",
             tm = tm, W, ID = "all_tips", MH = years,
-            tree = tree_years, prefix = paste(prefix, "all_region", sep = "_"), labels = TRUE)
+            tree = region_only_tree, prefix = paste(prefix, "all_region", sep = "_"), labels = TRUE)
 
   summaryW2(sim = "1", run = "1",
-            tm = tm, W1, ID = "all_tips_diag", MH = years,
-            tree = tree_years, prefix = paste(prefix, "all_region_diag", sep = "_"), labels = TRUE)
+            tm = tm, W1, ID = "subset_tips", MH = years,
+            tree = only_active_tree_diag, prefix = paste(prefix, "region_diag_all", sep = "_"), labels = TRUE)
+
 
   summaryW2(sim = "1", run = "1",
             tm = tm, W2, ID = "subset_tips", MH = years,
             tree = newtree, prefix = paste(prefix, "region_subset_all", sep = "_"), labels = TRUE)
 
   summaryW2(sim = "1", run = "1",
-            tm = tm, W3, ID = "subset_tips", MH = years,
+            tm = tm, W3, ID = "subset_diag_tips", MH = years,
             tree = newtree1, prefix = paste(prefix, "region_subset_all_diag", sep = "_"), labels = TRUE)
 
 }

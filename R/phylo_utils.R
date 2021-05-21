@@ -394,5 +394,31 @@ add_root_edge <- function(tree, total_sim_steps){
 
 }
 
+#' Get tip names for cherries in a phylogenetic tree
+#'
+#' @param phy object of class phylo
+#'
+#' @return list of pairs of tip_names that are cherries
+#' @export
+#'
+get_tip_cherry <- function(phy){
+  if (!inherits(phy, "phylo"))
+    stop("object \"phy\" is not of class \"phylo\"")
+  n <- length(phy$tip.label)
+  nb.node <- phy$Nnode
+  if (nb.node != n - 1)
+    stop("\"phy\" is not fully dichotomous")
+  if (n < 4)
+    stop("not enough tips in your phylogeny for this analysis")
+  #get node number
+  cherry_nodes <- which(tabulate(phy$edge[, 1][phy$edge[, 2] <= n]) == 2)
+  # get cherry node index
+  cherry_index <- lapply(cherry_nodes, function(x) which(phy$edge[,1]==x))
+  #get tip names
+  tip_names <- lapply(cherry_index, function(x) phy$tip.label[phy$edge[x,2]])
+
+  return(tip_names)
+}
+
 
 

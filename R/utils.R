@@ -148,17 +148,23 @@ save_stage <- function(dat, prefix = NULL){
   stage <- get_attr(dat, "stage")
   diag.status <- get_attr(dat, "diag.status")
   uid <- get_attr(dat, "uid")
+  #tx.status <- get_attr(dat, "tx.status")
 
+  browser()
   status_inf_index <- which(status == "i" & active == 1)
   status_inf <- status[status_inf_index]
   stage_inf <- stage[status_inf_index]
   diag.status_inf <- diag.status[status_inf_index]
+  #tx.status_inf <- tx.status[status_inf_index]
 
   if(length(status_inf_index) > 0){
     active_test <- active[status_inf_index]
     infID <- uid[status_inf_index]
 
-    inf_stage_df <- data.frame(infID, active_test, status_inf, stage_inf, diag.status_inf)
+    #inf_stage_df <- data.frame(infID, active_test, status_inf, stage_inf,
+    #                           diag.status_inf, tx.status_inf)
+    inf_stage_df <- data.frame(infID, active_test, status_inf, stage_inf,
+                               diag.status_inf)
 
     if(is.null(prefix)){
       filename <- "stage_and_IDs.csv"
@@ -193,17 +199,19 @@ save_departures <- function(dat, departures, at, prefix = NULL){
   stage <- get_attr(dat, "stage")
   uid <- get_attr(dat, "uid")
   origin <- get_attr(dat, "origin")
+  #tx.status <- get_attr(dat, "tx.status")
 
   status_dep <- status[departures]
   stage_dep <- stage[departures]
   origin_dep <- origin[departures]
+  #tx.status_dep <- tx.status[departures]
 
   if(any(status_dep == "i")){
     #active_test <- active[departures]
     infID <- uid[departures]
     time <- at
 
-    #inf_time_df <- data.frame(time, infID, active_teste, status_dep)
+    #inf_time_df <- data.frame(time, infID, status_dep, stage_dep, origin_dep, tx.status_dep)
     inf_time_df <- data.frame(time, infID, status_dep, stage_dep, origin_dep)
     inf_time_df <- subset(inf_time_df, status_dep == "i")
 
