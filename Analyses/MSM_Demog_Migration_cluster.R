@@ -49,8 +49,8 @@ data.frame(ages, dr_vec)
 #plot(ages, dr_vec, type = "o", xlab = "age", ylab = "Mortality Rate")
 
 # Initialize network
-n_pop1 = 1000
-n_pop2 = 2000
+n_pop1 = 50000
+n_pop2 = 950000
 #n_pop1 = 10
 #n_pop2 = 10
 n_total = n_pop1 + n_pop2
@@ -74,13 +74,13 @@ nw <- set_vertex_attribute(nw, "origin", originVec)
 
 # Create vector of diagnose statuses
 diagStatusVec1 <- rep(0, n_pop1)
-init.Infected1 <- sample(1:n_pop1, 0.005 * n_pop1)
+init.Infected1 <- sample(1:n_pop1, 0.001 * n_pop1)
 #init.Infected1 <- sample(1:n_pop1, 0.4 * n_pop1)
 diagStatusVec1[init.Infected1] <- 1
 
 
 diagStatusVec2 <- rep(0, n_pop2)
-init.Infected2 <- sample(1:n_pop2, 0.015 * n_pop2)
+init.Infected2 <- sample(1:n_pop2, 0.0003 * n_pop2)
 #init.Infected2 <- sample(1:n_pop2, 0.4 * n_pop2)
 diagStatusVec2[init.Infected2] <- 1
 

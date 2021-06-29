@@ -379,15 +379,16 @@ merge_trees <- function(trees){
 #'
 #' @param tree object of class Phylo
 #' @param total_sim_steps scalar for the total number of steps of network simulations
+#' @param root.edge_value scaler for the value to use as root.edge in the phylogenetic tree
 #'
 #' @return
 #' @export
 #'
-add_root_edge <- function(tree, total_sim_steps){
+add_root_edge <- function(tree, total_sim_steps, root.edge_value = 7665){
 
   #max_edge <- max(distRoot(tree))
   max_edge <- max(get_all_distances_to_root(tree))
-  tree_root.edge <- (total_sim_steps - max_edge) + 7665
+  tree_root.edge <- (total_sim_steps - max_edge) + root.edge_value
   tree$root.edge <- tree_root.edge
 
   return(tree)

@@ -255,7 +255,7 @@ if(!is.null(tm)){
   }
 
   saveRDS(sampleTimes, paste("output/vts/W/", "sampleTimes.RDS",sep=""))
-  prefix <- "degree1"
+  prefix <- "test"
 
   W_filename <- paste("output/vts/W/", "merged_trees", "_migrant_years_1_simple", ".RData", sep="")
   save(years, max_value, last_sample_date, tm, tree_years, only_active_tree, region_only_tree, only_active_tree_diag,

@@ -182,7 +182,7 @@ validadeW <- function(sim, run, tm, W_true, W_estimated, seed_ID, MH, true_tree,
 #'
 summaryW2 <- function(sim, run, tm, W1, ID, MH, tree, prefix = NULL, labels = TRUE){
 
-  browser()
+  #browser()
 
   #add time in years
   tm["time_years"] <- tm["at"] * 1/365
@@ -321,7 +321,7 @@ W_manipulations <- function(W, code){
 
   # W on true trees ----
   #convert W (infector probability matrix) to dataframe
-  browser()
+  #browser()
   W1 <- as.data.frame(W)
   W1["donor_ID"] <- unlist(lapply(W$donor, function(x) str_split(x, pattern = "_")[[1]][1]))
   W1["recip_ID"] <- unlist(lapply(W$recip, function(x) str_split(x, pattern = "_")[[1]][1]))

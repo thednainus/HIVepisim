@@ -24,7 +24,7 @@
 hivtrans_mig <- function(dat, at) {
 
   # Variables -----------------------------------------------------------
-
+  #browser()
   # Attributes
   active <- get_attr(dat, "active")
   stage <- get_attr(dat, "stage")
@@ -144,6 +144,10 @@ hivtrans_mig <- function(dat, at) {
       transmit <- rbinom(nrow(del), 1, del$finalProb)
       del <- del[which(transmit == 1), ]
 
+      # if (length(which(transmit == 1)) > 0){
+      #   browser()
+      # }
+
       # Look up new ids if any transmissions occurred
       ## Update Nodal Attr
       idsNewInf <- unique(del$sus)
@@ -193,6 +197,7 @@ hivtrans_mig <- function(dat, at) {
   # Save transmission matrix
   if (dat$control$save.transmat == TRUE){
     if (nInf > 0) {
+      #browser()
       dat <- set_transmat(dat, del, at)
     }
   }

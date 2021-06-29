@@ -1,6 +1,6 @@
 library(EpiModel)
 library(HIVepisim)
-#library(EpiModelHPC)
+
 
 rm(list = ls())
 
@@ -47,10 +47,10 @@ data.frame(ages, dr_vec)
 #plot(ages, dr_vec, type = "o", xlab = "age", ylab = "Mortality Rate")
 
 # Initialize network
-#n_pop1 = 50000
-#n_pop2 = 300000
 n_pop1 = 1000
 n_pop2 = 2000
+#n_pop1 = 50000
+#n_pop2 = 950000
 #n_pop1 = 5
 #n_pop2 = 5
 #n_pop1 = 50
@@ -76,16 +76,16 @@ nw <- set_vertex_attribute(nw, "origin", originVec)
 
 # Create vector of diagnose statuses
 diagStatusVec1 <- rep(0, n_pop1)
-n_inf_pop1 <- 4
+#n_inf_pop1 <- 50
+n_inf_pop1 <- 10
 init.Infected1 <- sample(1:n_pop1, n_inf_pop1)
-#init.Infected1 <- sample(1:n_pop1, 0.4 * n_pop1)
 diagStatusVec1[init.Infected1] <- 1
 
 
 diagStatusVec2 <- rep(0, n_pop2)
-n_inf_pop2 <- 10
+#n_inf_pop2 <- 250
+n_inf_pop2 <- 15
 init.Infected2 <- sample(1:n_pop2, n_inf_pop2)
-#init.Infected2 <- sample(1:n_pop2, 0.4 * n_pop2)
 diagStatusVec2[init.Infected2] <- 1
 
 diagStatusVec <- c(diagStatusVec1, diagStatusVec2)
@@ -204,12 +204,14 @@ coef.diss
 # Fit the model
 # # Fit the TERGM
 # to simulate large networks
-#est <- netest(nw, formation, target.stats, coef.diss, edapprox = TRUE,
-#              set.control.ergm = control.ergm(MCMC.burnin=1e7, MCMC.interval=1e7,
-#                                              MCMC.samplesize=20000,
-#                                              init.MPLE.samplesize = 1e8,
-#                                              SAN.control = control.san(SAN.nsteps = 1e8)
-#                                              ))
+
+# est <- netest(nw, formation, target.stats, coef.diss, edapprox = TRUE,
+#               set.control.ergm = control.ergm(MCMC.burnin=1e8, MCMC.interval=1e8,
+#                                               MCMC.samplesize=30000,
+#                                               init.MPLE.samplesize = 1e9,
+#                                               SAN.control = control.san(SAN.nsteps = 1e9)
+#                                               ))
+
 
 est <- netest(nw, formation, target.stats, coef.diss, edapprox = TRUE)
 
@@ -218,11 +220,21 @@ est <- netest(nw, formation, target.stats, coef.diss, edapprox = TRUE)
 
 # Model diagnostics
 # Simulate time series to examine timed edgelist
+
+# You can ignore message:
+#   Warning message:
+#   In x$coef.diss$duration^2 * dgeom(2:(nsteps + 1), 1/x$coef.diss$duration) :
+#   longer object length is not a multiple of shorter object length
+#
+# https://github.com/statnet/EpiModel/issues/529
+
+
 # to simulate large networks
-#dx <- netdx(est, nsims = 1, nsteps = 1000, keep.tedgelist = TRUE,
-#            set.control.ergm = control.simulate.ergm(MCMC.init.maxchanges = 1e8,
-#                                                     MCMC.burnin.min= 1.5e5,
-#                                                     MCMC.burnin.max =1.5e5))
+# dx <- netdx(est, nsims = 1, nsteps = 1000, keep.tedgelist = TRUE,
+#             set.control.ergm = control.simulate.ergm(MCMC.init.maxchanges = 1e8,
+#                                                      MCMC.burnin.min= 1.5e5,
+#                                                      MCMC.burnin.max =1.5e5))
+
 
 
 dx <- netdx(est, nsims = 1, nsteps = 1000, keep.tedgelist = TRUE)
@@ -230,7 +242,7 @@ dx <- netdx(est, nsims = 1, nsteps = 1000, keep.tedgelist = TRUE)
 #dx <- netdx(est, nsims = 1, nsteps = 1000, keep.tedgelist = TRUE,
 #            nwstats.formula = ~edges + nodemix("origin", levels2 = c(1, 2)) + degree(0:3, by = "origin"))
 #dx
-#plot(dx)
+plot(dx)
 # Extract timed-edgelist
 te <- as.data.frame(dx)
 head(te)
@@ -296,7 +308,7 @@ param <- param.net(time.unit = time.unit,
                    tx.init.prob = (0.092/7) * time.unit,
                    tx.halt.prob = (0.0102/7) * time.unit,
                    tx.reinit.prob = (0.00066/7) * time.unit,
-                   trans.r = 0.07,
+                   trans.r = 0.05,
                    ws0 = 1,
                    ws1 = 0.1,
                    ws2 = 0.1,
@@ -309,8 +321,8 @@ param <- param.net(time.unit = time.unit,
                    wr2 = 10,
                    aids.mr = 1/((5.06 * 365) / time.unit),
                    asmr = dr_vec,
-                   a1.rate = 0.000025 * time.unit,
-                   a2.rate = 0.00002 * time.unit,
+                   a1.rate = 0.00006 * time.unit,
+                   a2.rate = 0.00006 * time.unit,
                    arrival.age = 18,
                    m12.rate = 0,
                    m21.rate = 0)
@@ -324,7 +336,7 @@ nsteps = years * 365
 
 
 control <- control.net(type = NULL, nsteps = nsteps, start = 1, nsims = 1,
-                       ncores = 1, resimulate.network = TRUE, tergmLite = FALSE,
+                       ncores = 1, resimulate.network = TRUE, tergmLite = TRUE,
                        initialize.FUN = initialize_mig,
                        resim_nets.FUN = resim_nets,
                        hivtest.FUN = hivtest_msm,

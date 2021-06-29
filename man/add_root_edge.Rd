@@ -4,12 +4,14 @@
 \alias{add_root_edge}
 \title{Add root edge to phylogenetic tree}
 \usage{
-add_root_edge(tree, total_sim_steps)
+add_root_edge(tree, total_sim_steps, root.edge_value = 7665)
 }
 \arguments{
 \item{tree}{object of class Phylo}
 
 \item{total_sim_steps}{scalar for the total number of steps of network simulations}
+
+\item{root.edge_value}{scaler for the value to use as root.edge in the phylogenetic tree}
 }
 \value{
 

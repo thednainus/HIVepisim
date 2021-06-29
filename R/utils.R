@@ -99,7 +99,8 @@ append_core_attr_mig <-  function (dat, at, n.new)
   dat <- append_attr(dat, "entrTime", at, n.new)
   dat <- append_attr(dat, "exitTime", NA, n.new)
   dat <- append_attr(dat, "migrationTime", NA, n.new)
-  dat <- update_uids(dat, n.new)
+  #dat <- update_uids(dat, n.new)
+  dat <- update_unique_ids(dat, n.new)
   return(dat)
 }
 
@@ -115,11 +116,35 @@ append_core_attr_mig <-  function (dat, at, n.new)
 #' @return the Master list object of network models (\code{dat})
 #'
 #' @keywords internal
-update_uids <- function(dat, n.new) {
-  last_uid <- if (is.null(dat[["_last_uid"]])) 0L else dat[["_last_uid"]]
-  next_uids <- seq_len(n.new) + last_uid
-  dat[["_last_uid"]] <- last_uid + as.integer(n.new)
-  dat <- append_attr(dat, "uid", next_uids, n.new)
+# update_uids <- function(dat, n.new) {
+#   last_uid <- if (is.null(dat[["_last_uid"]])) 0L else dat[["_last_uid"]]
+#   next_uids <- seq_len(n.new) + last_uid
+#   dat[["_last_uid"]] <- last_uid + as.integer(n.new)
+#   dat <- append_attr(dat, "uid", next_uids, n.new)
+#
+#   return(dat)
+# }
+
+
+#' @title Create the unique_ids for the new nodes
+#'
+#' @description This function is called by `append_core_attr` and append new
+#' unique_ids to the created nodes. It also keeps track of the already used
+#' unique_ids with the /code{dat[["_last_unique_id"]]} variable
+#'
+#' @param dat a Master list object of network models
+#' @param n.new the number of new nodes to give \code{unique_id} to
+#'
+#' @return the Master list object of network models (\code{dat})
+#'
+#' @keywords internal
+#' @export
+update_unique_ids <- function(dat, n.new) {
+  last_unique_id <- if (is.null(dat[["_last_unique_id"]])) 0L
+  else dat[["_last_unique_id"]]
+  next_unique_ids <- seq_len(n.new) + last_unique_id
+  dat[["_last_unique_id"]] <- last_unique_id + as.integer(n.new)
+  dat <- append_attr(dat, "unique_id", next_unique_ids, n.new)
 
   return(dat)
 }
@@ -147,24 +172,24 @@ save_stage <- function(dat, prefix = NULL){
   status <- get_attr(dat, "status")
   stage <- get_attr(dat, "stage")
   diag.status <- get_attr(dat, "diag.status")
-  uid <- get_attr(dat, "uid")
-  #tx.status <- get_attr(dat, "tx.status")
+  uid <- get_attr(dat, "unique_id")
+  tx.status <- get_attr(dat, "tx.status")
 
-  browser()
+  #browser()
   status_inf_index <- which(status == "i" & active == 1)
   status_inf <- status[status_inf_index]
   stage_inf <- stage[status_inf_index]
   diag.status_inf <- diag.status[status_inf_index]
-  #tx.status_inf <- tx.status[status_inf_index]
+  tx.status_inf <- tx.status[status_inf_index]
 
   if(length(status_inf_index) > 0){
     active_test <- active[status_inf_index]
     infID <- uid[status_inf_index]
 
-    #inf_stage_df <- data.frame(infID, active_test, status_inf, stage_inf,
-    #                           diag.status_inf, tx.status_inf)
     inf_stage_df <- data.frame(infID, active_test, status_inf, stage_inf,
-                               diag.status_inf)
+                               diag.status_inf, tx.status_inf)
+    #inf_stage_df <- data.frame(infID, active_test, status_inf, stage_inf,
+    #                           diag.status_inf)
 
     if(is.null(prefix)){
       filename <- "stage_and_IDs.csv"
@@ -197,22 +222,22 @@ save_departures <- function(dat, departures, at, prefix = NULL){
   active <- get_attr(dat, "active")
   status <- get_attr(dat, "status")
   stage <- get_attr(dat, "stage")
-  uid <- get_attr(dat, "uid")
+  uid <- get_attr(dat, "unique_id")
   origin <- get_attr(dat, "origin")
-  #tx.status <- get_attr(dat, "tx.status")
+  tx.status <- get_attr(dat, "tx.status")
 
   status_dep <- status[departures]
   stage_dep <- stage[departures]
   origin_dep <- origin[departures]
-  #tx.status_dep <- tx.status[departures]
+  tx.status_dep <- tx.status[departures]
 
   if(any(status_dep == "i")){
     #active_test <- active[departures]
     infID <- uid[departures]
     time <- at
 
-    #inf_time_df <- data.frame(time, infID, status_dep, stage_dep, origin_dep, tx.status_dep)
-    inf_time_df <- data.frame(time, infID, status_dep, stage_dep, origin_dep)
+    inf_time_df <- data.frame(time, infID, status_dep, stage_dep, origin_dep, tx.status_dep)
+    #inf_time_df <- data.frame(time, infID, status_dep, stage_dep, origin_dep)
     inf_time_df <- subset(inf_time_df, status_dep == "i")
 
     if(is.null(prefix)){
