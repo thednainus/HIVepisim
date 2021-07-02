@@ -1,10 +1,6 @@
 # map simulated Illumina reads using shiver (https://github.com/ChrisHIV/shiver)
 
 library(DescTools)
-#library(reticulate)
-
-#set R to use python2
-#use_python("/Users/user/opt/miniconda2/bin/python2")
 
 #prefix for path names
 prefix <- "/Users/user/Desktop/Imperial/newHIVproject-01Aug2020/R_projects/HIVepisim/"
