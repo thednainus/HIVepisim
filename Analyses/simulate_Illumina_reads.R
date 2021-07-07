@@ -21,6 +21,8 @@ library(DescTools)
 # -ef  indicate to generate the zero sequencing errors SAM file as well the regular one
 #    NOTE: the reads in the zero-error SAM file have the same alignment positions
 #    as those in the regular SAM file, but have no sequencing errors
+# -qL  the minimum base quality score
+# -qU  the maxiumum base quality score
 
 
 Software <- "/Applications/art_bin_MountRainier/art_illumina"
@@ -70,19 +72,10 @@ for(i in 1:length(fasta_dirs)){
     input_filename <- paste("-i", fasta_files[f], sep = " ")
     output_filename <- paste("-o", paste(where2save_reads, out_dir, out_filename, sep = "/" ), sep= " ")
     parameters <- c("-ss MSv3", input_filename, output_filename, "-p", "-l 250",
-                    "-m 500", "-s 48", "-f 10000", "-na")
+                    "-m 500", "-s 48", "-f 10000", "-qL 25", "-qU 40", "-na")
     system2(command = Software, args = parameters)
 
   }
 
 
 }
-# TO DO
-# now do assembly
-# then use shiver
-# then use phyloscanner
-
-
-
-
-
