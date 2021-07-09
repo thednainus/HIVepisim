@@ -52,9 +52,8 @@ merging_threshold <- paste("--merging-threshold-a", "1", sep = " ")
 min_read_count <- paste("--min-read-count", "2", sep = " ")
 
 #raxml option
-raxml <- paste("--x-raxml", "/Applications/standard-RAxML/raxmlHPC-PTHREADS-AVX", sep = " ")
-raxml_param <- '"-m GTRCAT -p 1 --no-seq-check"'
-x_raxml <- paste(raxml, raxml_param, sep = " ")
+x_raxml <- paste("--x-raxml", '"/Applications/standard-RAxML/raxmlHPC-PTHREADS-AVX -m GTRCAT -p 1 --no-seq-check"',
+               sep = " ")
 
 
 
@@ -70,7 +69,7 @@ output_dirs <- output_dirs[1]
 
 for(i in 1:length(output_dirs)){
 
-  # make phyloscanner directory if it still does not exist
+  # phyloscanner directory
   pyloscanner_dir_fullPath <- paste(SplitPath(output_dirs[i])$normpath,
                                     "phyloscanner", sep = "/")
 
@@ -85,7 +84,7 @@ for(i in 1:length(output_dirs)){
   parameters <- paste(BamsRefsAndIds, auto_window_param, alignment_other_refs,
                       paiwise_align_to, merge_pairs,
                       excision_ref, excision_coords,
-                      merging_threshold, min_read_count, raxml, sep = " ")
+                      merging_threshold, min_read_count, x_raxml, sep = " ")
 
 
   command_make_trees <- paste("cd", pyloscanner_dir_fullPath, "&&", make_trees, sep = " ")

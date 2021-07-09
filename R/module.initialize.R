@@ -27,39 +27,43 @@ initialize_mig <- function(x, param, init, control, s) {
     dat$attr <- list()
     dat$stats <- list()
     dat$temp <- list()
+    dat$nwparam <- list()
+    dat$nwparam[[1]] <- x[-which(names(x) == "fit")]
 
-    # Initial Network Simulation ----------------------------------------------
-    if (x$edapprox == TRUE) {
-      nw <- simulate(x$fit, basis = x$fit$newnetwork,
-                     control = control$set.control.ergm)
+
+        # Initial Network Simulation ----------------------------------------------
+
+        if (get_control(dat, "resimulate.network") == TRUE) {
+      nsteps <- 1
     } else {
-      nw <- x$fit$network
+      nsteps <- get_control(dat, "nsteps")
     }
-    if (control$resimulate.network == TRUE) {
-      nw <- sim_nets(x, nw, nsteps = 1, control)
-    } else {
-      nw <- sim_nets(x, nw, nsteps = control$nsteps, control)
-    }
-    nw <- activate.vertices(nw, onset = 1, terminus = Inf)
-    dat$nw[[1]] <- nw
+    dat <- sim_nets_t1(x, dat, nsteps)
+
 
     # Network Parameters ------------------------------------------------------
     dat$nwparam <- list(x[-which(names(x) == "fit")])
     groups <- length(unique(get_vertex_attribute(nw, "group")))
     dat <- set_param(dat, "groups", groups)
 
+
     # Nodal Attributes --------------------------------------------------------
 
     # Standard attributes
-    num <- network.size(nw)
+    #browser()
+    #num <- network.size(nw)
+    num <- network.size(dat$nw[[1]])
     #dat <- append_core_attr(dat, 1, num)
     dat <- append_core_attr_mig(dat, 1, num)
+
+    groups <- length(unique(get_vertex_attribute(dat$nw[[1]], "group")))
+    dat <- set_param(dat, "groups", groups)
 
     ## Pull attr on nw to dat$attr
     dat <- copy_nwattr_to_datattr(dat)
 
     ## Store current proportions of attr
-    nwterms <- get_network_term_attr(nw)
+    nwterms <- get_network_term_attr(dat$nw[[1]])
     if (!is.null(nwterms)) {
       dat$temp$nwterms <- nwterms
       dat$temp$t1.tab <- get_attr_prop(dat, nwterms)
@@ -69,7 +73,8 @@ initialize_mig <- function(x, param, init, control, s) {
     dat <- init_status_mig(dat)
 
     # Conversions for tergmLite
-    if (control$tergmLite == TRUE) {
+    tergmLite <- get_control(dat, "tergmLite")
+    if (tergmLite == TRUE) {
       dat <- tergmLite::init_tergmLite(dat)
     }
 
@@ -86,6 +91,11 @@ initialize_mig <- function(x, param, init, control, s) {
     dat$param <- x$param
     dat$control <- control
     dat$nwparam <- x$nwparam
+    if (is.null(dat$control$isTERGM)) {
+      nwparam <- get_nwparam(dat)
+      isTERGM <- all(nwparam$coef.diss$duration > 1)
+      dat <- set_control(dat, "isTERGM", isTERGM)
+    }
     dat$epi <- sapply(x$epi, function(var) var[s])
     names(dat$epi) <- names(x$epi)
     dat$attr <- x$attr[[s]]
@@ -133,6 +143,7 @@ initialize_mig <- function(x, param, init, control, s) {
 #'
 init_status_mig <- function(dat) {
 
+  type <- get_control(dat, "type", override.null.error = TRUE)
   nsteps <- get_control(dat, "nsteps")
   tergmLite <- get_control(dat, "tergmLite")
   groups <- get_param(dat, "groups")
@@ -140,6 +151,8 @@ init_status_mig <- function(dat) {
 
   depar.rates.all <- get_param(dat, "asmr")
   depar.rates.aids <- get_param(dat, "aids.mr")
+
+  isTERGM <- get_control(dat, "isTERGM")
 
   # Variables ---------------------------------------------------------------
   i.num.all <- get_init(dat, "i.num.all", override.null.error = TRUE)
@@ -193,14 +206,21 @@ init_status_mig <- function(dat) {
     if (statOnNw == FALSE) {
       dat$nw[[1]] <- set_vertex_attribute(dat$nw[[1]], "status", status)
     }
-    dat$nw[[1]] <- activate.vertex.attribute(dat$nw[[1]],
-                                             prefix = "testatus",
-                                             value = status,
-                                             onset = 1,
-                                             terminus = Inf)
-    dat$nw[[1]] <- activate.vertex.attribute(dat$nw[[1]], prefix = "global_track",
-                                             value = origin, onset = 1,
-                                             terminus = Inf)
+    if (isTERGM == TRUE) {
+      dat$nw[[1]] <- activate.vertex.attribute(dat$nw[[1]],
+                                               prefix = "testatus",
+                                               value = status,
+                                               onset = 1,
+                                               terminus = Inf)
+      dat$nw[[1]] <- activate.vertex.attribute(dat$nw[[1]],
+                                               prefix = "global_track",
+                                               value = origin,
+                                               onset = 1,
+                                               terminus = Inf)
+    } else {
+      dat$temp$nw_list[[1]] <- set_vertex_attribute(dat$temp$nw_list[[1]],
+                                                    "status", status)
+    }
   }
 
 

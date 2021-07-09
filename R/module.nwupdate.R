@@ -27,8 +27,9 @@ nwupdate_mig <- function(dat, at) {
 
   final_step <- get_control(dat, "nsteps")
 
-  statOnNw <- "status" %in% dat$temp$nwterms
+  #statOnNw <- "status" %in% dat$temp$nwterms
   resimulate.network <- get_control(dat, "resimulate.network")
+  isTERGM <- get_control(dat, "isTERGM")
 
   ## Vital Dynamics
   arrivals <- which(active == 1 & entrTime == at)
@@ -51,16 +52,20 @@ nwupdate_mig <- function(dat, at) {
     }
     if (tergmLite == FALSE) {
       dat$nw[[1]] <- add.vertices(dat$nw[[1]], nv = nArrivals)
-      dat$nw[[1]] <- activate.vertices(dat$nw[[1]], onset = at,
-                                       terminus = Inf, v = arrivals)
-      dat$nw[[1]] <- activate.vertex.attribute(dat$nw[[1]],
-                                               prefix = "testatus",
-                                               value = status[arrivals],
-                                               onset = at, terminus = Inf,
-                                               v = arrivals)
-      dat$nw[[1]] <- activate.vertex.attribute(dat$nw[[1]], prefix = "global_track",
-                                               value = origin[arrivals], onset = at,
-                                               terminus = Inf, v = arrivals)
+
+      if (isTERGM == TRUE) {
+
+        dat$nw[[1]] <- activate.vertices(dat$nw[[1]], onset = at,
+                                         terminus = Inf, v = arrivals)
+        dat$nw[[1]] <- activate.vertex.attribute(dat$nw[[1]],
+                                                 prefix = "testatus",
+                                                 value = status[arrivals],
+                                                 onset = at, terminus = Inf,
+                                                 v = arrivals)
+        dat$nw[[1]] <- activate.vertex.attribute(dat$nw[[1]], prefix = "global_track",
+                                                 value = origin[arrivals], onset = at,
+                                                 terminus = Inf, v = arrivals)
+      }
     }
     if (tergmLite == TRUE) {
       dat$el[[1]] <- add_vertices(dat$el[[1]], nv = nArrivals)
@@ -80,29 +85,43 @@ nwupdate_mig <- function(dat, at) {
     # to be used with phylogenetics for getting time of terminal branch correctly.
     save_departures(dat, departures, at)
     if (tergmLite == FALSE) {
-      dat$nw[[1]] <- deactivate.vertices(dat$nw[[1]], onset = at,
-                                         terminus = Inf, v = departures,
-                                         deactivate.edges = TRUE)
+      if (isTERGM == TRUE) {
+        dat$nw[[1]] <- deactivate.vertices(dat$nw[[1]], onset = at,
+                                           terminus = Inf, v = departures,
+                                           deactivate.edges = TRUE)
+      } else {
+        dat$nw[[1]] <- delete.vertices(dat$nw[[1]], vid = departures)
+        dat <- delete_attr(dat, departures)
+      }
     }
+
     if (tergmLite == TRUE) {
       dat <- delete_attr(dat, departures)
       dat$el[[1]] <- delete_vertices(dat$el[[1]], departures)
+
+      if (dat$control$tergmLite.track.duration) {
+        dat$p[[1]]$state$nw0 %n% "lasttoggle" <-
+          delete_vertices(dat$p[[1]]$state$nw0 %n% "lasttoggle", departures)
+      }
     }
   }
 
   ## Migrations---------
   if (length(migrations12) > 0) {
     if (tergmLite == FALSE) {
-      e = NULL
-      for (vert in migrations12){
-        e = c(e, get.edgeIDs.active(dat$nw[[1]], v = vert, onset = at,
-                                    terminus = Inf, neighborhood = "combined"))
-      }
-      if (length(e) > 0) {
-        dat$nw[[1]] <- deactivate.edges(dat$nw[[1]], onset = at, terminus = Inf,
-                         e = unique(e))
-      }
+        if(isTERGM == TRUE) {
+          e = NULL
+          for (vert in migrations12){
+            e = c(e, get.edgeIDs.active(dat$nw[[1]], v = vert, onset = at,
+                                        terminus = Inf, neighborhood = "combined"))
+          }
+          if (length(e) > 0) {
+            dat$nw[[1]] <- deactivate.edges(dat$nw[[1]], onset = at, terminus = Inf,
+                             e = unique(e))
+          }
+        }
     }
+
     if (tergmLite == TRUE) {
       dat$el[[1]] <- delete_edges(dat$el[[1]], migrations12)
     }
@@ -110,40 +129,47 @@ nwupdate_mig <- function(dat, at) {
 
   if (length(migrations21) > 0) {
     if (tergmLite == FALSE) {
-       e = NULL
-       for (vert in migrations21){
-         e = c(e, get.edgeIDs.active(x = dat$nw[[1]], v = vert, onset = at,
-                                     terminus = Inf, neighborhood = "combined"))
+      if(isTERGM == TRUE) {
+        e = NULL
+        for (vert in migrations21){
+          e = c(e, get.edgeIDs.active(x = dat$nw[[1]], v = vert, onset = at,
+                                      terminus = Inf, neighborhood = "combined"))
         }
         if (length(e) > 0) {
           dat$nw[[1]] <- deactivate.edges(dat$nw[[1]], onset = at, terminus = Inf,
                                           e = unique(e))
         }
 
-          }
+      }
+    }
+
     if (tergmLite == TRUE) {
       dat$el[[1]] <- delete_edges(dat$el[[1]], migrations21)
     }
   }
 
-  ## Infection-----------
-  if (tergmLite == FALSE) {
-    idsNewInf <- which(status == "i" & infTime == at)
-    if (length(idsNewInf) > 0) {
-      dat$nw[[1]] <- activate.vertex.attribute(dat$nw[[1]], prefix = "testatus",
-                                               value = "i", onset = at,
-                                               terminus = Inf, v = idsNewInf)
-    }
+  ## Update temporally extended disease and origin status
+  if (tergmLite == FALSE & isTERGM == TRUE) {
+    #idsNewInf <- which(status == "i" & infTime == at)
+    #if (length(idsNewInf) > 0) {
+    dat$nw[[1]] <- activate.vertex.attribute(dat$nw[[1]],
+                                             prefix = "testatus",
+                                             value = status,
+                                             onset = at,
+                                             terminus = Inf)
+    #}
   }
 
   # migrations
-  if (tergmLite == FALSE) {
-    idsNewMigs <- which((migrants == 12 | migrants == 21) & migrationTime == at)
-    if (length(idsNewMigs) > 0) {
-      dat$nw[[1]] <- activate.vertex.attribute(dat$nw[[1]], prefix = "global_track",
-                                               value = origin[idsNewMigs], onset = at,
-                                               terminus = Inf, v = idsNewMigs)
-    }
+  if (tergmLite == FALSE & isTERGM == TRUE) {
+    #idsNewMigs <- which((migrants == 12 | migrants == 21) & migrationTime == at)
+    #if (length(idsNewMigs) > 0) {
+    dat$nw[[1]] <- activate.vertex.attribute(dat$nw[[1]],
+                                             prefix = "global_track",
+                                             value = origin,
+                                             onset = at,
+                                             terminus = Inf)
+    #}
   }
 
 
@@ -157,6 +183,16 @@ nwupdate_mig <- function(dat, at) {
   ## Copy static attributes to network object
   if (tergmLite == FALSE & resimulate.network == TRUE) {
     dat <- copy_datattr_to_nwattr(dat)
+  }
+
+
+  # Record network in nw_list for x-sect ERGM simulations
+  if (tergmLite == FALSE & isTERGM == FALSE & resimulate.network == TRUE) {
+    dat$temp$nw_list[[at]] <- dat$nw[[1]]
+  }
+  if (tergmLite == FALSE & isTERGM == FALSE & resimulate.network == FALSE) {
+    dat$temp$nw_list[[at]] <- set_vertex_attribute(dat$temp$nw_list[[at]],
+                                                   "status", status)
   }
 
   # Attribute consistency checks
