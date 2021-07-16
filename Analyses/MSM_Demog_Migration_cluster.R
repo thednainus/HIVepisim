@@ -50,7 +50,7 @@ data.frame(ages, dr_vec)
 
 # Initialize network
 n_pop1 = 50000
-n_pop2 = 950000
+n_pop2 = 500000
 #n_pop1 = 10
 #n_pop2 = 10
 n_total = n_pop1 + n_pop2
@@ -190,7 +190,14 @@ coef.diss
 
 # Fit the model
 # # Fit the TERGM
-est <- netest(nw, formation, target.stats, coef.diss)
+#est <- netest(nw, formation, target.stats, coef.diss)
+
+est <- netest(nw, formation, target.stats, coef.diss, edapprox = TRUE,
+              set.control.ergm = control.ergm(MCMC.burnin=1e7, MCMC.interval=1e7,
+                                              MCMC.samplesize=20000,
+                                              init.MPLE.samplesize = 1e8,
+                                              SAN = control.san(SAN.nsteps = 1e8)
+                                              ))
 
 # Model diagnostics
 # Simulate time series to examine timed edgelist
