@@ -289,7 +289,9 @@ durs
 #in days
 art_start <- 24 * 365
 #art_start <- 14 * 365
-
+#tx.init.prob = (0.092/7) * time.unit
+#tx.halt.prob = (0.0102/7) * time.unit
+#tx.reinit.prob = (0.00066/7) * time.unit
 
 param <- param.net(time.unit = time.unit,
                    groups = 1,
@@ -352,6 +354,7 @@ control <- control.net(type = NULL, nsteps = nsteps, start = 1, nsims = 1,
                        verbose.FUN = verbose.net,
                        save.nwstats = FALSE,
                        save.transmat = TRUE,
+                       save.stats = TRUE,
                        verbose = TRUE)
 
 sim <- netsim(est, param, init, control)

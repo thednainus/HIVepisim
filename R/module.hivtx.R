@@ -62,9 +62,26 @@ hivtx_msm <- function(dat, at) {
     tx.reinit <- tx.reinit.elig[rbinom(length(tx.reinit.elig), 1, rates.reinit) == 1]
 
     ## Update Attributes
+    #browser
     tx.status[tx.init] <- 1
     tx.status[tx.halt] <- 0
     tx.status[tx.reinit] <- 1
+
+    # Save ART init ----
+    if (dat$control$save.stats == TRUE){
+      if (length(tx.init) > 0) {
+        #browser()
+        dat <- set_art_init(dat, at, tx.init)
+      }
+
+      if (length(tx.halt) > 0){
+        dat <- set_art_halt(dat, at, tx.halt)
+      }
+
+      if (length(tx.reinit) > 0){
+        dat <- set_art_reinit(dat, at, tx.reinit)
+      }
+    }
 
     cuml.time.on.tx[which(tx.status == 1)] <- cuml.time.on.tx[which(tx.status == 1)] + 1
     cuml.time.off.tx[which(tx.status == 0)] <- cuml.time.off.tx[which(tx.status == 0)] + 1

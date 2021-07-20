@@ -203,6 +203,9 @@ est <- netest(nw, formation, target.stats, coef.diss, edapprox = TRUE,
 # Simulate time series to examine timed edgelist
 #dx <- netdx(est, nsims = 1, nsteps = 1000, keep.tedgelist = TRUE)
 
+dx <- netdx(est, nsims = 1, nsteps = 1000, keep.tedgelist = TRUE,
+            set.control.ergm = control.simulate.ergm(MCMC.burnin = 1.5e5))
+
 # Extract timed-edgelist
 #te <- as.data.frame(dx)
 #head(te)
@@ -281,6 +284,7 @@ control <- control.net(type = NULL, nsteps = 365 * years, start = 1, nsims = 1,
                        verbose.FUN = verbose.net,
                        save.nwstats = FALSE,
                        save.transmat = TRUE,
+                       save.save.art.info = TRUE,
                        verbose = TRUE)
 
 sim <- netsim(est, param, init, control)

@@ -154,7 +154,38 @@ delete_edges <- function(el, vid) {
 #'
 #' @examples
 #' TO DO
-save_departures <- function(dat, departures, at, prefix = NULL){
+save_departures <- function(dat, prefix = NULL){
+
+  if(!is.null(dat$stats$departures) == TRUE){
+    if(is.null(prefix)){
+      filename <- "departure_IDs.csv"
+    } else {
+      filename <- paste(prefix, "departure_IDs.csv", sep = "_")
+    }
+
+    write.csv(dat$stats$departures, file = filename, row.names = FALSE)
+  }
+}
+
+
+#' Save id and time of individuals that departure the network
+#'
+#' @description It aims to save the ID and time of infected individual that
+#'  departure the network via natural or HIV related cause.
+#'
+#' @inheritParams EpiModel::arrivals.net
+#' @param departures ids of departures
+#' @param prefix Text for prefix to use when saving filename.
+#'
+#' @details
+#' If a prefix is not provided, csv file will be saved as departure_IDs.csv
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' TO DO
+set_departures <- function(dat, departures, at){
   active <- get_attr(dat, "active")
   status <- get_attr(dat, "status")
   stage <- get_attr(dat, "stage")
@@ -176,20 +207,17 @@ save_departures <- function(dat, departures, at, prefix = NULL){
     #inf_time_df <- data.frame(time, infID, status_dep, stage_dep, origin_dep)
     inf_time_df <- subset(inf_time_df, status_dep == "i")
 
-    if(is.null(prefix)){
-      filename <- "departure_IDs.csv"
-    } else {
-      filename <- paste(prefix, "departure_IDs.csv", sep = "_")
+    #browser()
+    if(!is.null(dat$stats$departures) == TRUE){
+      inf_time_df <- rbind(dat$stats$departures, inf_time_df)
     }
-
-    write.table(inf_time_df, file = filename, append = TRUE, sep = ",",
-                row.names = FALSE, col.names = !file.exists(filename))
+    dat$stats$departures <- inf_time_df
   }
 
-
+  return(dat)
 }
 
-#' Save stageof HIV infection of nodes in the network at final step
+#' Save stage of HIV infection of nodes in the network at final step
 #'
 #' @description At the final step of network simulation, it will save the IDs of
 #'    infected nodes and their stage of HIV infection.
@@ -206,6 +234,37 @@ save_departures <- function(dat, departures, at, prefix = NULL){
 #' @examples
 #' TO DO
 save_stage <- function(dat, prefix = NULL){
+
+
+  #check whether the list stage_info exist
+  if(!is.null(dat$stats$stage_info) == TRUE){
+    if(is.null(prefix)){
+      filename <- "stage_and_IDs.csv"
+    } else {
+      filename <- paste(prefix, "stage_and_IDs.csv", sep = "_")
+    }
+
+    write.csv(dat$stats$stage_info, file = filename, row.names = FALSE)
+  }
+}
+
+
+#' Set stage of HIV infection of nodes in the network at final step
+#'
+#' @description At the final step of network simulation, it will save the IDs of
+#'    infected nodes and their stage of HIV infection.
+#'
+#' @inheritParams EpiModel::arrivals.net
+#'
+#' @details
+#' If a prefix is not provided, csv file will be saved as stage_and_IDs.csv
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' TO DO
+set_stage <- function(dat, at){
   active <- get_attr(dat, "active")
   status <- get_attr(dat, "status")
   stage <- get_attr(dat, "stage")
@@ -229,11 +288,216 @@ save_stage <- function(dat, prefix = NULL){
     #inf_stage_df <- data.frame(infID, active_test, status_inf, stage_inf,
     #                           diag.status_inf)
 
+    dat$stats$stage_info <- inf_stage_df
+  }
+
+  return(dat)
+
+}
+
+
+
+#' Save time in which antiretroviral treatment (ART) started
+#'
+#' This function will save the time in which an individual initiated ART
+#'
+#' @description Whenever an individual initiates ART, this function will save
+#'    the IDs of infected nodes and when ART started.
+#'
+#' @inheritParams EpiModel::arrivals.net
+#' @param prefix Text for prefix to use when saving filename.
+#'
+#' @details
+#' If a prefix is not provided, csv file will be saved as ART_init.csv
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' TO DO
+save_art <- function(dat, prefix = NULL){
+
+  if(!is.null(dat$stats$art_init) == TRUE){
+
     if(is.null(prefix)){
-      filename <- "stage_and_IDs.csv"
+      filename <- "ART_init.csv"
     } else {
-      filename <- paste(prefix, "stage_and_IDs.csv", sep = "_")
+      filename <- paste(prefix, "ART_init.csv", sep = "_")
     }
-    write.csv(inf_stage_df, file = filename, row.names = FALSE)
+
+    write.csv(dat$stats$art_init, file = filename, row.names = FALSE)
   }
 }
+
+
+#' Set time in which antiretroviral treatment (ART) started
+#'
+#' This function will save the time in which an individual initiated ART
+#'
+#' @description Whenever an individual initiates ART, this function will save
+#'    the IDs of infected nodes and when ART started.
+#'
+#' @inheritParams EpiModel::arrivals.net
+#' @param IDs IDs of individuals who started ART.
+#' @param prefix Text for prefix to use when saving filename.
+#'
+#' @details
+#' If a prefix is not provided, csv file will be saved as ART.csv
+#'
+#' @return
+#' @export
+#'
+set_art_init <- function(dat, at, IDs){
+  #browser()
+  art_init <- data.frame(time = at, IDs = IDs)
+
+  if(!is.null(dat$stats$art_init) == TRUE){
+    art_init <- rbind(dat$stats$art_init, art_init)
+  }
+  dat$stats$art_init <- art_init
+
+  return(dat)
+}
+
+
+#' Save time in which antiretroviral treatment (ART) was hlated
+#'
+#' This function will save the time in which an individual initiated ART
+#'
+#' @description Whenever an individual initiates ART, this function will save
+#'    the IDs of infected nodes and when ART started.
+#'
+#' @inheritParams EpiModel::arrivals.net
+#' @param prefix Text for prefix to use when saving filename.
+#'
+#' @details
+#' If a prefix is not provided, csv file will be saved as ART_halt.csv
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' TO DO
+save_art_halt <- function(dat, prefix = NULL){
+
+  if(!is.null(dat$stats$art_halt) == TRUE){
+
+    if(is.null(prefix)){
+      filename <- "ART_halt.csv"
+    } else {
+      filename <- paste(prefix, "ART_halt.csv", sep = "_")
+    }
+
+    write.csv(dat$stats$art_halt, file = filename, row.names = FALSE)
+  }
+}
+
+
+#' Set time in which antiretroviral treatment (ART) was halted
+#'
+#' This function will save the time in which an individual initiated ART
+#'
+#' @description Whenever an individual initiates ART, this function will save
+#'    the IDs of infected nodes and when ART started.
+#'
+#' @inheritParams EpiModel::arrivals.net
+#' @param IDs IDs of individuals who started ART.
+#' @param prefix Text for prefix to use when saving filename.
+#'
+#' @details
+#' If a prefix is not provided, csv file will be saved as ART.csv
+#'
+#' @return
+#' @export
+#'
+set_art_halt <- function(dat, at, IDs){
+  #browser()
+  art_halt <- data.frame(time = at, IDs = IDs)
+
+  if(!is.null(dat$stats$art_halt) == TRUE){
+    art_halt <- rbind(dat$stats$art_halt, art_halt)
+
+  }
+  dat$stats$art_halt <- art_halt
+
+  return(dat)
+}
+
+
+#' Save time in which antiretroviral treatment (ART) was reinitiated
+#'
+#' This function will save the time in which an individual initiated ART
+#'
+#' @description Whenever an individual initiates ART, this function will save
+#'    the IDs of infected nodes and when ART started.
+#'
+#' @inheritParams EpiModel::arrivals.net
+#' @param prefix Text for prefix to use when saving filename.
+#'
+#' @details
+#' If a prefix is not provided, csv file will be saved as ART_reinit.csv
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' TO DO
+save_art_reinit <- function(dat, prefix = NULL){
+
+  if(!is.null(dat$stats$art_reinit) == TRUE){
+
+    if(is.null(prefix)){
+      filename <- "ART_reinit.csv"
+    } else {
+      filename <- paste(prefix, "ART_reinit.csv", sep = "_")
+    }
+
+    write.csv(dat$stats$art_reinit, file = filename, row.names = FALSE)
+  }
+}
+
+
+#' Set time in which antiretroviral treatment (ART) was reinitiated
+#'
+#' This function will save the time in which an individual initiated ART
+#'
+#' @description Whenever an individual initiates ART, this function will save
+#'    the IDs of infected nodes and when ART started.
+#'
+#' @inheritParams EpiModel::arrivals.net
+#' @param IDs IDs of individuals who started ART.
+#' @param prefix Text for prefix to use when saving filename.
+#'
+#' @details
+#' If a prefix is not provided, csv file will be saved as ART.csv
+#'
+#' @return
+#' @export
+#'
+set_art_reinit <- function(dat, at, IDs){
+  #browser()
+  art_reinit <- data.frame(time = at, IDs = IDs)
+
+  if(!is.null(dat$stats$art_reinit) == TRUE){
+    art_reinit <- rbind(dat$stats$art_reinit, art_reinit)
+  }
+  dat$stats$art_reinit <- art_reinit
+
+  return(dat)
+}
+
+
+#'@export
+set_transmat2 <- function (dat, del, at)
+{
+  del <- del[!duplicated(del$sus), ]
+  del[["sus"]] <- get_unique_ids(dat, del[["sus"]])
+  del[["inf"]] <- get_unique_ids(dat, del[["inf"]])
+  browser()
+  if (at != 2) {
+    del <- rbind(dat$stats$transmat, del)
+  }
+  dat$stats$transmat <- del
+  return(dat)
+}
+

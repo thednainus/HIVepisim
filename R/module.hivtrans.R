@@ -198,7 +198,7 @@ hivtrans_mig <- function(dat, at) {
   if (dat$control$save.transmat == TRUE){
     if (nInf > 0) {
       #browser()
-      dat <- set_transmat(dat, del, at)
+      dat <- set_transmat2(dat, del, at)
     }
   }
 

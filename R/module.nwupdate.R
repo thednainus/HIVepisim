@@ -83,7 +83,9 @@ nwupdate_mig <- function(dat, at) {
     # save a csv file for time of departure and ID of infected individual that
     # is not in the network anymore
     # to be used with phylogenetics for getting time of terminal branch correctly.
-    save_departures(dat, departures, at)
+    #save_departures(dat, departures, at)
+    dat <- set_departures(dat, departures, at)
+
     if (tergmLite == FALSE) {
       if (isTERGM == TRUE) {
         dat$nw[[1]] <- deactivate.vertices(dat$nw[[1]], onset = at,
@@ -175,9 +177,22 @@ nwupdate_mig <- function(dat, at) {
 
 
   # save final list of infected individuals and origin
-  if(at == final_step){
-    save_stage(dat)
+  #if(at == final_step){
+  #  save_stage(dat)
+  #}
+
+  # Save info for stage of HIV infection at the end of simulation
+  # Save info for stage of HIV infection at the end of simulation
+  if (at == final_step & dat$control$save.stats == TRUE){
+    #browser()
+    dat <- set_stage(dat, at)
+    save_stage(dat, prefix = NULL)
+    save_art(dat, prefix = NULL)
+    save_art_halt(dat, prefix = NULL)
+    save_art_reinit(dat, prefix = NULL)
+    save_departures(dat, prefix = NULL)
   }
+
 
 
   ## Copy static attributes to network object
