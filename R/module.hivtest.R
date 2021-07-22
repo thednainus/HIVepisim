@@ -46,18 +46,25 @@ hivtest_msm <- function(dat, at) {
 
 
     # Testing rates
-  rates <- hiv.test.rate
-  idsTstGen_pop1 <- elig_pop1[rbinom(length(elig_pop1), 1, rates) == 1]
-  idsTstGen_pop2 <- elig_pop2[rbinom(length(elig_pop2), 1, rates) == 1]
+  #browser()
+  idsTstGen_pop1 <- elig_pop1[rbinom(length(elig_pop1), 1, hiv.test.rate) == 1]
+  idsTstGen_pop2 <- elig_pop2[rbinom(length(elig_pop2), 1, hiv.test.rate) == 1]
 
-  tst_pop1 <- idsTstGen_pop1
-  tst_pop2 <- idsTstGen_pop2
 
-  tstPos_pop1 <- tst_pop1[status[tst_pop1] == "i" & infTime[tst_pop1] <= at - twind.int]
-  tstPos_pop2 <- tst_pop2[status[tst_pop2] == "i" & infTime[tst_pop2] <= at - twind.int]
+  tstPos_pop1 <- idsTstGen_pop1[status[idsTstGen_pop1] == "i" & infTime[idsTstGen_pop1] <= at - twind.int]
+  tstPos_pop2 <- idsTstGen_pop2[status[idsTstGen_pop2] == "i" & infTime[idsTstGen_pop2] <= at - twind.int]
 
-  tstNeg_pop1 <- setdiff(tst_pop1, tstPos_pop1)
-  tstNeg_pop2 <- setdiff(tst_pop2, tstPos_pop2)
+  tstNeg_pop1 <- setdiff(idsTstGen_pop1, tstPos_pop1)
+  tstNeg_pop2 <- setdiff(idsTstGen_pop2, tstPos_pop2)
+
+  #set diagnosis time
+  if(dat$control$save.stats == TRUE){
+    #browser()
+    all_pos_tes_ids <- union(tstPos_pop1, tstPos_pop2)
+    if(length(all_pos_tes_ids) > 0){
+      dat <- set_diagnosis_time(dat, at, union(tstPos_pop1, tstPos_pop2))
+    }
+  }
 
   # Outputs  -----
   last.neg.test[union(tstNeg_pop1, tstNeg_pop2)] <- at
@@ -76,8 +83,8 @@ hivtest_msm <- function(dat, at) {
   dat <- set_attr(dat, "diag.stage", diag.stage)
 
 
-  dat <- set_epi(dat, "tot.tests_pop1", at, length(tst_pop1))
-  dat <- set_epi(dat, "tot.tests_pop2", at, length(tst_pop2))
+  dat <- set_epi(dat, "tot.tests_pop1", at, length(idsTstGen_pop1))
+  dat <- set_epi(dat, "tot.tests_pop2", at, length(idsTstGen_pop2))
   dat <- set_epi(dat, "tot.neg.tests_pop1", at, length(tstNeg_pop1))
   dat <- set_epi(dat, "tot.neg.tests_pop2", at, length(tstNeg_pop2))
   # number of new diagnoses by timing

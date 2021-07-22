@@ -191,6 +191,8 @@ nwupdate_mig <- function(dat, at) {
     save_art_halt(dat, prefix = NULL)
     save_art_reinit(dat, prefix = NULL)
     save_departures(dat, prefix = NULL)
+    save_diagnosis_time(dat, prefix = NULL)
+    save_track_stages(dat, prefix = NULL)
   }
 
 

@@ -349,7 +349,10 @@ save_art <- function(dat, prefix = NULL){
 #'
 set_art_init <- function(dat, at, IDs){
   #browser()
-  art_init <- data.frame(time = at, IDs = IDs)
+  uid <- get_attr(dat, "unique_id")
+  infID <- uid[IDs]
+
+  art_init <- data.frame(time = at, IDs = infID)
 
   if(!is.null(dat$stats$art_init) == TRUE){
     art_init <- rbind(dat$stats$art_init, art_init)
@@ -412,7 +415,10 @@ save_art_halt <- function(dat, prefix = NULL){
 #'
 set_art_halt <- function(dat, at, IDs){
   #browser()
-  art_halt <- data.frame(time = at, IDs = IDs)
+  uid <- get_attr(dat, "unique_id")
+  infID <- uid[IDs]
+
+  art_halt <- data.frame(time = at, IDs = infID)
 
   if(!is.null(dat$stats$art_halt) == TRUE){
     art_halt <- rbind(dat$stats$art_halt, art_halt)
@@ -476,7 +482,10 @@ save_art_reinit <- function(dat, prefix = NULL){
 #'
 set_art_reinit <- function(dat, at, IDs){
   #browser()
-  art_reinit <- data.frame(time = at, IDs = IDs)
+  uid <- get_attr(dat, "unique_id")
+  infID <- uid[IDs]
+
+  art_reinit <- data.frame(time = at, IDs = infID)
 
   if(!is.null(dat$stats$art_reinit) == TRUE){
     art_reinit <- rbind(dat$stats$art_reinit, art_reinit)
@@ -487,17 +496,124 @@ set_art_reinit <- function(dat, at, IDs){
 }
 
 
-#'@export
-set_transmat2 <- function (dat, del, at)
-{
-  del <- del[!duplicated(del$sus), ]
-  del[["sus"]] <- get_unique_ids(dat, del[["sus"]])
-  del[["inf"]] <- get_unique_ids(dat, del[["inf"]])
-  browser()
-  if (at != 2) {
-    del <- rbind(dat$stats$transmat, del)
+#' Save time in which an individual has been diagnosed as HIV positive
+#'
+#' This function will save the time in which an individual has been diagnosed
+#' as HIV positive.
+#'
+#' @description Whenever an individual has a positive HIV test, this
+#'   function will save the ID of the individual and the time of diagnosis.
+#'
+#' @inheritParams EpiModel::arrivals.net
+#' @param prefix Text for prefix to use when saving filename.
+#'
+#' @details
+#' If a prefix is not provided, csv file will be saved as diag_time.csv
+#'
+#' @return
+#' @export
+save_diagnosis_time <- function(dat, prefix = NULL){
+
+  if(!is.null(dat$stats$diag_time) == TRUE){
+
+    if(is.null(prefix)){
+      filename <- "diag_time.csv"
+    } else {
+      filename <- paste(prefix, "diag_time.csv", sep = "_")
+    }
+
+    write.csv(dat$stats$diag_time, file = filename, row.names = FALSE)
   }
-  dat$stats$transmat <- del
+}
+
+
+#' Set time in which an individual has been diagnosed as HIV positive
+#'
+#' This function will save the time in which an individual has diagnosed as
+#' HIV positive
+#'
+#' @description Whenever an individual has a positive HIV test, this function
+#'    will save the IDs of infected nodes and time of the positive HIV test.
+#'
+#' @inheritParams EpiModel::arrivals.net
+#' @param IDs IDs of individuals who have been diagonsed as HIV positive.
+#' @param prefix Text for prefix to use when saving filename.
+#'
+#' @details
+#' If a prefix is not provided, csv file will be saved as ART.csv
+#'
+#' @return
+#' @export
+set_diagnosis_time <- function(dat, at, IDs){
+  #browser()
+  uid <- get_attr(dat, "unique_id")
+  infID <- uid[IDs]
+
+  diag_time <- data.frame(time = at, IDs = infID)
+
+  if(!is.null(dat$stats$diag_time) == TRUE){
+    diag_time <- rbind(dat$stats$diag_time, diag_time)
+  }
+  dat$stats$diag_time <- diag_time
+
+  return(dat)
+}
+
+#' Save time and IDs of nodes and their stages of HIV infection.
+#'
+#' This function will save information to get the stage of infection at time
+#' of sampling.
+#'
+#'
+#' @description Whenever an individual change the stage of HIV infection, this
+#'   function will save the information on track_stages.
+#'
+#' @inheritParams EpiModel::arrivals.net
+#' @param prefix Text for prefix to use when saving filename.
+#'
+#' @details
+#' If a prefix is not provided, csv file will be saved as stages.csv
+#'
+#' @return
+#' @export
+save_track_stages <- function(dat, prefix = NULL){
+
+  if(!is.null(dat$stats$HIVstages) == TRUE){
+
+    if(is.null(prefix)){
+      filename <- "stages.csv"
+    } else {
+      filename <- paste(prefix, "stages.csv", sep = "_")
+    }
+
+    write.csv(dat$stats$HIVstages, file = filename, row.names = FALSE)
+  }
+}
+
+
+#' Track HIV stage of infection
+#'
+#' This function will track for each node its HIV stage of infection and when
+#' a node change to another stage of infection.
+#'
+#' @inheritParams EpiModel::arrivals.net
+#' @param stage stage of HIV infection
+#' @param IDs Indexes of node IDs
+#'
+#' @return
+#' @export
+track_stages <- function(dat, HIVstage, at, IDs){
+  #browser()
+  uid <- get_attr(dat, "unique_id")
+  infID <- uid[IDs]
+  #browser()
+  stages <- data.frame(time = at, IDs = infID, HIVstages = HIVstage)
+
+  if(!is.null(dat$stats$HIVstages) == TRUE){
+    stages <- rbind(dat$stats$HIVstages, stages)
+  }
+  dat$stats$HIVstages <- stages
+
   return(dat)
 }
 

@@ -88,9 +88,6 @@ hivprogress_msm <- function(dat, at) {
 
   newidsAIDS <- isAIDS[rbinom(length(isAIDS), 1, stage_prog_rate3) == 1]
 
-  #stage[isAIDS] <- 4
-  #stage.time[isAIDS] <- 1
-  #aids.time[isAIDS] <- at
 
 
   # change stage accordingly
@@ -107,7 +104,28 @@ hivprogress_msm <- function(dat, at) {
   stage.time[newidsAIDS] <- 1
   aids.time[newidsAIDS] <- at
 
+  #browser()
+    #track HIV stage of infection
+  if(dat$control$save.stats == TRUE){
+    #browser()
 
+    if(length(newidsStage0) > 0){
+      dat <- track_stages(dat, stages, at, newidsStage0)
+    }
+
+    if(length(newidsStage2) > 0){
+      dat <- track_stages(dat, 2, at, newidsStage2)
+    }
+
+    if(length(newidsStage3) > 0){
+      dat <- track_stages(dat, 3, at, newidsStage3)
+    }
+
+    if(length(newidsAIDS)){
+      dat <- track_stages(dat, 4, at, newidsAIDS)
+    }
+
+  }
 
   ## Output ------
   dat <- set_attr(dat, "stage", stage)

@@ -292,6 +292,8 @@ art_start <- 24 * 365
 #tx.init.prob = (0.092/7) * time.unit
 #tx.halt.prob = (0.0102/7) * time.unit
 #tx.reinit.prob = (0.00066/7) * time.unit
+#hiv.test.rate = (0.01325/7) * time.unit
+#trans.r = 0.05
 
 param <- param.net(time.unit = time.unit,
                    groups = 1,
