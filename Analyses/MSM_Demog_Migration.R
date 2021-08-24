@@ -312,7 +312,7 @@ param <- param.net(time.unit = time.unit,
                    tx.init.prob = (0.092/7) * time.unit,
                    tx.halt.prob = (0.0102/7) * time.unit,
                    tx.reinit.prob = (0.00066/7) * time.unit,
-                   trans.r = 0.05,
+                   trans.r = 0.04,
                    ws0 = 1,
                    ws1 = 0.1,
                    ws2 = 0.1,
@@ -328,8 +328,8 @@ param <- param.net(time.unit = time.unit,
                    a1.rate = 0.00006 * time.unit,
                    a2.rate = 0.00006 * time.unit,
                    arrival.age = 18,
-                   m12.rate = 0,
-                   m21.rate = 0)
+                   m12.rate = 0.0001,
+                   m21.rate = 0.0001)
 
 init <- init.net()
 
@@ -361,6 +361,11 @@ control <- control.net(type = NULL, nsteps = nsteps, start = 1, nsims = 1,
 
 sim <- netsim(est, param, init, control)
 
+tm <- get_transmat(sim)
+IDPOP <- union(tm$sus, tm$inf)
+stages <- read.csv("stages.csv")
+stages["time_decimal"] <- days2years(sampleTimes = stages$time,
+                                     init_date = init_sim_date)
 
 sim <- readRDS("results_sim.RDS")
 # Plot epidemiological quantities of interest ----

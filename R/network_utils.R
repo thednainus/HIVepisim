@@ -597,23 +597,109 @@ save_track_stages <- function(dat, prefix = NULL){
 #' a node change to another stage of infection.
 #'
 #' @inheritParams EpiModel::arrivals.net
-#' @param stage stage of HIV infection
+#' @param HIVstage stage of HIV infection
 #' @param IDs Indexes of node IDs
 #'
 #' @return
 #' @export
-track_stages <- function(dat, HIVstage, at, IDs){
+track_stages <- function(dat, at, HIVstage, IDs){
   #browser()
-  uid <- get_attr(dat, "unique_id")
-  infID <- uid[IDs]
-  #browser()
-  stages <- data.frame(time = at, IDs = infID, HIVstages = HIVstage)
+  #uid <- get_attr(dat, "unique_id")
+  infID <- get_unique_ids(dat, IDs)
+  #infID <- uid[IDs]
+
+  stages <- data.frame(time = at, infIDs = infID, IDs = IDs, HIVstages = HIVstage)
 
   if(!is.null(dat$stats$HIVstages) == TRUE){
     stages <- rbind(dat$stats$HIVstages, stages)
   }
   dat$stats$HIVstages <- stages
 
+  return(dat)
+}
+
+
+
+#' Track origin of node in network
+#'
+#' This function will track for each node its origin and when it migrates
+#' to another location.
+#'
+#' @inheritParams EpiModel::arrivals.net
+#' @param migrations Migration number from 21 ("global" to "region") or 12
+#'    ("region" to "global").
+#' @param IDs Indexes of node IDs
+#'
+#' @return
+#' @export
+track_origin <- function(dat, at, migrations, IDs){
+  #browser()
+  uid <- get_attr(dat, "unique_id")
+  infID <- uid[IDs]
+
+  if(length(infID) != 0){
+    #browser()
+    origin <- data.frame(time = at, IDs = infID, migrant = migrations)
+
+    if(!is.null(dat$stats$migrat) == TRUE){
+      origin <- rbind(dat$stats$migrant, origin)
+    }
+    dat$stats$migrant <- origin
+
+  }
+
+  return(dat)
+
+}
+
+
+#' Save time and IDs of nodes and their location.
+#'
+#' This function will save information to get location of individual at certan
+#'    time.
+#'
+#'
+#' @description Whenever an individual change their origin because of migration,
+#'   this function will save the information on track_origin.
+#'
+#' @inheritParams EpiModel::arrivals.net
+#' @param prefix Text for prefix to use when saving filename.
+#'
+#' @details
+#' If a prefix is not provided, csv file will be saved as origin.csv
+#'
+#' @return
+#' @export
+save_track_origin <- function(dat, prefix = NULL){
+
+  if(!is.null(dat$stats$migrant) == TRUE){
+
+    if(is.null(prefix)){
+      filename <- "origin.csv"
+    } else {
+      filename <- paste(prefix, "origin.csv", sep = "_")
+    }
+
+    write.csv(dat$stats$migrant, file = filename, row.names = FALSE)
+  }
+}
+
+
+set_transmat2 <- function (dat, del, at){
+
+  uid <- get_attr(dat, "unique_id")
+
+  del <- del[!duplicated(del$sus), ]
+  susID <- uid[del[["sus"]]]
+  infID <- uid[del[["inf"]]]
+  #del[["sus"]] <- get_unique_ids(dat, del[["sus"]])
+  #del[["inf"]] <- get_unique_ids(dat, del[["inf"]])
+  del[["sus"]] <- susID
+  del[["inf"]] <- infID
+  if (at != 2) {
+    del <- rbind(dat$stats$transmat, del)
+  }
+  dat$stats$transmat <- del
   return(dat)
 }
 

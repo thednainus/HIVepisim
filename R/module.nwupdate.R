@@ -110,6 +110,7 @@ nwupdate_mig <- function(dat, at) {
 
   ## Migrations---------
   if (length(migrations12) > 0) {
+    #dat <- track_origin(dat, at, "12", migrations21)
     if (tergmLite == FALSE) {
         if(isTERGM == TRUE) {
           e = NULL
@@ -130,6 +131,8 @@ nwupdate_mig <- function(dat, at) {
   }
 
   if (length(migrations21) > 0) {
+    #dat <- track_origin(dat, at, "21", migrations21)
+
     if (tergmLite == FALSE) {
       if(isTERGM == TRUE) {
         e = NULL
@@ -184,7 +187,7 @@ nwupdate_mig <- function(dat, at) {
   # Save info for stage of HIV infection at the end of simulation
   # Save info for stage of HIV infection at the end of simulation
   if (at == final_step & dat$control$save.stats == TRUE){
-    #browser()
+    browser()
     dat <- set_stage(dat, at)
     save_stage(dat, prefix = NULL)
     save_art(dat, prefix = NULL)
@@ -193,6 +196,7 @@ nwupdate_mig <- function(dat, at) {
     save_departures(dat, prefix = NULL)
     save_diagnosis_time(dat, prefix = NULL)
     save_track_stages(dat, prefix = NULL)
+    save_track_origin(dat, prefix = NULL)
   }
 
 

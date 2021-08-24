@@ -239,6 +239,7 @@ init_status_mig <- function(dat) {
     stage <- get_attr(dat, "stage")
     stage[idsInf] <- 0
     dat <- set_attr(dat, "stage", stage)
+    dat <- track_stages(dat, at = 0, 0, idsInf)
     stage.time <- get_attr(dat, "stage.time")
     #stage.time[idsInf] <- infTime[idsInf] - min.hiv.time
     stage.time[idsInf] <- infTime[idsInf]

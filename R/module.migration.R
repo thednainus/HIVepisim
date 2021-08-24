@@ -70,6 +70,7 @@ migration <- function(dat, at){
         dat <- set_attr(dat, "origin", origin)
         dat <- set_attr(dat, "migrant", migrant)
         dat <- set_attr(dat, "migrationTime", migrationTime)
+        dat <- track_origin(dat, at, "12", idsMigs12.all)
         #dat$nw[[1]] <- deactivate.edges(dat$nw[[1]], onset = at,
         #                                terminus = Inf,
         #                                e = get.edgeIDs(x = dat$nw[[1]], v = idsMigs12.all))
@@ -113,6 +114,7 @@ migration <- function(dat, at){
         dat <- set_attr(dat, "origin", origin)
         dat <- set_attr(dat, "migrant", migrant)
         dat <- set_attr(dat, "migrationTime", migrationTime)
+        dat <- track_origin(dat, at, "21", idsMigs21)
         #nMig21 <- nMigrations21.all
         #dat$nw[[1]] <- deactivate.edges(dat$nw[[1]], onset = at,
         #                                terminus = Inf,

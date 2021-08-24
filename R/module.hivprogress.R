@@ -57,7 +57,7 @@ hivprogress_msm <- function(dat, at) {
   # Note that this is following Cori et al. 2015
   # Stage 0 the acute and early HIV infection
 
-  idsStage0 <- which(active == 1 & stage == 0 & tx.status == 0)
+  idsStage0 <- which(active == 1 & stage == 0 & tx.status == 0 & status == "i")
   # ids that will progress to another stage following probabilities f1,f2,f3 and f4
   newidsStage0 <- idsStage0[rbinom(length(idsStage0), 1, stage_prog_rate0) == 1]
 
@@ -68,13 +68,13 @@ hivprogress_msm <- function(dat, at) {
 
 
   # Change from stage 1 to stage 2 of HIV infection following Cori et al. 2015
-  idsStage1 <- which(active == 1 & stage == 1 & tx.status == 0)
+  idsStage1 <- which(active == 1 & stage == 1 & tx.status == 0 & status == "i")
   newidsStage2 <- idsStage1[rbinom(length(idsStage1), 1, stage_prog_rate1) == 1]
 
 
 
   # Change from stage 2 to stage 3 of HIV infection following Cori et al. 2015
-  idsStage2 <- which(active == 1 & stage == 2 & tx.status == 0)
+  idsStage2 <- which(active == 1 & stage == 2 & tx.status == 0 & status == "i")
   newidsStage3 <- idsStage2[rbinom(length(idsStage2), 1, stage_prog_rate2) == 1]
 
 
@@ -110,19 +110,19 @@ hivprogress_msm <- function(dat, at) {
     #browser()
 
     if(length(newidsStage0) > 0){
-      dat <- track_stages(dat, stages, at, newidsStage0)
+      dat <- track_stages(dat, at, stages, newidsStage0)
     }
 
     if(length(newidsStage2) > 0){
-      dat <- track_stages(dat, 2, at, newidsStage2)
+      dat <- track_stages(dat, at, 2, newidsStage2)
     }
 
     if(length(newidsStage3) > 0){
-      dat <- track_stages(dat, 3, at, newidsStage3)
+      dat <- track_stages(dat, at, 3, newidsStage3)
     }
 
-    if(length(newidsAIDS)){
-      dat <- track_stages(dat, 4, at, newidsAIDS)
+    if(length(newidsAIDS) > 0){
+      dat <- track_stages(dat, at, 4, newidsAIDS)
     }
 
   }

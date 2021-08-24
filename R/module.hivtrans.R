@@ -170,6 +170,8 @@ hivtrans_mig <- function(dat, at) {
     dat <- set_attr(dat, "infTime", infTime)
     stage[idsNewInf] <- 0
     dat <- set_attr(dat, "stage", stage)
+    #track stage of newly infected individuals
+    dat <- track_stages(dat, at, 0, idsNewInf)
     stage.time[idsNewInf] <- 0
     dat <- set_attr(dat, "stage.time", stage.time)
     diag.status[idsNewInf] <- 0
