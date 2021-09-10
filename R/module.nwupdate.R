@@ -187,7 +187,7 @@ nwupdate_mig <- function(dat, at) {
   # Save info for stage of HIV infection at the end of simulation
   # Save info for stage of HIV infection at the end of simulation
   if (at == final_step & dat$control$save.stats == TRUE){
-    browser()
+    #browser()
     dat <- set_stage(dat, at)
     save_stage(dat, prefix = NULL)
     save_art(dat, prefix = NULL)

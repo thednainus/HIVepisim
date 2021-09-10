@@ -361,12 +361,6 @@ control <- control.net(type = NULL, nsteps = nsteps, start = 1, nsims = 1,
 
 sim <- netsim(est, param, init, control)
 
-tm <- get_transmat(sim)
-IDPOP <- union(tm$sus, tm$inf)
-stages <- read.csv("stages.csv")
-stages["time_decimal"] <- days2years(sampleTimes = stages$time,
-                                     init_date = init_sim_date)
-
 sim <- readRDS("results_sim.RDS")
 # Plot epidemiological quantities of interest ----
 simdf <- as.data.frame(sim)

@@ -608,7 +608,7 @@ track_stages <- function(dat, at, HIVstage, IDs){
   infID <- get_unique_ids(dat, IDs)
   #infID <- uid[IDs]
 
-  stages <- data.frame(time = at, infIDs = infID, IDs = IDs, HIVstages = HIVstage)
+  stages <- data.frame(time = at, infIDs = infID, HIVstages = HIVstage)
 
   if(!is.null(dat$stats$HIVstages) == TRUE){
     stages <- rbind(dat$stats$HIVstages, stages)
@@ -682,24 +682,5 @@ save_track_origin <- function(dat, prefix = NULL){
 
     write.csv(dat$stats$migrant, file = filename, row.names = FALSE)
   }
-}
-
-
-set_transmat2 <- function (dat, del, at){
-
-  uid <- get_attr(dat, "unique_id")
-
-  del <- del[!duplicated(del$sus), ]
-  susID <- uid[del[["sus"]]]
-  infID <- uid[del[["inf"]]]
-  #del[["sus"]] <- get_unique_ids(dat, del[["sus"]])
-  #del[["inf"]] <- get_unique_ids(dat, del[["inf"]])
-  del[["sus"]] <- susID
-  del[["inf"]] <- infID
-  if (at != 2) {
-    del <- rbind(dat$stats$transmat, del)
-  }
-  dat$stats$transmat <- del
-  return(dat)
 }
 
