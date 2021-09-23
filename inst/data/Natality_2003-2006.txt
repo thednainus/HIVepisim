@@ -1,0 +1,31 @@
+"Notes"	"County"	"County Code"	"Year"	"Year Code"	Births
+	"San Diego County, CA"	"06073"	"2003"	"2003"	23109
+	"San Diego County, CA"	"06073"	"2004"	"2004"	23504
+	"San Diego County, CA"	"06073"	"2005"	"2005"	23450
+	"San Diego County, CA"	"06073"	"2006"	"2006"	23905
+"Total"	"San Diego County, CA"	"06073"			93968
+"Total"					93968
+"---"
+"Dataset: Natality, 2003-2006"
+"Query Parameters:"
+"Gender: Male"
+"States: San Diego County, CA (06073)"
+"Group By: County; Year"
+"Show Totals: True"
+"Show Zero Values: False"
+"Show Suppressed: False"
+"Calculate Rates Per: 1,000"
+"Population Option: No populations shown because rates were not selected."
+"---"
+"Help: See http://wonder.cdc.gov/wonder/help/Natality.html for more information."
+"---"
+"Query Date: Sep 17, 2021 7:22:09 AM"
+"---"
+"Suggested Citation: United States Department of Health and Human Services (US DHHS), Centers for Disease Control and Prevention"
+"(CDC), National Center for Health Statistics (NCHS), Division of Vital Statistics, Natality public-use data 2003-2006, on CDC"
+"WONDER Online Database, March 2009. Accessed at http://wonder.cdc.gov/natality-v2006.html on Sep 17, 2021 7:22:09 AM"
+"---"
+Caveats:
+"1. Each birth record represents one liveborn infant."
+"2. County-level data are shown only for counties with populations of 100,000 persons or more. Data for all counties with fewer"
+"than 100,000 persons within a state are combined together under the label ""Unidentified Counties."""

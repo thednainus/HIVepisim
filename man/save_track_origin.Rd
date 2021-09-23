@@ -20,7 +20,7 @@ Whenever an individual change their origin because of migration,
   this function will save the information on track_origin.
 }
 \details{
-This function will save information to get location of individual at certan
+This function will save information to get location of individual at certain
    time.
 
 

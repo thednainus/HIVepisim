@@ -1,0 +1,216 @@
+"Notes"	"County"	"County Code"	"Gender"	"Gender Code"	"Year"	"Year Code"	"Age Group"	"Age Group Code"	Deaths	Population	Crude Rate
+	"San Diego County, CA"	"06073"	"Male"	"M"	"1999"	"1999"	"15-19 years"	"15-19"	68	104085	65.3
+	"San Diego County, CA"	"06073"	"Male"	"M"	"1999"	"1999"	"20-24 years"	"20-24"	116	126110	92.0
+	"San Diego County, CA"	"06073"	"Male"	"M"	"1999"	"1999"	"25-34 years"	"25-34"	222	235161	94.4
+	"San Diego County, CA"	"06073"	"Male"	"M"	"1999"	"1999"	"35-44 years"	"35-44"	540	231800	233.0
+	"San Diego County, CA"	"06073"	"Male"	"M"	"1999"	"1999"	"45-54 years"	"45-54"	780	167584	465.4
+	"San Diego County, CA"	"06073"	"Male"	"M"	"1999"	"1999"	"55-64 years"	"55-64"	941	94893	991.6
+	"San Diego County, CA"	"06073"	"Male"	"M"	"1999"	"1999"	"65-74 years"	"65-74"	1916	72669	2636.6
+	"San Diego County, CA"	"06073"	"Male"	"M"	"1999"	"1999"	"75-84 years"	"75-84"	3057	48194	6343.1
+	"San Diego County, CA"	"06073"	"Male"	"M"	"1999"	"1999"	"85+ years"	"85+"	1943	11623	16716.9
+"Total"	"San Diego County, CA"	"06073"	"Male"	"M"	"1999"	"1999"			9583	1092119	877.5
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2000"	"2000"	"15-19 years"	"15-19"	73	105385	69.3
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2000"	"2000"	"20-24 years"	"20-24"	120	128208	93.6
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2000"	"2000"	"25-34 years"	"25-34"	234	231512	101.1
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2000"	"2000"	"35-44 years"	"35-44"	478	232423	205.7
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2000"	"2000"	"45-54 years"	"45-54"	793	173771	456.3
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2000"	"2000"	"55-64 years"	"55-64"	969	97346	995.4
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2000"	"2000"	"65-74 years"	"65-74"	1891	72237	2617.8
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2000"	"2000"	"75-84 years"	"75-84"	2957	48938	6042.3
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2000"	"2000"	"85+ years"	"85+"	2028	12038	16846.7
+"Total"	"San Diego County, CA"	"06073"	"Male"	"M"	"2000"	"2000"			9543	1101858	866.1
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2001"	"2001"	"15-19 years"	"15-19"	78	106551	73.2
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2001"	"2001"	"20-24 years"	"20-24"	122	133520	91.4
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2001"	"2001"	"25-34 years"	"25-34"	241	233243	103.3
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2001"	"2001"	"35-44 years"	"35-44"	458	233531	196.1
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2001"	"2001"	"45-54 years"	"45-54"	865	183561	471.2
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2001"	"2001"	"55-64 years"	"55-64"	1048	102778	1019.7
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2001"	"2001"	"65-74 years"	"65-74"	1793	72198	2483.4
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2001"	"2001"	"75-84 years"	"75-84"	3038	49950	6082.1
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2001"	"2001"	"85+ years"	"85+"	2010	12576	15982.8
+"Total"	"San Diego County, CA"	"06073"	"Male"	"M"	"2001"	"2001"			9653	1127908	855.8
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2002"	"2002"	"15-19 years"	"15-19"	66	108142	61.0
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2002"	"2002"	"20-24 years"	"20-24"	136	135310	100.5
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2002"	"2002"	"25-34 years"	"25-34"	237	233896	101.3
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2002"	"2002"	"35-44 years"	"35-44"	472	231735	203.7
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2002"	"2002"	"45-54 years"	"45-54"	840	187552	447.9
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2002"	"2002"	"55-64 years"	"55-64"	1054	111035	949.3
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2002"	"2002"	"65-74 years"	"65-74"	1742	72130	2415.1
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2002"	"2002"	"75-84 years"	"75-84"	2904	50294	5774.0
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2002"	"2002"	"85+ years"	"85+"	2087	13075	15961.8
+"Total"	"San Diego County, CA"	"06073"	"Male"	"M"	"2002"	"2002"			9538	1143169	834.3
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2003"	"2003"	"15-19 years"	"15-19"	84	108808	77.2
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2003"	"2003"	"20-24 years"	"20-24"	115	131194	87.7
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2003"	"2003"	"25-34 years"	"25-34"	225	230178	97.8
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2003"	"2003"	"35-44 years"	"35-44"	460	228337	201.5
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2003"	"2003"	"45-54 years"	"45-54"	875	192525	454.5
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2003"	"2003"	"55-64 years"	"55-64"	1106	117516	941.1
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2003"	"2003"	"65-74 years"	"65-74"	1702	72501	2347.6
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2003"	"2003"	"75-84 years"	"75-84"	2982	50519	5902.7
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2003"	"2003"	"85+ years"	"85+"	2169	13930	15570.7
+"Total"	"San Diego County, CA"	"06073"	"Male"	"M"	"2003"	"2003"			9718	1145508	848.4
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2004"	"2004"	"15-19 years"	"15-19"	82	110592	74.1
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2004"	"2004"	"20-24 years"	"20-24"	130	135426	96.0
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2004"	"2004"	"25-34 years"	"25-34"	221	230511	95.9
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2004"	"2004"	"35-44 years"	"35-44"	436	225517	193.3
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2004"	"2004"	"45-54 years"	"45-54"	905	196100	461.5
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2004"	"2004"	"55-64 years"	"55-64"	1146	123023	931.5
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2004"	"2004"	"65-74 years"	"65-74"	1622	72392	2240.6
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2004"	"2004"	"75-84 years"	"75-84"	2882	50103	5752.2
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2004"	"2004"	"85+ years"	"85+"	2288	14232	16076.4
+"Total"	"San Diego County, CA"	"06073"	"Male"	"M"	"2004"	"2004"			9712	1157896	838.8
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2005"	"2005"	"15-19 years"	"15-19"	55	113185	48.6
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2005"	"2005"	"20-24 years"	"20-24"	154	139967	110.0
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2005"	"2005"	"25-34 years"	"25-34"	230	228032	100.9
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2005"	"2005"	"35-44 years"	"35-44"	421	221755	189.8
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2005"	"2005"	"45-54 years"	"45-54"	934	199621	467.9
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2005"	"2005"	"55-64 years"	"55-64"	1225	128684	951.9
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2005"	"2005"	"65-74 years"	"65-74"	1566	72541	2158.8
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2005"	"2005"	"75-84 years"	"75-84"	2815	50221	5605.2
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2005"	"2005"	"85+ years"	"85+"	2295	15208	15090.7
+"Total"	"San Diego County, CA"	"06073"	"Male"	"M"	"2005"	"2005"			9695	1169214	829.2
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2006"	"2006"	"15-19 years"	"15-19"	84	115160	72.9
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2006"	"2006"	"20-24 years"	"20-24"	144	141009	102.1
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2006"	"2006"	"25-34 years"	"25-34"	210	228517	91.9
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2006"	"2006"	"35-44 years"	"35-44"	396	218376	181.3
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2006"	"2006"	"45-54 years"	"45-54"	819	202817	403.8
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2006"	"2006"	"55-64 years"	"55-64"	1230	134432	915.0
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2006"	"2006"	"65-74 years"	"65-74"	1523	72586	2098.2
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2006"	"2006"	"75-84 years"	"75-84"	2797	50060	5587.3
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2006"	"2006"	"85+ years"	"85+"	2359	15934	14804.8
+"Total"	"San Diego County, CA"	"06073"	"Male"	"M"	"2006"	"2006"			9562	1178891	811.1
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2007"	"2007"	"15-19 years"	"15-19"	65	116488	55.8
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2007"	"2007"	"20-24 years"	"20-24"	126	142503	88.4
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2007"	"2007"	"25-34 years"	"25-34"	233	230095	101.3
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2007"	"2007"	"35-44 years"	"35-44"	410	215421	190.3
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2007"	"2007"	"45-54 years"	"45-54"	959	206372	464.7
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2007"	"2007"	"55-64 years"	"55-64"	1320	140627	938.7
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2007"	"2007"	"65-74 years"	"65-74"	1520	74448	2041.7
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2007"	"2007"	"75-84 years"	"75-84"	2632	49669	5299.1
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2007"	"2007"	"85+ years"	"85+"	2369	17198	13774.9
+"Total"	"San Diego County, CA"	"06073"	"Male"	"M"	"2007"	"2007"			9634	1192821	807.7
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2008"	"2008"	"15-19 years"	"15-19"	59	118414	49.8
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2008"	"2008"	"20-24 years"	"20-24"	129	145020	89.0
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2008"	"2008"	"25-34 years"	"25-34"	214	235220	91.0
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2008"	"2008"	"35-44 years"	"35-44"	340	214077	158.8
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2008"	"2008"	"45-54 years"	"45-54"	893	210076	425.1
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2008"	"2008"	"55-64 years"	"55-64"	1431	146390	977.5
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2008"	"2008"	"65-74 years"	"65-74"	1549	77842	1989.9
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2008"	"2008"	"75-84 years"	"75-84"	2518	49746	5061.7
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2008"	"2008"	"85+ years"	"85+"	2560	18258	14021.3
+"Total"	"San Diego County, CA"	"06073"	"Male"	"M"	"2008"	"2008"			9693	1215043	797.7
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2009"	"2009"	"15-19 years"	"15-19"	60	118933	50.4
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2009"	"2009"	"20-24 years"	"20-24"	113	146514	77.1
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2009"	"2009"	"25-34 years"	"25-34"	217	239636	90.6
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2009"	"2009"	"35-44 years"	"35-44"	322	212150	151.8
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2009"	"2009"	"45-54 years"	"45-54"	878	212744	412.7
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2009"	"2009"	"55-64 years"	"55-64"	1434	153250	935.7
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2009"	"2009"	"65-74 years"	"65-74"	1583	81058	1952.9
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2009"	"2009"	"75-84 years"	"75-84"	2378	49495	4804.5
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2009"	"2009"	"85+ years"	"85+"	2714	19176	14153.1
+"Total"	"San Diego County, CA"	"06073"	"Male"	"M"	"2009"	"2009"			9699	1232956	786.6
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2010"	"2010"	"15-19 years"	"15-19"	57	118308	48.2
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2010"	"2010"	"20-24 years"	"20-24"	113	148641	76.0
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2010"	"2010"	"25-34 years"	"25-34"	172	243726	70.6
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2010"	"2010"	"35-44 years"	"35-44"	310	211674	146.5
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2010"	"2010"	"45-54 years"	"45-54"	762	214464	355.3
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2010"	"2010"	"55-64 years"	"55-64"	1398	159184	878.2
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2010"	"2010"	"65-74 years"	"65-74"	1539	83148	1850.9
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2010"	"2010"	"75-84 years"	"75-84"	2419	49896	4848.1
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2010"	"2010"	"85+ years"	"85+"	2775	19581	14171.9
+"Total"	"San Diego County, CA"	"06073"	"Male"	"M"	"2010"	"2010"			9545	1248622	764.4
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2011"	"2011"	"15-19 years"	"15-19"	45	115928	38.8
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2011"	"2011"	"20-24 years"	"20-24"	118	149916	78.7
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2011"	"2011"	"25-34 years"	"25-34"	232	251654	92.2
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2011"	"2011"	"35-44 years"	"35-44"	308	211539	145.6
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2011"	"2011"	"45-54 years"	"45-54"	870	214025	406.5
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2011"	"2011"	"55-64 years"	"55-64"	1425	166959	853.5
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2011"	"2011"	"65-74 years"	"65-74"	1536	87795	1749.5
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2011"	"2011"	"75-84 years"	"75-84"	2488	50363	4940.1
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2011"	"2011"	"85+ years"	"85+"	2910	20357	14294.8
+"Total"	"San Diego County, CA"	"06073"	"Male"	"M"	"2011"	"2011"			9932	1268536	782.9
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2012"	"2012"	"15-19 years"	"15-19"	56	114651	48.8
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2012"	"2012"	"20-24 years"	"20-24"	118	152263	77.5
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2012"	"2012"	"25-34 years"	"25-34"	257	259114	99.2
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2012"	"2012"	"35-44 years"	"35-44"	313	213343	146.7
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2012"	"2012"	"45-54 years"	"45-54"	819	213212	384.1
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2012"	"2012"	"55-64 years"	"55-64"	1549	170815	906.8
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2012"	"2012"	"65-74 years"	"65-74"	1640	94996	1726.4
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2012"	"2012"	"75-84 years"	"75-84"	2454	50863	4824.7
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2012"	"2012"	"85+ years"	"85+"	2883	20971	13747.6
+"Total"	"San Diego County, CA"	"06073"	"Male"	"M"	"2012"	"2012"			10089	1290228	782.0
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2013"	"2013"	"15-19 years"	"15-19"	49	112262	43.6
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2013"	"2013"	"20-24 years"	"20-24"	116	151053	76.8
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2013"	"2013"	"25-34 years"	"25-34"	246	266666	92.3
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2013"	"2013"	"35-44 years"	"35-44"	309	214534	144.0
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2013"	"2013"	"45-54 years"	"45-54"	807	212436	379.9
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2013"	"2013"	"55-64 years"	"55-64"	1575	175389	898.0
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2013"	"2013"	"65-74 years"	"65-74"	1798	101207	1776.6
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2013"	"2013"	"75-84 years"	"75-84"	2472	51512	4798.9
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2013"	"2013"	"85+ years"	"85+"	3047	21351	14271.0
+"Total"	"San Diego County, CA"	"06073"	"Male"	"M"	"2013"	"2013"			10419	1306410	797.5
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2014"	"2014"	"15-19 years"	"15-19"	33	111106	29.7
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2014"	"2014"	"20-24 years"	"20-24"	118	152131	77.6
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2014"	"2014"	"25-34 years"	"25-34"	240	274103	87.6
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2014"	"2014"	"35-44 years"	"35-44"	309	216270	142.9
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2014"	"2014"	"45-54 years"	"45-54"	797	211894	376.1
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2014"	"2014"	"55-64 years"	"55-64"	1489	179723	828.5
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2014"	"2014"	"65-74 years"	"65-74"	1814	107371	1689.5
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2014"	"2014"	"75-84 years"	"75-84"	2403	52542	4573.5
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2014"	"2014"	"85+ years"	"85+"	2986	22123	13497.3
+"Total"	"San Diego County, CA"	"06073"	"Male"	"M"	"2014"	"2014"			10189	1327263	767.7
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2015"	"2015"	"15-19 years"	"15-19"	45	110220	40.8
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2015"	"2015"	"20-24 years"	"20-24"	133	150809	88.2
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2015"	"2015"	"25-34 years"	"25-34"	239	278729	85.7
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2015"	"2015"	"35-44 years"	"35-44"	292	218210	133.8
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2015"	"2015"	"45-54 years"	"45-54"	770	211487	364.1
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2015"	"2015"	"55-64 years"	"55-64"	1558	184581	844.1
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2015"	"2015"	"65-74 years"	"65-74"	1953	113592	1719.3
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2015"	"2015"	"75-84 years"	"75-84"	2412	53370	4519.4
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2015"	"2015"	"85+ years"	"85+"	3128	23080	13552.9
+"Total"	"San Diego County, CA"	"06073"	"Male"	"M"	"2015"	"2015"			10530	1344078	783.4
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2016"	"2016"	"15-19 years"	"15-19"	38	109262	34.8
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2016"	"2016"	"20-24 years"	"20-24"	130	148047	87.8
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2016"	"2016"	"25-34 years"	"25-34"	254	283107	89.7
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2016"	"2016"	"35-44 years"	"35-44"	354	220229	160.7
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2016"	"2016"	"45-54 years"	"45-54"	686	210259	326.3
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2016"	"2016"	"55-64 years"	"55-64"	1668	188448	885.1
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2016"	"2016"	"65-74 years"	"65-74"	2050	119161	1720.4
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2016"	"2016"	"75-84 years"	"75-84"	2449	54506	4493.1
+	"San Diego County, CA"	"06073"	"Male"	"M"	"2016"	"2016"	"85+ years"	"85+"	3158	23640	13358.7
+"Total"	"San Diego County, CA"	"06073"	"Male"	"M"	"2016"	"2016"			10787	1356659	795.1
+"Total"	"San Diego County, CA"	"06073"	"Male"	"M"					177521	21899179	810.6
+"Total"	"San Diego County, CA"	"06073"							177521	21899179	810.6
+"Total"									177521	21899179	810.6
+"---"
+"Dataset: Compressed Mortality, 1999-2016"
+"Query Parameters:"
+"Age Group: 15-19 years; 20-24 years; 25-34 years; 35-44 years; 45-54 years; 55-64 years; 65-74 years; 75-84 years; 85+ years"
+"Gender: Male"
+"States: San Diego County, CA (06073)"
+"Group By: County; Gender; Year; Age Group"
+"Show Totals: True"
+"Show Zero Values: False"
+"Show Suppressed: False"
+"Calculate Rates Per: 100,000"
+"---"
+"Help: See http://wonder.cdc.gov/wonder/help/cmf.html for more information."
+"---"
+"Query Date: Sep 17, 2021 6:57:49 AM"
+"---"
+"Suggested Citation: Centers for Disease Control and Prevention, National Center for Health Statistics. Compressed Mortality File"
+"1999-2016 on CDC WONDER Online Database, released June 2017. Data are from the Compressed Mortality File 1999-2016 Series 20 No."
+"2U, 2016, as compiled from data provided by the 57 vital statistics jurisdictions through the Vital Statistics Cooperative"
+"Program. Accessed at http://wonder.cdc.gov/cmf-icd10.html on Sep 17, 2021 6:57:49 AM"
+"---"
+Caveats:
+"1. About sub-national population figures for regions, divisions, states and counties: population figures for 1999 are from the"
+"1990-1999 series of bridged-race intercensal estimates of the July 1 resident population; population figures for 2000 and 2010"
+"are bridged-race April 1 census counts; population figures for 2001-2009 are from the revised 2000-2009 series of bridged-race"
+"intercensal estimates of the July 1 resident population; and population figures for 2011-2015 are bridged-race postcensal"
+"estimates of the July 1 resident population, from the Vintage 2015 series released by NCHS on June 28, 2016."
+"2. Deaths of persons with Age ""Not Stated"" are included in ""All"" counts and rates, but are not distributed among age groups,"
+"so are not included in age-specific counts, age-specific rates or in any age-adjusted rates. More information:"
+"http://wonder.cdc.gov/wonder/help/cmf.html#Not Stated."
+"3. As of April 3, 2017, the underlying cause of death has been revised for 125 deaths in 2014. More information:"
+"http://wonder.cdc.gov/wonder/help/cmf.html#2014-Revision."

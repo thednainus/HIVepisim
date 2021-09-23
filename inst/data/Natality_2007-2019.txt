@@ -1,0 +1,57 @@
+"Notes"	"County"	"County Code"	"Year"	"Year Code"	Births
+	"San Diego County, CA"	"06073"	"2007"	"2007"	24245
+	"San Diego County, CA"	"06073"	"2008"	"2008"	24038
+	"San Diego County, CA"	"06073"	"2009"	"2009"	23062
+	"San Diego County, CA"	"06073"	"2010"	"2010"	23031
+	"San Diego County, CA"	"06073"	"2011"	"2011"	22345
+	"San Diego County, CA"	"06073"	"2012"	"2012"	22752
+	"San Diego County, CA"	"06073"	"2013"	"2013"	22314
+	"San Diego County, CA"	"06073"	"2014"	"2014"	22965
+	"San Diego County, CA"	"06073"	"2015"	"2015"	22488
+	"San Diego County, CA"	"06073"	"2016"	"2016"	21836
+	"San Diego County, CA"	"06073"	"2017"	"2017"	21144
+	"San Diego County, CA"	"06073"	"2018"	"2018"	20570
+	"San Diego County, CA"	"06073"	"2019"	"2019"	19625
+"Total"	"San Diego County, CA"	"06073"			290415
+"Total"					290415
+"---"
+"Dataset: Natality, 2007-2019"
+"Query Parameters:"
+"Gender: Male"
+"States: San Diego County, CA (06073)"
+"Group By: County; Year"
+"Show Totals: True"
+"Show Zero Values: False"
+"Show Suppressed: False"
+"Calculate Rates Per: 1,000"
+"Population Option: No populations shown because rates were not selected."
+"---"
+"Help: See http://wonder.cdc.gov/wonder/help/Natality.html for more information."
+"---"
+"Query Date: Sep 17, 2021 7:21:08 AM"
+"---"
+"Suggested Citation: United States Department of Health and Human Services (US DHHS), Centers for Disease Control and Prevention"
+"(CDC), National Center for Health Statistics (NCHS), Division of Vital Statistics, Natality public-use data 2007-2019, on CDC"
+"WONDER Online Database, October 2020. Accessed at http://wonder.cdc.gov/natality-current.html on Sep 17, 2021 7:21:08 AM"
+"---"
+Caveats:
+"1. Each birth record represents one liveborn infant."
+"2. County-level data are shown only for counties with populations of 100,000 persons or more. Within each state, data for all"
+"counties with fewer than 100,000 persons are combined together under the label ""Unidentified Counties""."
+"3. <p> As a result of population changes the following counties do not have data available for all years.<br/> Before 2014 the"
+"data for the following counties was recoded to the ""Unidentified Counties"" category within the state of the county because"
+"they did not meet minimum population standards. Houston County, AL (01069); Navajo County, AZ (04017); Faulkner County, AR"
+"(05045); Saline County, AR (05125); Bartow County, GA (13015); Carroll County, GA (13045); Columbia County, GA (13073); Coweta"
+"County, GA (13077); Douglas County, GA (13097); Fayette County, GA (13113); Forsyth County, GA (13117); Lowndes County, GA"
+"(13185); Paulding County, GA (13223); Whitfield County, GA (13313); Bonneville County, ID (16019); DeKalb County, IL (17037);"
+"Kendall County, IL (17093); Clark County, IN (18019); Douglas County, KS (20045); Boone County, KY (21015); Hardin County, KY"
+"(21093); Warren County, KY (21227); Ascension Parish, LA (22005); Bossier Parish, LA (22015); Livingston Parish, LA (22063);"
+"Cecil County, MD (24015); St. Mary's County, MD (24037); Scott County, MN (27139); Wright County, MN (27171); Franklin County,"
+"MO (29071); Missoula County, MT (30063); Sandoval County, NM (35043); Tompkins County, NY (36109); Brunswick County, NC (37019);"
+"Craven County, NC (37049); Harnett County, NC (37085); Henderson County, NC (37089); Miami County, OH (39109); Canadian County,"
+"OK (40017); Adams County, PA (42001); Dorchester County, SC (45035); Pennington County, SD (46103); Wilson County, TN (47189);"
+"Comal County, TX (48091); Guadalupe County, TX (48187); Hays County, TX (48209); Kaufman County, TX (48257); Parker County, TX"
+"(48367); Cache County, UT (49005); Washington County, UT (49053); Spotsylvania County, VA (51177); Stafford County, VA (51179);"
+"Cowlitz County, WA (53015); Berkeley County, WV (54003); Fond du Lac County, WI (55039); Walworth County, WI (55127). </p> <p>"
+"After 2013 the data for the following counties was recoded to the ""Unidentified Counties"" category within the state of the"
+"county because they did not meet minimum population standards. Cape May County, NJ (34009); Portsmouth city, VA (51740). </p>"

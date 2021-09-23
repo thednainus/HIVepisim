@@ -24,17 +24,30 @@
 #'
 arrivals_mig <- function(dat, at){
 
+  #browser()
+
   arrival.age <- get_param(dat, "arrival.age")
+  init_sim_date <- get_param(dat, "init_date")
 
   # Variables ---------------------------------------------------------------
   # Arrival rate for population 1 (San Diego population)
-  a1.rate <- get_param(dat, "a1.rate")
+  a1.rates <- get_param(dat, "a1.rate")
+
+  #get a1.rate for time step "at"
+  a1.rate <- get_rate(init_date = init_sim_date, times = a1.rates$a1.times,
+                      rates = a1.rates$a1.rates, at = at)
+
   index1 <- at - 1
   nOld1 <- get_epi(dat, "num.pop1", index1)
   nArrivals1 <- 0
 
   # Arrival rate for population 2 (Global population)
-  a2.rate <- get_param(dat, "a2.rate")
+  a2.rates <- get_param(dat, "a2.rate")
+
+  #get a2.rate for time step "at"
+  a2.rate <- get_rate(init_date = init_sim_date, times = a2.rates$a2.times,
+                      rates = a2.rates$a2.rates, at = at)
+
   index2 <- at - 1
   nOld2 <- get_epi(dat, "num.pop2", index2)
   nArrivals2 <- 0
@@ -42,6 +55,7 @@ arrivals_mig <- function(dat, at){
   # Add Nodes ---------------------------------------------------------------
   # For population 1 (San Diego population)
   if (nOld1 > 0) {
+    #browser()
     nArrivals1 <- rbinom(1, nOld1, a1.rate)
     if (nArrivals1 > 0) {
       #browser()

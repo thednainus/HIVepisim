@@ -197,6 +197,7 @@ nwupdate_mig <- function(dat, at) {
     save_diagnosis_time(dat, prefix = NULL)
     save_track_stages(dat, prefix = NULL)
     save_track_origin(dat, prefix = NULL)
+    save_r0(dat, prefix = NULL)
   }
 
 

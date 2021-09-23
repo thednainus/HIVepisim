@@ -18,13 +18,15 @@
 departure_mig <- function(dat, at) {
 
   ## General departures
+  #browser()
+  init_sim_date <- get_param(dat, "init_date")
   active <- get_attr(dat, "active")
   status <- get_attr(dat, "status")
   stage <- get_attr(dat, "stage")
   origin <- get_attr(dat, "origin")
   exitTime <- get_attr(dat, "exitTime")
   age <- get_attr(dat, "age")
-  rates.all <- get_param(dat, "asmr")
+  asmr <- get_param(dat, "asmr")
   rates.aids <- get_param(dat, "aids.mr")
 
   idsDpt.pop1 <- NULL
@@ -32,6 +34,12 @@ departure_mig <- function(dat, at) {
 
   idsDpt.pop2 <- NULL
   idsDpt.aids.pop2 <- NULL
+
+  # get general mortality rate by time step
+  #get a2.rate for time step "at"
+  dep_times <- asmr$dr_times
+  #linear interpolation for time step at
+  rates.all <- apply(asmr$dep_vec, 1, get_rate, init_date = init_sim_date, times = dep_times, at = at)
 
 
   # Departures (not HIV-related: population 1) --------------------------------------------------
@@ -123,17 +131,29 @@ departure_mig <- function(dat, at) {
 
 
   #Cumulative R0 calculations
-  if (at == 2) {
-    dat$temp$R0_pop1 <- NA
-    dat$temp$R0_pop2 <- NA
-  }
   if (length(depHIV.pop1) > 0) {
+    #browser()
+
     newR0_pop1 <- dat$attr$count.trans[depHIV.pop1]
-    dat$temp$R0_pop1 <- c(dat$temp$R0_pop1, newR0_pop1)
+    r0pop1 <- data.frame(time = at, r0 = newR0_pop1)
+
+    if(!is.null(dat$stats$R0_pop1) == TRUE){
+      r0pop1 <- rbind(dat$stats$R0_pop1, r0pop1)
+    }
+    dat$stats$R0_pop1 <- r0pop1
+
   }
   if (length(depHIV.pop2) > 0) {
+
+    #browser()
+
     newR0_pop2 <- dat$attr$count.trans[depHIV.pop2]
-    dat$temp$R0_pop2 <- c(dat$temp$R0_pop2, newR0_pop2)
+    r0pop2 <- data.frame(time = at, r0 = newR0_pop2)
+
+    if(!is.null(dat$stats$R0_pop2) == TRUE){
+      r0pop2 <- rbind(dat$stats$R0_pop2, r0pop2)
+    }
+    dat$stats$R0_pop2 <- r0pop2
   }
 
 

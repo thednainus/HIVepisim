@@ -41,7 +41,7 @@ hivtrans_mig <- function(dat, at) {
 
   # Parameters ------
   # baseline for transmission rate
-  trans.r <- get_param(dat, "trans.r")
+  inf.prob <- get_param(dat, "inf.prob")
   #time.unit <- get_param(dat, "time.unit")
   actRate <- get_param(dat, "act.rate")
 
@@ -105,42 +105,42 @@ hivtrans_mig <- function(dat, at) {
       del$susMigrant <- migrant[del$sus]
       del$susStatus <- status[del$sus]
 
-      del$act.rate <- actRate
+      #del$act.rate <- actRate
 
 
       # Set parameters on discordant edgelist data frame
-      del$trans.r <- rep(trans.r, length(del$inf))
+      #browser()
+      del$inf.prob <- rep(inf.prob, length(del$inf))
 
       # stages of HIV infection (following Cori et al. 2015)
-      del$trans.r[del$stage == 0] <- del$trans.r[del$stage == 0] * ws0
-      del$trans.r[del$stage == 1] <- del$trans.r[del$stage == 1] * ws1
-      del$trans.r[del$stage == 2] <- del$trans.r[del$stage == 2] * ws2
-      del$trans.r[del$stage == 3] <- del$trans.r[del$stage == 3] * ws3
-      del$trans.r[del$stage == 4] <- del$trans.r[del$stage == 4] * ws4
+      del$inf.prob[del$stage == 0] <- del$inf.prob[del$stage == 0] * ws0
+      del$inf.prob[del$stage == 1] <- del$inf.prob[del$stage == 1] * ws1
+      del$inf.prob[del$stage == 2] <- del$inf.prob[del$stage == 2] * ws2
+      del$inf.prob[del$stage == 3] <- del$inf.prob[del$stage == 3] * ws3
+      del$inf.prob[del$stage == 4] <- del$inf.prob[del$stage == 4] * ws4
 
       # Treatment status and tested status
       #is not tested
-      del$trans.r[del$diag.status == 0] <- del$trans.r[del$diag.status == 0] * wc1
+      del$inf.prob[del$diag.status == 0] <- del$inf.prob[del$diag.status == 0] * wc1
       # is off treatment
-      del$trans.r[del$tx.status == 0 & del$cuml.time.off.tx > 0] <-
-        del$trans.r[del$tx.status == 0 & del$cuml.time.off.tx > 0] * wc2
+      del$inf.prob[del$tx.status == 0 & del$cuml.time.off.tx > 0] <-
+        del$inf.prob[del$tx.status == 0 & del$cuml.time.off.tx > 0] * wc2
       #is tested but not on treatment
-      del$trans.r[del$diag.status == 1 & del$tx.status == 0 & del$cuml.time.on.tx == 0] <-
-        del$trans.r[del$diag.status == 1 & del$tx.status == 0 & del$cuml.time.on.tx == 0] * wc2
+      del$inf.prob[del$diag.status == 1 & del$tx.status == 0 & del$cuml.time.on.tx == 0] <-
+        del$inf.prob[del$diag.status == 1 & del$tx.status == 0 & del$cuml.time.on.tx == 0] * wc2
       #is on treatment
-      del$trans.r[del$tx.status == 1 & del$cuml.time.on.tx > 0] <-
-        del$trans.r[del$tx.status == 1 & del$cuml.time.on.tx > 0] * wc3
+      del$inf.prob[del$tx.status == 1 & del$cuml.time.on.tx > 0] <-
+        del$inf.prob[del$tx.status == 1 & del$cuml.time.on.tx > 0] * wc3
 
       # risk groups
-      del$trans.r[del$risk.group == 1] <- del$trans.r[del$risk.group == 1] * wr1
-      del$trans.r[del$risk.group == 2] <- del$trans.r[del$risk.group == 2] * wr2
+      del$inf.prob[del$risk.group == 1] <- del$inf.prob[del$risk.group == 1] * wr1
+      del$inf.prob[del$risk.group == 2] <- del$inf.prob[del$risk.group == 2] * wr2
 
-      del$finalProb <- 1 - (1 - del$trans.r)^del$act.rate
+      del$actRate <- actRate
+      del$finalProb <- 1 - (1 - del$inf.prob)^del$actRate
 
 
       # Transmission from infected person --------------------------------------
-
-      #transmit <- rbinom(nrow(del), 1, del$trans.r)
       transmit <- rbinom(nrow(del), 1, del$finalProb)
       del <- del[which(transmit == 1), ]
 
@@ -185,6 +185,7 @@ hivtrans_mig <- function(dat, at) {
 
 
      # Attributes of transmitter
+    #browser()
     transmitter <- as.numeric(del$inf)
     tab.trans <- table(transmitter)
     uni.trans <- as.numeric(names(tab.trans))

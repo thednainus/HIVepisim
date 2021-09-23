@@ -655,7 +655,7 @@ track_origin <- function(dat, at, migrations, IDs){
 
 #' Save time and IDs of nodes and their location.
 #'
-#' This function will save information to get location of individual at certan
+#' This function will save information to get location of individual at certain
 #'    time.
 #'
 #'
@@ -682,5 +682,74 @@ save_track_origin <- function(dat, prefix = NULL){
 
     write.csv(dat$stats$migrant, file = filename, row.names = FALSE)
   }
+}
+
+#' Save time and values for basic reproduction number
+#'
+#' This function will save information for cumulative basic reproduction
+#'    number.
+#'
+#' @inheritParams EpiModel::arrivals.net
+#' @param prefix Text for prefix to use when saving filename.
+#'
+#' @details
+#' If a prefix is not provided, csv file will be saved as r0.csv
+#'
+#' @return
+#' @export
+save_r0 <- function(dat, prefix = NULL){
+
+  if(!is.null(dat$stats$R0_pop1) == TRUE){
+
+    if(is.null(prefix)){
+      filename <- "r0_pop1.csv"
+    } else {
+      filename <- paste(prefix, "r0_pop1.csv", sep = "_")
+    }
+
+    write.csv(dat$stats$R0_pop1, file = filename, row.names = FALSE)
+   }
+
+  if(!is.null(dat$stats$R0_pop2) == TRUE){
+
+    if(is.null(prefix)){
+        filename2 <- "r0_pop2.csv"
+      } else {
+        filename2 <- paste(prefix, "r0_pop2.csv", sep = "_")
+      }
+
+    write.csv(dat$stats$R0_pop2, file = filename2, row.names = FALSE)
+  }
+}
+
+#' Get rate based on linear interpolation
+#'
+#' @param init_date Object of class Date. Initial date for the start of simulations
+#'    in the form of "YEAR-MONTH-DAY".
+#' @param times Vector of times for interpolation
+#' @param rates Vector os respective rates (related to times)
+#' @param at time step in days
+#'
+#' @return rate based on linear interpolation. See \code{\link[stats]{approx}}.
+#' @export
+#'
+#' @examples
+#' # times <- c(2000:2019)
+#' # rates <- c(1.445432e-06, 1.455312e-06, 1.414593e-06, 1.346566e-06,
+#' #            1.329516e-06, 1.281034e-06, 1.445432e-06, 1.455312e-06,
+#' #             1.414593e-06, 1.346566e-06, 1.329516e-06, 1.281034e-06,
+#' #             1.288603e-06, 1.250734e-06, 1.265186e-06, 1.234629e-06,
+#' #              1.193328e-06, 1.133912e-06, 1.099263e-06, 1.052727e-06)
+#' # init_date <- as.Date("1980-01-01")
+#' # new_rate <- get_rate(init_date, times, rates, at = 10000)
+get_rate <- function(init_date, times, rates, at){
+
+  #convert time in days to year
+  time_step_year <- as.Date(at, origin = init_date)
+  time_step_year <- decimal_date(time_step_year)
+
+  new_rate <- approx(times, rates , xout = time_step_year, rule = 2)$y
+
+  return(new_rate)
 }
 

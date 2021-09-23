@@ -43,7 +43,8 @@ initialize_mig <- function(x, param, init, control, s) {
 
     # Network Parameters ------------------------------------------------------
     dat$nwparam <- list(x[-which(names(x) == "fit")])
-    groups <- length(unique(get_vertex_attribute(nw, "group")))
+
+    groups <- length(unique(get_vertex_attribute(dat$nw[[1]], "group")))
     dat <- set_param(dat, "groups", groups)
 
 
