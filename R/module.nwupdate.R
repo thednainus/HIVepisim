@@ -25,7 +25,7 @@ nwupdate_mig <- function(dat, at) {
   migrants <- get_attr(dat, "migrant")
   origin <- get_attr(dat, "origin")
 
-  final_step <- get_control(dat, "nsteps")
+  final_step <- get_control(dat, "when2save_at")
 
   #statOnNw <- "status" %in% dat$temp$nwterms
   resimulate.network <- get_control(dat, "resimulate.network")

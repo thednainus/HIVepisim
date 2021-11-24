@@ -36,8 +36,14 @@ hivtest_msm <- function(dat, at) {
   tsincelntst[is.na(tsincelntst)] <- at - entrTime[is.na(tsincelntst)]
 
   # Parameters ----
-  hiv.test.rate <- get_param(dat, "hiv.test.rate")
+  hiv.test.rate.df <- get_param(dat, "hiv.test.rate")
   twind.int <- get_param(dat, "test.window.int")
+  init_sim_date <- get_param(dat, "init_date")
+
+  #get hiv.test.rate for time step "at"
+  #browser()
+  hiv.test.rate <- get_rate(init_date = init_sim_date, times = hiv.test.rate.df$year,
+                            rates = hiv.test.rate.df$perc_per_day, at = at)
 
 
   # General interval testing

@@ -16,6 +16,8 @@
 #'
 initialize_mig <- function(x, param, init, control, s) {
 
+  #browser()
+
   if (control$start == 1) {
 
     # Master Data List --------------------------------------------------------
@@ -144,6 +146,7 @@ initialize_mig <- function(x, param, init, control, s) {
 #'
 init_status_mig <- function(dat) {
 
+
   type <- get_control(dat, "type", override.null.error = TRUE)
   nsteps <- get_control(dat, "nsteps")
   tergmLite <- get_control(dat, "tergmLite")
@@ -252,10 +255,13 @@ init_status_mig <- function(dat) {
     diag.stage[idsInf] <- stage[idsInf]
     dat <- set_attr(dat, "diag.stage", diag.stage)
 
-    hiv.test.rate <- get_param(dat, "hiv.test.rate")
+    #hiv.test.rate <- get_param(dat, "hiv.test.rate")
+    hiv.test.rate.df <- get_param(dat, "hiv.test.rate")
+    hiv.test.rate <- mean(hiv.test.rate.df$perc_per_day)
     dat <- set_attr(dat, "diag.time", rep(NA, num.all))
     diag.time <- get_attr(dat, "diag.time")
-    diag.time[idsInf] <- infTime[idsInf] + round(mean(1/dat$param$hiv.test.rate))
+    #diag.time[idsInf] <- infTime[idsInf] + round(1/dat$param$hiv.test.rate)
+    diag.time[idsInf] <- infTime[idsInf] + round(1/hiv.test.rate)
     dat <- set_attr(dat, "diag.time", diag.time)
 
     dat <- set_attr(dat, "last.neg.test",rep(NA, num.all))

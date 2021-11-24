@@ -641,7 +641,7 @@ track_origin <- function(dat, at, migrations, IDs){
     #browser()
     origin <- data.frame(time = at, IDs = infID, migrant = migrations)
 
-    if(!is.null(dat$stats$migrat) == TRUE){
+    if(!is.null(dat$stats$migrant) == TRUE){
       origin <- rbind(dat$stats$migrant, origin)
     }
     dat$stats$migrant <- origin

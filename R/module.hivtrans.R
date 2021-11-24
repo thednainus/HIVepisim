@@ -41,7 +41,13 @@ hivtrans_mig <- function(dat, at) {
 
   # Parameters ------
   # baseline for transmission rate
-  inf.prob <- get_param(dat, "inf.prob")
+  inf.prob_df <- get_param(dat, "inf.prob")
+  init_sim_date <- get_param(dat, "init_date")
+
+  #get infection probability per day
+  inf.prob <-get_rate(init_date = init_sim_date, times = inf.prob_df$time,
+                      rates = inf.prob_df$trans.prob, at = at)
+
   #time.unit <- get_param(dat, "time.unit")
   actRate <- get_param(dat, "act.rate")
 
