@@ -5,15 +5,15 @@
 # I also used the infection probability based on Erik's suggestion of getting
 # this probability based on incidence in San Diego calculated using the ECD model
 
-#param_list <- commandArgs(trailingOnly = TRUE)
-#line_number <- as.numeric(param_list[1])
-#message(line_number)
+param_list <- commandArgs(trailingOnly = TRUE)
+line_number <- as.numeric(param_list[1])
+message(line_number)
 
-line_number <- 9036
+#line_number <- 742
 
-#seed_value <- as.numeric(param_list[2])
-#message(seed_value)
-seed_value <- 60777
+seed_value <- as.numeric(param_list[2])
+message(seed_value)
+#seed_value <- 15248
 
 set.seed(seed_value)
 
@@ -46,9 +46,8 @@ total_steps <- as.numeric(end_sim_date - init_sim_date)
 #total_steps <- 100
 
 #checkpoint_steps
-#checkpoint_steps <- 1872
-checkpoint_steps <- total_steps
-#checkpoint_steps <- 2
+checkpoint_steps <- 1872
+#checkpoint_steps <- total_steps
 
 #if file data/sim1/sim1.cp.rda does not exist, it means that we are running this
 # code for the first time
@@ -67,8 +66,11 @@ if(file.exists("data/sim1/sim1.cp.rda") == FALSE){
 
   # 63% per year is 0.0027 per day
   # 0.01253765 is 99% per year
-  params4dim <- readRDS(system.file("data/params4dim_10Dec2021.RDS",
+  params4dim <- readRDS(system.file("data/params4dim_23Nov2021.RDS",
                                     package = "HIVepisim"))[line_number,]
+
+  params4dim <- readRDS(system.file("data/params4dim_19Nov2021.RDS",
+                                    package = "HIVepisim"))
 
   # Network Initialization --------------------------------------------------
 
@@ -313,7 +315,7 @@ if(file.exists("data/sim1/sim1.cp.rda") == FALSE){
 
   } else {
     est <- netest(nw, formation, target.stats, coef.diss, edapprox = TRUE)
-    dx <- netdx(est, nsims = 1, nsteps = 1000, keep.tedgelist = TRUE)
+    dx <- netdx(est, nsims = 10, nsteps = 1000, keep.tedgelist = TRUE)
 
     # Model diagnostics
     # Simulate time series to examine timed edgelist
@@ -513,7 +515,7 @@ param <- param.net(time.unit = time.unit,
                    m21.rate = 1/(300*365))
 # In order to have a m12.rate that will generate 500 migrations every 10 years,
 # the m12.rate should be 1/(100 * 365) (rate per day)
-# to balance number of migrant for m21.rate, we will have 15000/x = 50 indvidulas per year;
+# to balance number of migrant for m21.rate, we will have 15000/x = 50 individuals per year;
 # x = 15000/50; x = 300 years
 # m21.rate = 1/(300*365)
 
@@ -562,11 +564,9 @@ if(iter < 64){
 
 
 # creating stop condition to exit with code 85
-  #sim <- netsim_hpc("est.rda", param, init, control,
-  #                  cp.save.int = checkpoint_steps, save.min=FALSE, save.max=FALSE,
-  #                  compress = "gzip")
-  start_time <- Sys.time()
-  sim <- netsim(est, param, init, control)
+  sim <- netsim_hpc("est.rda", param, init, control,
+                    cp.save.int = checkpoint_steps, save.min=FALSE, save.max=FALSE,
+                    compress = "gzip")
 
   #end of script
   end_time <- Sys.time()

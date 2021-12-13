@@ -9,7 +9,7 @@
 #line_number <- as.numeric(param_list[1])
 #message(line_number)
 
-line_number <- 9036
+line_number <- 6016
 
 #seed_value <- as.numeric(param_list[2])
 #message(seed_value)
@@ -138,6 +138,7 @@ if(file.exists("data/sim1/sim1.cp.rda") == FALSE){
 
   # Initialize network
   n_pop1 = 5000
+  #n_pop1 = 10000
   n_pop2 = n_pop1 * 3
 
   #total number of individuals in the network
@@ -308,12 +309,13 @@ if(file.exists("data/sim1/sim1.cp.rda") == FALSE){
     print(est)
 
     # to simulate large networks
-    dx <- netdx(est, nsims = 1, nsteps = 1000, keep.tedgelist = TRUE,
-                set.control.ergm = control.simulate.ergm(MCMC.burnin= 1.5e5))
+    dx <- netdx(est, nsims = 5, nsteps = 500, keep.tedgelist = TRUE,
+                set.control.ergm = control.simulate.ergm(MCMC.burnin= 1.5e8))
 
   } else {
     est <- netest(nw, formation, target.stats, coef.diss, edapprox = TRUE)
-    dx <- netdx(est, nsims = 1, nsteps = 1000, keep.tedgelist = TRUE)
+    dx <- netdx(est, nsims = 1, nsteps = 1000, keep.tedgelist = TRUE,
+                set.control.stergm = control.simulate.network(MCMC.maxchanges = 1e7))
 
     # Model diagnostics
     # Simulate time series to examine timed edgelist
@@ -509,8 +511,8 @@ param <- param.net(time.unit = time.unit,
                    a1.rate = list(a1.times = a1.rate.times, a1.rates = a1.rates),
                    a2.rate = list(a2.times = a2.rate.times, a2.rates = a2.rates),
                    arrival.age = 18,
-                   m12.rate = 1/(100*365),
-                   m21.rate = 1/(300*365))
+                   m12.rate = 1/((n_pop1/50)*365),
+                   m21.rate = 1/((n_pop2/50)*365))
 # In order to have a m12.rate that will generate 500 migrations every 10 years,
 # the m12.rate should be 1/(100 * 365) (rate per day)
 # to balance number of migrant for m21.rate, we will have 15000/x = 50 indvidulas per year;
