@@ -30,6 +30,8 @@ nwupdate_mig <- function(dat, at) {
   #statOnNw <- "status" %in% dat$temp$nwterms
   resimulate.network <- get_control(dat, "resimulate.network")
   isTERGM <- get_control(dat, "isTERGM")
+  save.nwstats <- get_control(dat, "save.nwstats")
+  save_nodes <- get_control(dat, "save_nodes")
 
   ## Vital Dynamics
   arrivals <- which(active == 1 & entrTime == at)
@@ -184,6 +186,18 @@ nwupdate_mig <- function(dat, at) {
   #  save_stage(dat)
   #}
 
+
+
+  #browser()
+
+  if (save.nwstats == TRUE){
+    #get number of nodes by attribute origin
+    total_nodes <- matrix(table(get.vertex.attribute(dat$nw[[1]], attrname = "origin")),
+                          nrow = 1, ncol = 2)
+    colnames(total_nodes) <- c("global", "region")
+    dat <- track_nodes(dat, at, total_nodes)
+  }
+
   # Save info for stage of HIV infection at the end of simulation
   # Save info for stage of HIV infection at the end of simulation
   if (at == final_step & dat$control$save.stats == TRUE){
@@ -198,6 +212,11 @@ nwupdate_mig <- function(dat, at) {
     save_track_stages(dat, prefix = NULL)
     save_track_origin(dat, prefix = NULL)
     save_r0(dat, prefix = NULL)
+
+    if(save_nodes == TRUE){
+      save_nodes(dat, prefix = NULL)
+    }
+
   }
 
 

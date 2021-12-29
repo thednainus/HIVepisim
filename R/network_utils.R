@@ -653,6 +653,30 @@ track_origin <- function(dat, at, migrations, IDs){
 }
 
 
+#' Track total number of nodes by atrribute origin
+#'
+#' This function will track the total number of nodes in each time step
+#'
+#' @inheritParams EpiModel::arrivals.net
+#' @param total_nodes Matrix for total nodes at step at by attribute origin
+#'
+#' @return
+#' @export
+track_nodes <- function(dat, at, total_nodes){
+
+  nodes <- data.frame(time = at, total_nodes)
+
+  if(!is.null(dat$stats$nodes) == TRUE){
+    nodes <- rbind(dat$stats$nodes, nodes)
+  }
+  dat$stats$nodes <- nodes
+
+
+  return(dat)
+
+}
+
+
 #' Save time and IDs of nodes and their location.
 #'
 #' This function will save information to get location of individual at certain
@@ -681,6 +705,33 @@ save_track_origin <- function(dat, prefix = NULL){
     }
 
     write.csv(dat$stats$migrant, file = filename, row.names = FALSE)
+  }
+}
+
+
+#' Save total number of nodes at each time step by attribute origin
+#'
+#' This function will save the total number of nodes by attribute origin
+#'
+#' @inheritParams EpiModel::arrivals.net
+#' @param prefix Text for prefix to use when saving filename.
+#'
+#' @details
+#' If a prefix is not provided, csv file will be saved as total_nodes.csv
+#'
+#' @return
+#' @export
+save_nodes <- function(dat, prefix = NULL){
+
+  if(!is.null(dat$stats$nodes) == TRUE){
+
+    if(is.null(prefix)){
+      filename <- "total_nodes.csv"
+    } else {
+      filename <- paste(prefix, "total_nodes.csv", sep = "_")
+    }
+
+    write.csv(dat$stats$nodes, file = filename, row.names = FALSE)
   }
 }
 

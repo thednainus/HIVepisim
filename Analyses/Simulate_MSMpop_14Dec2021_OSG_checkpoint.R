@@ -137,8 +137,8 @@ if(file.exists("data/sim1/sim1.cp.rda") == FALSE){
   #plot(ages, dr_vec, type = "o", xlab = "age", ylab = "Mortality Rate")
 
   # Initialize network
-  #n_pop1 = 5000
-  n_pop1 = 10000
+  n_pop1 = 1000
+  #n_pop1 = 30000
   n_pop2 = n_pop1 * 3
 
   #total number of individuals in the network
@@ -256,6 +256,8 @@ if(file.exists("data/sim1/sim1.cp.rda") == FALSE){
   # summary(nw ~ nodemix("origin"))
   formation <- ~edges + nodemix("origin", levels2 = c(1, 2))
 
+  #formation <- ~edges + nodemix("origin", levels2 = c(1, 2)) + concurrent(by="origin")
+
 
   # CHECK how to specify degree and concurrent for both populations
   #formation <- ~edges + nodemix("origin", levels2 = c(1, 2)) + degree(0, by = "origin") +
@@ -310,9 +312,12 @@ if(file.exists("data/sim1/sim1.cp.rda") == FALSE){
 
     # to simulate large networks
     dx <- netdx(est, nsims = 5, nsteps = 500, keep.tedgelist = TRUE,
-                set.control.ergm = control.simulate.ergm(MCMC.burnin= 1.5e8))
+                set.control.stergm = control.simulate.network(MCMC.maxchanges = 1e7,
+                                                              MCMC.burnin.min= 1.5e5,
+                                                              MCMC.burnin.max =1.5e5))
 
   } else {
+    #est <- netest(nw, formation, target.stats, coef.diss, edapprox = TRUE)
     est <- netest(nw, formation, target.stats, coef.diss, edapprox = TRUE)
     dx <- netdx(est, nsims = 1, nsteps = 1000, keep.tedgelist = TRUE,
                 set.control.stergm = control.simulate.network(MCMC.maxchanges = 1e7)
@@ -552,7 +557,9 @@ control <- control.net(type = NULL, simno = 1, currsim = 1,
                        nwupdate.FUN = nwupdate_mig,
                        prevalence.FUN = prevalence_mig,
                        verbose.FUN = verbose.net,
-                       save.nwstats = FALSE,
+                       save.nwstats = TRUE,
+                       save_nodes = TRUE,
+                       nwstats.formula = ~edges + nodemix("origin", levels2 = c(1, 2)) + nodefactor("origin", levels = c("global", "region")) + concurrent,
                        save.transmat = TRUE,
                        save.stats = TRUE,
                        verbose = TRUE,

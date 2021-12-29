@@ -33,9 +33,9 @@ initialize_mig <- function(x, param, init, control, s) {
     dat$nwparam[[1]] <- x[-which(names(x) == "fit")]
 
 
-        # Initial Network Simulation ----------------------------------------------
+    # Initial Network Simulation ----------------------------------------------
 
-        if (get_control(dat, "resimulate.network") == TRUE) {
+    if (get_control(dat, "resimulate.network") == TRUE) {
       nsteps <- 1
     } else {
       nsteps <- get_control(dat, "nsteps")

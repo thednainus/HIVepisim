@@ -1,4 +1,4 @@
-lines <- as.list(rep(1:100))
+lines <- as.list(rep(1:1000))
 dagfilename <- "largepop_seed_sim.dag"
 
 part1 <- unlist(lapply(lines, function(x) paste("JOB SIM", x, " hiv_epimodel_simulation2.sub", sep = "")))
