@@ -7,6 +7,6 @@ The aim is to get a transmission matrix for simualtions using phylodynamics.
 
 ## Notes
 
-- You can find code [here](https://github.com/thednainus/HIVepisim/blob/master/Analyses/MSM_Demog_Migration.R) to run a sample analyses. 
+- You can find code [here](https://github.com/thednainus/HIVepisim/blob/master/Analyses/MSM_Demog_Migration_example.R) to run a sample analyses. 
 
 
