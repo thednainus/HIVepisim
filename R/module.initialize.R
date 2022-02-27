@@ -21,14 +21,11 @@ initialize_mig <- function(x, param, init, control, s) {
   if (control$start == 1) {
 
     # Master Data List --------------------------------------------------------
-    dat <- list()
+    dat <- create_dat_object(param, init, control)
     dat$param <- param
     dat$init <- init
     dat$control <- control
 
-    dat$attr <- list()
-    dat$stats <- list()
-    dat$temp <- list()
     dat$nwparam <- list()
     dat$nwparam[[1]] <- x[-which(names(x) == "fit")]
 
@@ -54,7 +51,6 @@ initialize_mig <- function(x, param, init, control, s) {
 
     # Standard attributes
     #browser()
-    #num <- network.size(nw)
     num <- network.size(dat$nw[[1]])
     #dat <- append_core_attr(dat, 1, num)
     dat <- append_core_attr_mig(dat, 1, num)
@@ -88,11 +84,9 @@ initialize_mig <- function(x, param, init, control, s) {
 
     # Restart/Reinit Simulations ----------------------------------------------
   } else if (control$start > 1) {
-    dat <- list()
+    dat <- create_dat_object(param = x$param, control = control)
 
     dat$nw <- x$network[[s]]
-    dat$param <- x$param
-    dat$control <- control
     dat$nwparam <- x$nwparam
     if (is.null(dat$control$isTERGM)) {
       nwparam <- get_nwparam(dat)
@@ -103,7 +97,6 @@ initialize_mig <- function(x, param, init, control, s) {
     names(dat$epi) <- names(x$epi)
     dat$attr <- x$attr[[s]]
     dat$stats <- sapply(x$stats, function(var) var[[s]])
-    dat$temp <- list()
   }
 
   return(dat)
@@ -148,25 +141,38 @@ init_status_mig <- function(dat) {
 
 
   type <- get_control(dat, "type", override.null.error = TRUE)
+  type <- if (is.null(type)) "None" else type
+
   nsteps <- get_control(dat, "nsteps")
   tergmLite <- get_control(dat, "tergmLite")
   groups <- get_param(dat, "groups")
+  #browser()
   status.vector <- get_init(dat, "status.vector", override.null.error = TRUE)
 
-  depar.rates.all <- get_param(dat, "asmr")
+  #depar.rates.all <- get_param(dat, "asmr")
   depar.rates.aids <- get_param(dat, "aids.mr")
 
   isTERGM <- get_control(dat, "isTERGM")
 
   # Variables ---------------------------------------------------------------
+
+  #browser()
   i.num.all <- get_init(dat, "i.num.all", override.null.error = TRUE)
 
   num.all <- sum(get_attr(dat, "active") == 1)
 
   if (groups == 2) {
     group <- get_attr(dat, "group")
+    if (!all(group %in% c(1, 2))) {
+      stop(
+        "When using the `group` attribute, the only authorized values",
+        " are 1 and 2.\n",
+        "The values found were: ", paste0(unique(group), collapse = ", ")
+      )
+    }
+
     i.num.g2 <- get_init(dat, "i.num.g2")
-    if (type  == "SIR" && is.null(status.vector) && !is.null(type)) {
+    if (type  == "SIR" && is.null(status.vector)) {
       r.num.g2 <- get_init(dat, "r.num.g2", override.null.error = TRUE)
     }
   } else {
@@ -205,7 +211,7 @@ init_status_mig <- function(dat) {
   dat <- set_attr(dat, "origin", origin)
 
 
-  ## Set up TEA status
+  # Set up TEA status
   if (tergmLite == FALSE) {
     if (statOnNw == FALSE) {
       dat$nw[[1]] <- set_vertex_attribute(dat$nw[[1]], "status", status)
@@ -230,9 +236,23 @@ init_status_mig <- function(dat) {
 
   # Infection Time ----------------------------------------------------------
   ## Set up inf.time vector
+  if (type == "None") {
+    infTime <- rep(NA, num.all)
     idsInf <- which(status == "i")
-    infTime <- rep(NA, length(status))
-    infTime[idsInf] <- -rgeom(n = length(idsInf), prob = depar.rates.aids) + 2
+    infTime[idsInf] <- 1
+    #dat <- set_attr(dat, "infTime", infTime)
+    } else {
+      idsInf <- which(status == "i")
+      infTime <- rep(NA, length(status))
+      infTime.vector <- get_init(dat, "infTime.vector",
+                                 override.null.error = TRUE)
+      if (!is.null(infTime.vector)){
+        infTime <- infTime.vector
+        } else {
+          infTime[idsInf] <- ssample(1:(-nsteps + 2),
+                                     length(idsInf), replace = TRUE)
+        }
+      }
     dat <- set_attr(dat, "infTime", infTime)
 
 
@@ -271,7 +291,7 @@ init_status_mig <- function(dat) {
     tx.status[idsInf] <- 0
     dat <- set_attr(dat, "tx.status", tx.status)
 
-    dat <- set_attr(dat, "cuml.time.on.tx", rep(NA, num.all))
+    dat <- set_attr(dat, "cuml.time.on.tx", rep(0, num.all))
     cuml.time.on.tx <- get_attr(dat, "cuml.time.on.tx")
     cuml.time.on.tx[idsInf] <- 0
     dat <- set_attr(dat, "cuml.time.on.tx", cuml.time.on.tx)

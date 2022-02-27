@@ -106,7 +106,10 @@ prevalence_mig <- function(dat, at) {
 
 
   #dat <- set_epi(dat, "i.prev.dx.all", at, dat$epi$i.num.dx.all[at] / dat$epi$num[at])
-  dat <- set_epi(dat, "i.prev.dx.pop1", at, sum(active == 1 & diag.status == 1 & status == "i" & origin == "region", na.rm = TRUE) /
+  dat <- set_epi(dat, "i.prev.dx.pop1", at, sum(active == 1 & diag.status == 1 &
+                                                  status == "i" &
+                                                  origin == "region",
+                                                na.rm = TRUE) /
                    sum(active == 1 & origin == "region"))
   dat <- set_epi(dat, "i.prev.dx.pop2", at, sum(active == 1 & diag.status == 1 & status == "i" & origin == "global", na.rm = TRUE) /
                    sum(active == 1 & origin == "global"))
@@ -156,3 +159,4 @@ prevalence_mig <- function(dat, at) {
 
   return(dat)
 }
+

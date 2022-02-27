@@ -1,19 +1,15 @@
-# simulate MSM population based on lhs
-# In here I only sampled the probability of initiating treatment once an HIV
-# positive is diagnosed
-
-# I also used the infection probability based on Erik's suggestion of getting
-# this probability based on incidence in San Diego calculated using the ECD model
+# 16 February
+#Here I keep the transmission rate constant through time
 
 param_list <- commandArgs(trailingOnly = TRUE)
 line_number <- as.numeric(param_list[1])
 message(line_number)
 
-#line_number <- 5749
+#line_number <- 2348
 
 seed_value <- as.numeric(param_list[2])
 message(seed_value)
-#seed_value <- 15248
+#seed_value <- 589634
 
 set.seed(seed_value)
 
@@ -26,10 +22,6 @@ library(HIVepisim)
 library(HIVepisimAnalysis)
 library(lubridate)
 library(stringr)
-
-
-#library(lhs)
-#library(plyr)
 
 
 # number of years to simulate
@@ -46,8 +38,9 @@ total_steps <- as.numeric(end_sim_date - init_sim_date)
 #total_steps <- 100
 
 #checkpoint_steps
-checkpoint_steps <- 234
-#checkpoint_steps <- 2
+checkpoint_steps <- 7488
+#checkpoint_steps <- total_steps
+
 
 #if file data/sim1/sim1.cp.rda does not exist, it means that we are running this
 # code for the first time
@@ -66,8 +59,13 @@ if(file.exists("data/sim1/sim1.cp.rda") == FALSE){
 
   # 63% per year is 0.0027 per day
   # 0.01253765 is 99% per year
-  params4dim <- readRDS(system.file("data/params4dim_19Nov2021.RDS",
+  # /109    /68
+  #params6dim <- readRDS(system.file("data/params6dim_19Feb2022.RDS",
+  #                                  package = "HIVepisim"))[line_number,]
+  params6dim <- readRDS(system.file("data/params6dim_21Feb2022_xsede_5000jobs.RDS",
                                     package = "HIVepisim"))[line_number,]
+
+
 
   # Network Initialization --------------------------------------------------
 
@@ -110,6 +108,7 @@ if(file.exists("data/sim1/sim1.cp.rda") == FALSE){
   names(dep1) <- c(paste("dep", years1, sep = ""), paste("dep", years2, sep = ""))
 
   departure_rates <- data.frame(dep1)
+  #departure_rates2016 <- departure_rates$dep2016
 
 
   # Per-capita daily death rate
@@ -117,31 +116,42 @@ if(file.exists("data/sim1/sim1.cp.rda") == FALSE){
   #dr_pp_pd <- lapply(dr_pp_pd, function(x) x/365)
 
   dr_pp_pd <- departure_rates/100000
+  #dr_pp_pd <- departure_rates2016/100000
   #assuming that 6.7% are MSM (Grey at al. 2016)
   dr_pp_pd <-  dr_pp_pd * 0.067
   dr_pp_pd <- dr_pp_pd/365
-
+  #dr_pp_pd <- dr_pp_pd * 15
 
   # Create vector of daily death rates
   age_spans <- c(2, 5,  rep(10, 5), 6)
   #if using time unit per day
   #dr_vec <- rep(dr_pp_pd, times = age_spans)
-  #if unsing time unit per week (7 days)
+  #if using time unit per week (7 days)
   dr_vec <- apply(dr_pp_pd, 2, function(x) rep(x, times = age_spans))
-  dr_vec <- as.data.frame(dr_vec)
-  #dr_vec["ages"] <- ages
+  #dr_vec <- as.data.frame(dr_vec)
 
-  # Plot death rates
-  #par(mar = c(3,3,2,1), mgp = c(2,1,0), mfrow = c(1,1))
-  #plot(ages, dr_vec, type = "o", xlab = "age", ylab = "Mortality Rate")
 
   # Initialize network
-  n_pop1 = 5000
+  #n_pop1 = 1000
+  n_pop1 = 20000
   n_pop2 = n_pop1 * 3
+
 
   #total number of individuals in the network
   n_total = n_pop1 + n_pop2
   nw <- network_initialize(n_total)
+
+
+  #take average from 1980 to 2016 per age group
+  dr_vec1_pop1 <- dr_vec
+
+  dr_vec1_pop2 <- dr_vec
+  #dr_vec1_pop2 <- (dr_vec1_pop1 * n_pop1)/n_pop2
+  #dr_vec1_pop2 <- 0.0005414478
+  # Plot death rates
+  #par(mar = c(3,3,2,1), mgp = c(2,1,0), mfrow = c(1,1))
+  #plot(ages, dr_vec, type = "o", xlab = "age", ylab = "Mortality Rate")
+
 
   # Set age attribute
   ageVec <- sample(ages, n_total, replace = TRUE)
@@ -160,18 +170,7 @@ if(file.exists("data/sim1/sim1.cp.rda") == FALSE){
 
   # Create vector of diagnose statuses
   diagStatusVec1 <- rep(0, n_pop1)
-
-  #n_inf_pop1 <- 300.9307
-  n_inf_pop1 <- params4dim$init_pop1_param
-  init.Infected1 <- sample(1:n_pop1, n_inf_pop1)
-  diagStatusVec1[init.Infected1] <- 1
-
-
   diagStatusVec2 <- rep(0, n_pop2)
-  #n_inf_pop2 <- 250
-  n_inf_pop2 <- n_pop2 * 0.05
-  init.Infected2 <- sample(1:n_pop2, n_inf_pop2)
-  diagStatusVec2[init.Infected2] <- 1
 
   diagStatusVec <- c(diagStatusVec1, diagStatusVec2)
   print(table(diagStatusVec))
@@ -181,9 +180,30 @@ if(file.exists("data/sim1/sim1.cp.rda") == FALSE){
   print(nw)
 
   # set vector of status
-  statusVector <- diagStatusVec
-  statusVector[diagStatusVec == 1] <- "i"
-  statusVector[diagStatusVec == 0] <- "s"
+  StatusVec1 <- rep(0, n_pop1)
+
+  #n_inf_pop1 <- 300.9307
+  n_inf_pop1 <- params6dim$init_pop1_param
+  init.Infected1 <- sample(1:n_pop1, n_inf_pop1)
+  StatusVec1[init.Infected1] <- 1
+
+  #proportion of infected individuals in population 1
+  prop_inf_pop1 <- round(n_inf_pop1)/n_pop1
+
+
+  StatusVec2 <- rep(0, n_pop2)
+  #n_inf_pop2 <- 250
+
+  #initial number of infected individuals in population 2
+  #will be the same proportion as in population 1
+  n_inf_pop2 <- prop_inf_pop1 * n_pop2
+  init.Infected2 <- sample(1:n_pop2, n_inf_pop2)
+  StatusVec2[init.Infected2] <- 1
+
+  statusVector <- c(StatusVec1, StatusVec2)
+  #statusVector[diagStatusVec == 1] <- "i"
+  statusVector[statusVector == 1] <- "i"
+  statusVector[statusVector == 0] <- "s"
 
   print(table(statusVector))
 
@@ -208,9 +228,6 @@ if(file.exists("data/sim1/sim1.cp.rda") == FALSE){
   # 20% of population will be on risk group 2
   riskGroupVector1 <- sample(x = 1:2, size = n_pop1, replace = TRUE, prob = c(0.8, 0.2))
   riskGroupVector2 <- sample(x = 1:2, size = n_pop2, replace = TRUE, prob = c(0.8, 0.2))
-
-  #riskGroupVector1 <- rep(1:2, each = n_pop1/2)
-  #riskGroupVector2 <- rep(1:2, each = n_pop2/2)
 
   riskGroupVector <- c(riskGroupVector1, riskGroupVector2)
   print(table(riskGroupVector))
@@ -248,68 +265,79 @@ if(file.exists("data/sim1/sim1.cp.rda") == FALSE){
   # which have more than one partnership at any time.
 
 
-  #formation <- ~edges + nodemix("origin") + nodefactor("risk.group") + nodematch("risk.group") + concurrent
   # nodemix as specified below will only estimate edges for global.global and region.region
   # to know the other of terms you can type
   # summary(nw ~ nodemix("origin"))
-  formation <- ~edges + nodemix("origin", levels2 = c(1, 2))
+  #formation <- ~edges + nodemix("origin", levels2 = c(1,2)) + nodematch("risk.group")
+  #formation <- ~edges + nodemix("origin", levels2 = c(2)) + nodefactor("origin") +
+  #  nodematch("risk.group")
+  formation <- ~edges + nodemix("origin", levels2 = c(1,2))
 
-  # CHECK how to specify degree and concurrent for both populations
-  #formation <- ~edges + nodemix("origin", levels2 = c(1, 2)) + degree(0, by = "origin") +
-  #  concurrent(by="origin")
-  #formation <- ~edges
+
 
   # Target statistics
-  #target.stats <- c(250, 375, 225, 100)
   # target.stats below is including nodemix for global.global and region.region
   #overall edges = 250; edges b/t global.global = 200; edges b/t global.region = 0
   # then edges b/t global.region.region = 250 - 150 - 0 = 100
-  #target.stats <- c((0.04 * n_pop1/2 + 0.04 * n_pop2/2), 0.04 * n_pop2/2, 0)
-  # mean degree of 1.17 from Weiss et al 2020 (Epidemics)
-  target.stats <- c((1.17 * n_pop1/2 + 1.17 * n_pop2/2), 1.17 * n_pop2/2, 0)
+  target.stats <- c((1.19 * n_pop1/2 + 1.19 * n_pop2/2), 1.19 * n_pop2/2, 0.0)
 
-  #target.stats <- c((0.2 * n_pop1/2 + 0.2 * n_pop2/2),
-  #                  0.2 * n_pop2/2,
-  #                  0,
-  #                  0.8 * n_pop2,
-  #                  0.8 * n_pop1,
-  #                  0,
-  #                  0)
 
   print(target.stats)
 
   # Dissolution  model
-  # 200 is the time step for a dissolution to happen
-  #coef.diss <- dissolution_coefs(~offset(edges), 200, mean(dr_vec))
-  #durs <- c(60, 60, 2)
-  durs <- c(23.7, 23.7, 2)
+  #weighted mean degree
+  mean_dr_rate <- weighted.mean(c(mean(dr_vec1_pop1), mean(dr_vec1_pop2)),
+                                c(n_pop1, n_pop2))
+
+  m12.rate = 1/((n_pop1/50)*365)
+  m21.rate = 1/((n_pop2/50)*365)
+
+
+  mean_migration_rate <- weighted.mean(c(m12.rate, m21.rate), c(n_pop1, n_pop2))
+
+  #duration of relationship
+  durs <- c(24.03, 24.03, 2)
+
   coef.diss <- dissolution_coefs(~offset(edges) +
-                                 offset(nodemix("origin", levels2 = c(1, 2))),
-                                 duration = durs, d.rate = mean(unlist(lapply(dr_vec, mean))))
+                                   offset(nodemix("origin", levels2 = c(1,2))),
+                                 duration = durs, d.rate = mean(c(mean_dr_rate,mean_migration_rate)))
+
   print(coef.diss)
+
+
 
   # Fit the model
   # # Fit the TERGM
   # to simulate large networks
 
-  if(n_pop1 > 10000){
+  if(n_total > 10000){
 
     est <- netest(nw, formation, target.stats, coef.diss, edapprox = TRUE,
                   set.control.ergm = control.ergm(MCMC.burnin=1e7, MCMC.interval=1e7,
                                                   MCMC.samplesize=20000,
-                                                  init.MPLE.samplesize = 1e8,
+                                                  init.MPLE.samplesize = 1e9,
                                                   SAN = control.san(SAN.nsteps = 1e8)
                   ))
+
 
     print(est)
 
     # to simulate large networks
-    dx <- netdx(est, nsims = 1, nsteps = 1000, keep.tedgelist = TRUE,
-                set.control.ergm = control.simulate.ergm(MCMC.burnin= 1.5e5))
+    dx <- netdx(est, nsims = 1, nsteps = 500, keep.tedgelist = TRUE,
+                nwstats.formula = ~edges + nodemix("origin", levels2 = c(1, 2, 3)) + meandeg +
+                  concurrent(by="origin") + nodematch("risk.group"),
+                set.control.stergm = control.simulate.network(MCMC.maxchanges = 1e9,
+                                                              MCMC.burnin.min= 1.5e5,
+                                                              MCMC.burnin.max =1.5e5))
 
   } else {
+
     est <- netest(nw, formation, target.stats, coef.diss, edapprox = TRUE)
-    dx <- netdx(est, nsims = 1, nsteps = 1000, keep.tedgelist = TRUE)
+
+    dx <- netdx(est, nsims = 1, nsteps = 1000, keep.tedgelist = TRUE,
+                nwstats.formula = ~edges + nodemix("origin", levels2 = c(1, 2)) + meandeg + nodefactor("origin"),
+                set.control.stergm = control.simulate.network(MCMC.maxchanges = 1e7)
+    )
 
     # Model diagnostics
     # Simulate time series to examine timed edgelist
@@ -326,55 +354,35 @@ if(file.exists("data/sim1/sim1.cp.rda") == FALSE){
   #dx <- netdx(est, nsims = 1, nsteps = 1000, keep.tedgelist = TRUE,
   #            nwstats.formula = ~edges + nodemix("origin", levels2 = c(1, 2)) + degree(0:3, by = "origin"))
   print(est)
-  print(dx)
+  #print(dx)
   save(est, file = "est.rda")
   #plot(dx)
   # Extract timed-edgelist
-  #te <- as.data.frame(dx)
-  #head(te)
+  te <- as.data.frame(dx)
+  head(te)
 
   # Limit to non-censored edges
-  #te2 <- te[which(te$onset.censored == FALSE & te$terminus.censored == FALSE),
-  #          c("head", "tail", "duration")]
-  #head(te2)
+  te2 <- te[which(te$onset.censored == FALSE & te$terminus.censored == FALSE),
+            c("head", "tail", "duration")]
+  head(te2)
 
   # Look up the age group of head and tail nodes
-  #te2$ag.head <- originVec[te2$head]
-  #te2$ag.tail <- originVec[te2$tail]
-  #head(te2)
+  te2$ag.head <- originVec[te2$head]
+  te2$ag.tail <- originVec[te2$tail]
+  head(te2)
 
   # Calculate mean durations in each age-mixed group
-  #mean(te$duration[te2$ag.head == "global" & te2$ag.tail == "global"])
-  #mean(te$duration[te2$ag.head != te2$ag.tail])
-  #mean(te$duration[te2$ag.head == "region" & te2$ag.tail == "region"])
+  print(mean(te$duration[te2$ag.head == "global" & te2$ag.tail == "global"]))
+  print(mean(te$duration[te2$ag.head != te2$ag.tail]))
+  print(mean(te$duration[te2$ag.head == "region" & te2$ag.tail == "region"]))
 
   # Compare to targets
   #durs
 
-
-
-  # EpiModel Model Simulation -----------------------------------------------
-  # Base model
-  #a1.rate = 3.798435e-05,
-  #a2.rate = 3.798435e-05 * 0.0645
-  #m21.rate = 0.00129
-
-  # parameters from epimodelHIV param_msm
-  # hiv.test.rate = 0.01325 per week. Per day will be 0.01325/7
-  # test.window.int = 21/7 per week. Per day will be 21
-  # tx.init.prob = 0.092 per week, tx.init.prob = 0.092/7 per day
-  # tx.halt.prob = 0.0102 per week, tx.halt.prob = 0.0102/7 per day
-  # tx.reinit.prob = 0.00066 per week, tx.reinit.prob = 0.00066 per day
-  # a1.rate = 0.00052 per week, a1.rate = 0.00052/7 per day
-  # a2.rate = 0.00052 per week, a2.rate = 0.00052/7 per day
-  # a2.rate = 0.00005 per week
-  # art_start = 24 * 365
-
-  #in weeks
-  #art_start <- 24 * 52
-  #in days
-  #in case there is checkpoint, so we can read the paramenters values again
-  save(params4dim, time.unit, departure_rate_years, dr_vec, file = "params.rda")
+  #in case there is checkpoint, so we can read the parameters values again
+  save(start_time, params6dim, time.unit, departure_rate_years, dr_vec1_pop1, dr_vec1_pop2,
+       n_pop1, n_pop2, m12.rate, m21.rate,
+       file = "params.rda")
 }
 
 if(file.exists("data/sim1/sim1.cp.rda") == TRUE){
@@ -388,39 +396,43 @@ if(file.exists("data/sim1/sim1.cp.rda") == TRUE){
 }
 
 
-year_art_start <- ymd("2004-01-01")
+year_art_start <- ymd("1995-01-01")
 art_start <- as.numeric(year_art_start - init_sim_date)
 
+# year in which HIV diagnosis will start
+# this is noted in the pdf "HIV Trends and the Status of High Risk Groups
+# in San Diego County, 1985-2001"
+year_diag_start <- ymd("1985-01-01")
+diag_start <- as.numeric(year_diag_start - init_sim_date)
 
-#hiv.test.rate (mean probability of HIV testing per day for MSM)
-# parameter was fixed to 0.045
-# see notes on my notebook (pages 95-96 for reason)
-# probably not the right reason. Think a better way of getting this parameter
-# Age-specific mortality rates for MALES for the San Diego
-# Values were obtained using https://wonder.cdc.gov/
-# group by County, Gender, Year, Age Group
-# and searching fro San Diego only
-# rates are per 100,000 population
-a1.rate.times <- c(2000:2019)
+#years to multiply the different scalars to the act.rate
+#year 1 is beggining of simulation
+year2 <- ymd("1995-01-01")
+year2_start <- as.numeric(year2 - init_sim_date)
+year3 <- ymd("2005-01-01")
+year3_start <- as.numeric(year3 - init_sim_date)
+
+arrival1.rate.times <- c(2000:2019)
 #crude birth rate based on crude birth rate table for San Diego County
 #this is all births (males + females) from 2000 to 2019
 
-a1.rates <- c(44272/2813833, 43758/2849238, 43951/2890256,
-              45368/2927216, 45758/2953703, 45897/2966783,
-              46876/2976492, 47545/2998477, 46742/3032689,
-              44960/3064436, 44838/3095314, 43621/3125265,
-              44391/3161751, 43627/3201418, 44596/3235143,
-              43960/3267933, 42741/3287280, 40889/3309627,
-              39921/3333127, 38445/3351784)
+arrival1.rates <- c(44272/2813833, 43758/2849238, 43951/2890256,
+                    45368/2927216, 45758/2953703, 45897/2966783,
+                    46876/2976492, 47545/2998477, 46742/3032689,
+                    44960/3064436, 44838/3095314, 43621/3125265,
+                    44391/3161751, 43627/3201418, 44596/3235143,
+                    43960/3267933, 42741/3287280, 40889/3309627,
+                    39921/3333127, 38445/3351784)
 #assuming that 50% are males
 #a1.rates <- a1.rates * 0.5
 #assuming that 6.7% are MSM (Grey at al. 2016)
-a1.rates <- a1.rates * 0.067
+arrival1.rates <- arrival1.rates * 0.067
 #now convert rate per year to rate per day
-a1.rates <- a1.rates/365
+arrival1.rates <- arrival1.rates/365
 
 
-
+#increase arrival rate because by the end of 40 years not many individuals
+#arrive at the network
 
 a2.rate.times <- c(1980:2019)
 #crude birth rate based on
@@ -441,40 +453,57 @@ a2.rates <- a2.rates * 0.067
 #now convert rate per year to rate per day
 a2.rates <- a2.rates/365
 
+
+# hiv.test.rate (mean probability of HIV testing per day for MSM)
+# parameter was fixed to 0.045
+# see notes on my notebook (pages 95-96 for reason)
+# probably not the right reason. Think a better way of getting this parameter
+# Age-specific mortality rates for MALES for the San Diego
+# Values were obtained using https://wonder.cdc.gov/
+# group by County, Gender, Year, Age Group
+# and searching fro San Diego only
+# rates are per 100,000 population
+
 #migration in both directions will be set to 1 individual in 10 years
 
 #hiv.test.rate:data was previously fit using a fixed value of 0.045
-hiv.test.rate.df <- readRDS(system.file("data/probability_msm_tested_per_day.RDS",
+hiv.test.rate.df <- readRDS(system.file("data/probability_msm_tested_per_day2.RDS",
                                         package = "HIVepisim"))
+#0.0008587123 was based on some calculations described in testing.R
+hiv.test.rate.df$perc_per_day <-  hiv.test.rate.df$perc_per_day * params6dim$scalar4
 
-#tx.init.prob = 0.0027 (check reason on my notes page 136)
-
-inf.prob.param <-  readRDS(system.file("data/transmission_probability.RDS",
+inf.prob.param <-  readRDS(system.file("data/transmission_probability_v2.RDS",
                                        package = "HIVepisim"))
-inf.prob.param$trans.prob <- inf.prob.param$trans.prob * params4dim$multiplier
-#act.rate.param <- 0.22
-act.rate.param <- params4dim$act.rate
+#baseline of act.rate per day is 1
+act.rate.param <- 1
+act.rate.param_scalars <- c(params6dim$scalar1,
+                            params6dim$scalar2,
+                            params6dim$scalar3)
 
 # 63% per year is 0.0027 per day
 # 0.01253765 is 99% per year
 #tx.init.prob.param <- runif(10000, min = 0.0001, max = 0.01253765)
 #saveRDS(tx.init.prob.param, "inst/data/tx.init.prob.param.RDS")
-#line_number <- 1
-#get line number to simulate MSM population
-#line_number <- commandArgs(trailingOnly = TRUE)
-#line_number <- as.numeric(line_number)
-#print(line_number)
-#tx.init.prob.param <- readRDS(system.file("data/tx.init.prob.param.RDS",
-#                                          package = "HIVepisim"))[line_number]
+
+
+#rates to progress to each stage is the average time for all individuals to
+#transition from one CD4+ category to the next (Cori et al. 2015)
+# analyses were reported for 1,039 individuals
+#rate per individual were then divided by 1039 (Cori et al. 2015)
+
+#if act.rate_scalars = NULL, it will fix act.rate per year
 
 param <- param.net(time.unit = time.unit,
                    init_date = init_sim_date,
                    groups = 1,
                    act.rate = act.rate.param,
-                   stage_prog_rate0 = 1/((0.5 * 365) / time.unit),
-                   stage_prog_rate1 = 1/((3.32 * 365) / time.unit),
-                   stage_prog_rate2 = 1/((2.7 * 365) / time.unit),
-                   stage_prog_rate3 = 1/((5.5 * 365) / time.unit),
+                   act.rate_scalars = act.rate.param_scalars,
+                   act.rate_year2 = year2_start,
+                   act.rate_year3 = year3_start,
+                   stage_prog_rate0 = 1/(0.5 * 365),
+                   stage_prog_rate1 = 1/(3.32 * 365),
+                   stage_prog_rate2 = 1/(2.7 * 365),
+                   stage_prog_rate3 = 1/(5.5 *365),
                    f1 = 0.76,
                    f2 = 0.19,
                    f3 = 0.05,
@@ -482,10 +511,11 @@ param <- param.net(time.unit = time.unit,
                    hiv.test.rate = hiv.test.rate.df,
                    test.window.int = 21 / time.unit,
                    art_start = art_start,
-                   tx.init.prob = params4dim$tx.init.prob.param,
+                   tx.init.prob = params6dim$tx.init.prob.param,
                    tx.halt.prob = 0,
                    tx.reinit.prob = 0,
-                   inf.prob = inf.prob.param,
+                   inf.prob = mean(inf.prob.param$trans.prob),
+                   diag.start = diag_start,
                    ws0 = 1,
                    ws1 = 0.1,
                    ws2 = 0.1,
@@ -496,25 +526,36 @@ param <- param.net(time.unit = time.unit,
                    wc3 = 0.05,
                    wr1 = 1,
                    wr2 = 10,
-                   aids.mr = 1/((5.06 * 365) / time.unit),
-                   asmr = list(dr_times = departure_rate_years, dep_vec = dr_vec),
-                   a1.rate = list(a1.times = a1.rate.times, a1.rates = a1.rates),
-                   a2.rate = list(a2.times = a2.rate.times, a2.rates = a2.rates),
+                   aids.mr = 1/(5.06 * 365),
+                   asmr_pop1 = list(dr_times = departure_rate_years, dep_vec = dr_vec1_pop1),
+                   asmr_pop2 = list(dr_times = departure_rate_years, dep_vec = dr_vec1_pop2),
+                   a1.rate = list(a1.times = arrival1.rate.times,
+                                  a1.rates = (arrival1.rates*5)),
+                   a2.rate = list(a2.times = a2.rate.times,
+                                  a2.rates = (a2.rates * 4)),
                    arrival.age = 18,
-                   m12.rate = 1/(10*365),
-                   m21.rate = 1/(10*365))
+                   m12.migrants = 50,
+                   m21.migrants = 50)
+# In order to have a m12.rate that will generate 500 migrations every 10 years,
+# the m12.rate should be 1/(100 * 365) (rate per day)
+# to balance number of migrant for m21.rate, we will have 15000/x = 50 individuals per year;
+# x = 15000/50; x = 300 years
+# m21.rate = 1/(300*365)
 
 
 init <- init.net()
 
-#in weeks
-#nsteps = years * 52
-# in days
 
-control <- control.net(type = NULL, simno = 1, currsim = 1,
-                       nsteps = checkpoint_stage, start = 1, nsims = 1,
+control <- control.net(type = NULL,
+                       simno = 1,
+                       currsim = 1,
+                       nsteps = checkpoint_stage,
+                       start = 1,
+                       nsims = 1,
                        when2save_at = total_steps,
-                       ncores = 1, resimulate.network = TRUE, tergmLite = TRUE,
+                       ncores = 1,
+                       resimulate.network = TRUE,
+                       tergmLite = TRUE,
                        initialize.FUN = initialize_mig,
                        resim_nets.FUN = resim_nets,
                        hivtest.FUN = hivtest_msm,
@@ -522,41 +563,93 @@ control <- control.net(type = NULL, simno = 1, currsim = 1,
                        hivprogress.FUN = hivprogress_msm,
                        hivtrans.FUN = hivtrans_mig,
                        aging.FUN = aging_msm,
-                       departure.FUN = departure_mig,
-                       migration.FUN = migration,
-                       arrivals.FUN = arrivals_mig,
+                       departure.FUN = departure_mig2,
+                       migration.FUN = migration2,
+                       arrivals.FUN = arrivals_mig2,
                        nwupdate.FUN = nwupdate_mig,
                        prevalence.FUN = prevalence_mig,
                        verbose.FUN = verbose.net,
-                       save.nwstats = FALSE,
+                       savedata.FUN = save_cpdata,
+                       module.order = c("aging.FUN",
+                                        "departure.FUN", "arrivals.FUN",
+                                        "migration.FUN", "nwupdate.FUN", "resim_nets.FUN",
+                                        "hivtrans.FUN",
+                                        "hivtest.FUN", "hivtx.FUN", "hivprogress.FUN",
+                                        "prevalence.FUN","savedata.FUN"),
+                       save.nwstats = TRUE,
+                       save_nodes = TRUE,
+                       nwstats.formula = ~edges + nodemix("origin", levels2 = c(1, 2, 3)) +
+                         meandeg,
                        save.transmat = TRUE,
                        save.stats = TRUE,
                        verbose = TRUE)
 
 
-if(iter < 64){
+
+
+if(iter < 2){
 
 
 
   # I added a + 1 in  nsteps = total_steps + 1
-  #because I don't want to save the other files I generated
+  # because I don't want to save the other files I generated
   # at the very end of the simulations
 
-  #I added the when2save_at, so I can introduce checkpoint for OSG
-  #terminate files when I reach checkpoint_steps
-  #but only save all files at the very end
+  # I added the when2save_at, so I can introduce checkpoint for OSG
+  # terminate files when I reach checkpoint_steps
+  # but only save all files at the very end
 
 
-
-# creating stop condition to exit with code 85
+  # creating stop condition to exit with code 85
+  start_time <- Sys.time()
   sim <- netsim_hpc("est.rda", param, init, control,
                     cp.save.int = checkpoint_steps, save.min=FALSE, save.max=FALSE,
                     compress = "gzip")
+
+
+  #sim <- netsim(est, param, init, control)
 
   #end of script
   end_time <- Sys.time()
   print("Simulation took:")
   print(end_time - start_time)
+
+  #check plot for mean degree
+
+
+  #nodes <- read.csv("total_nodes.csv")
+  #nodes <- rbind(c(1,30000,10000), nodes)
+  #nodes <- rbind(c(1,3000,1000), nodes)
+
+  #sim$stats$nwstats$sim1[[1]] <- cbind(sim$stats$nwstats$sim1[[1]] , global_meandeg = sim$stats$nwstats$sim1[[1]][,5]/nodes$global)
+  #sim$stats$nwstats$sim1[[1]] <- cbind(sim$stats$nwstats$sim1[[1]] , region_meandeg = sim$stats$nwstats$sim1[[1]][,6]/nodes$region)
+
+  #sim$stats$nwstats$sim1[[1]] <- cbind(sim$stats$nwstats$sim1[[1]] , global_meandeg2 = (sim$stats$nwstats$sim1[[1]][,2]*2)/nodes$global)
+  #sim$stats$nwstats$sim1[[1]] <- cbind(sim$stats$nwstats$sim1[[1]] , region_meandeg = (sim$stats$nwstats$sim1[[1]][,4]*2)/nodes$region)
+
+  #quartz()
+  #plot(sim, type = "formation", plots.joined = FALSE)
+  #plot(sim, type = "formation", plots.joined = FALSE, stats = c("global_meandeg2", "region_meandeg"))
+
+  #plot(sim, y=c("dall_pop1.flow", "dall_pop2.flow",
+  #              "nArrivals_mig1", "nArrivals_mig2",
+  #              "a1.flow", "a2.flow"), legend = TRUE)
+
+  #plot(sim, y=c("i.num.pop1", "s.num.pop1"), legend = TRUE)
+  #plot(sim, y=c("i.num.pop2", "s.num.pop2"), legend = TRUE)
+  #plot(sim, y=c("i.num.pop1", "s.num.pop1", "i.num.pop2", "s.num.pop2"), legend = TRUE)
+
+  #plot(sim, y=c("hstage0.pop1", "hstage1.pop1", "hstage2.pop1",
+  #              "hstage3.pop1", "hstage.aids.pop1"), legend = TRUE)
+  #plot(sim, y=c("hstage0.pop1", "hstage1.pop1"), legend = TRUE)
+  #plot(sim, y=c("hstage.aids.pop1"), legend = TRUE)
+
+  #plot(sim, y=c("hstage0.pop2", "hstage1.pop2",
+  #              "hstage2.pop2", "hstage3.pop2",
+  #              "hstage.aids.pop2"), legend = TRUE)
+
+  #save results of simulations
+  #saveRDS(sim, "results_sim.RDS")
 
   iter = iter + 1
   saveRDS(iter, "iter.RDS")
@@ -566,25 +659,27 @@ if(iter < 64){
 
   #quit with exit code 85
   #so condor can create the checkpoint in SPOOL
-  #print(quit(save = "no", status = 85))
-  #quit(save = "no", status = 85)
+  print(quit(save = "no", status = 85))
+  quit(save = "no", status = 85)
 }
 
 
-if(iter == 64){
+if(iter == 2){
 
   sim <- netsim_hpc("est.rda", param, init, control,
-                    cp.save.int = checkpoint_steps, save.min=FALSE, save.max=FALSE,
-                    compress = "gzip")
-  #quit(status = 0)
+                    cp.save.int = checkpoint_steps, save.min = FALSE,
+                    save.max = FALSE,
+                    compress = TRUE)
+
+  #time to finish whole simulation
+  #end of script
+  end_time2 <- Sys.time()
+  print("Whole simulation took:")
+  print(end_time2 - start_time)
 }
 
 
-
-
-
-
-
+#save results of simulations
 saveRDS(sim, "results_sim.RDS")
 
 #beginning of simulation time
@@ -624,6 +719,52 @@ incidence_model <- readRDS(system.file("data/ECDC_incidence_model_22Oct2021.RDS"
                                        package = "HIVepisimAnalysis"))
 
 
+#library(ggplot2)
+#library(reshape2)
+
+#merge data
+#incidence
+all_inc_data <- data.frame(year=incidence_model$ECDC_incidence.Year,
+                          ECDC_incidence = incidence_model$ECDC_incidence.N_Inf_M,
+                          best_fit_incidence1 = incid_pop1_agg[1:41,3])
+
+all_inc_data <- data.frame(year=incidence_model$ECDC_incidence.Year[1:21],
+                           ECDC_incidence = incidence_model$ECDC_incidence.N_Inf_M[1:21],
+                           best_fit_incidence1 = incid_pop1_agg[1:21,3])
+
+#melt data
+#incid <- melt(all_inc_data, id.vars = c("year"))
+
+#quartz()
+ggplot(incid, aes(x = year, y = value)) +
+ geom_line(aes(colour = variable), size = 1.5) +
+  theme_bw() +
+  theme(legend.title = element_blank(),
+        legend.position = "bottom",
+        text = element_text(size = 20)) +
+  labs(y = "incidence")
+#
+#
+all_dx_data <- data.frame(year = incidenceDiag$time[6:21],
+                          Diagnosis = incidenceDiag$frequency[6:21],
+                          best_fit_incid_diag1 = newDx_pop1_agg[6:21,3])
+
+all_dx_data <- data.frame(year = incidenceDiag$time[6:41],
+                          Diagnosis = incidenceDiag$frequency[6:41],
+                          best_fit_incid_diag1 = newDx_pop1_agg[6:41,3])
+
+diagn <- melt(all_dx_data, id.vars = c("year"))
+#
+# quartz()
+ggplot(diagn, aes(x = year, y = value)) +
+  geom_line(aes(colour = variable), size = 1.5) +
+  theme_bw() +
+  theme(legend.title = element_blank(),
+        legend.position = "bottom",
+        text = element_text(size = 20)) +
+  labs(y = "incid diagnosis")
+
+
 
 #new HIV diagnosis
 log_weights_dx <- compute_log_importance_weight_newDx(incidenceDiag$frequency,
@@ -632,7 +773,8 @@ log_weights_dx_df <- data.frame(rep_param = newDx_pop1_agg$rep_param[1],
                                 log_weights = log_weights_dx)
 
 #new HIV incidence
-log_weights_incid <- compute_log_importance_weight_incidence(incidence_model$ECDC_incidence.N_Inf_M, incid_sim = incid_pop1_agg[1:41,])
+log_weights_incid <- compute_log_importance_weight_incidence(incidence_model$ECDC_incidence.N_Inf_M,
+                                                             incid_sim = incid_pop1_agg[1:41,])
 log_weights_incid_df <- data.frame(rep_param = incid_pop1_agg$rep_param[1], log_weights = log_weights_incid)
 
 
@@ -643,4 +785,3 @@ saveRDS(newDx_pop1_agg, "summary_newDx_pop1.RDS")
 saveRDS(log_weights_incid_df, "log_weights_incid_df.RDS")
 saveRDS(incid_pop1_agg, "summary_incidence_pop1.RDS")
 quit(save = "no", status = 0)
-

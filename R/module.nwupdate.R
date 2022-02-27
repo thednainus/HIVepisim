@@ -1,4 +1,3 @@
-
 #' @title Dynamic Network Updates
 #'
 #' @description This function handles all calls to the network object contained
@@ -14,8 +13,6 @@
 nwupdate_mig <- function(dat, at) {
 
   ## Attributes
-  type <- get_control(dat, "type", override.null.error = TRUE)
-  tergmLite <- get_control(dat, "tergmLite")
   status <- get_attr(dat, "status")
   infTime <- get_attr(dat, "infTime")
   active <- get_attr(dat, "active")
@@ -25,6 +22,11 @@ nwupdate_mig <- function(dat, at) {
   migrants <- get_attr(dat, "migrant")
   origin <- get_attr(dat, "origin")
 
+  #control
+  cumulative.edgelist <- get_control(
+    dat, "cumulative.edgelist", override.null.error = TRUE)
+  type <- get_control(dat, "type", override.null.error = TRUE)
+  tergmLite <- get_control(dat, "tergmLite")
   final_step <- get_control(dat, "when2save_at")
 
   #statOnNw <- "status" %in% dat$temp$nwterms
@@ -79,7 +81,7 @@ nwupdate_mig <- function(dat, at) {
   ## Departures----------
   if (length(departures) > 0) {
     #if("i" %in% dat$attr$status[departures]){
-      #browser()
+    #browser()
     #}
 
     # save a csv file for time of departure and ID of infected individual that
@@ -104,8 +106,8 @@ nwupdate_mig <- function(dat, at) {
       dat$el[[1]] <- delete_vertices(dat$el[[1]], departures)
 
       if (dat$control$tergmLite.track.duration) {
-        dat$p[[1]]$state$nw0 %n% "lasttoggle" <-
-          delete_vertices(dat$p[[1]]$state$nw0 %n% "lasttoggle", departures)
+        dat$nw[[1]] %n% "lasttoggle" <-
+          delete_vertices(dat$nw[[1]] %n% "lasttoggle", departures)
       }
     }
   }
@@ -114,17 +116,17 @@ nwupdate_mig <- function(dat, at) {
   if (length(migrations12) > 0) {
     #dat <- track_origin(dat, at, "12", migrations21)
     if (tergmLite == FALSE) {
-        if(isTERGM == TRUE) {
-          e = NULL
-          for (vert in migrations12){
-            e = c(e, get.edgeIDs.active(dat$nw[[1]], v = vert, onset = at,
-                                        terminus = Inf, neighborhood = "combined"))
-          }
-          if (length(e) > 0) {
-            dat$nw[[1]] <- deactivate.edges(dat$nw[[1]], onset = at, terminus = Inf,
-                             e = unique(e))
-          }
+      if(isTERGM == TRUE) {
+        e = NULL
+        for (vert in migrations12){
+          e = c(e, get.edgeIDs.active(dat$nw[[1]], v = vert, onset = at,
+                                      terminus = Inf, neighborhood = "combined"))
         }
+        if (length(e) > 0) {
+          dat$nw[[1]] <- deactivate.edges(dat$nw[[1]], onset = at, terminus = Inf,
+                                          e = unique(e))
+        }
+      }
     }
 
     if (tergmLite == TRUE) {
@@ -237,29 +239,42 @@ nwupdate_mig <- function(dat, at) {
   }
 
   # Attribute consistency checks
-   if (tergmLite == FALSE) {
-     tst <- get.vertex.attribute.active(dat$nw[[1]], "testatus", at = at)
-     tst2 <- get.vertex.attribute.active(dat$nw[[1]], "global_track", at = at)
-     if (any(is.na(tst))) {
-       stop("Error in nwupdate.net: NA's in testatus attribute.\n")
-     }
-     if (any(is.na(tst2))) {
-       stop("Error in nwupdate.net: NA's in global_track attribute.\n")
-     }
-     if (statOnNw == TRUE) {
-       fstat <- get_vertex_attribute(dat$nw[[1]], "status")
-       fstat2 <- get_vertex_attribute(dat$nw[[1]], "origin")
-       if (!identical(tst, fstat)) {
-         stop("Error in nwupdate.net: mismatch between status and testatus
+  if (tergmLite == FALSE) {
+    tst <- get.vertex.attribute.active(dat$nw[[1]], "testatus", at = at)
+    tst2 <- get.vertex.attribute.active(dat$nw[[1]], "global_track", at = at)
+    if (any(is.na(tst))) {
+      stop("Error in nwupdate.net: NA's in testatus attribute.\n")
+    }
+    if (any(is.na(tst2))) {
+      stop("Error in nwupdate.net: NA's in global_track attribute.\n")
+    }
+    if (statOnNw == TRUE) {
+      fstat <- get_vertex_attribute(dat$nw[[1]], "status")
+      fstat2 <- get_vertex_attribute(dat$nw[[1]], "origin")
+      if (!identical(tst, fstat)) {
+        stop("Error in nwupdate.net: mismatch between status and testatus
                attribute.\n")
-       }
-       if (!identical(tst2, fstat2)) {
-         stop("Error in nwupdate.net: mismatch between global_track and origin
+      }
+      if (!identical(tst2, fstat2)) {
+        stop("Error in nwupdate.net: mismatch between global_track and origin
                attribute.\n")
-       }
-     }
-   }
+      }
+    }
+  }
+
+  # Cummulative edgelist
+  if (!is.null(cumulative.edgelist) && cumulative.edgelist == TRUE) {
+
+    truncate.el.cuml <- get_control(
+      dat, "truncate.el.cuml", override.null.error = TRUE)
+    truncate.el.cuml <- if (is.null(truncate.el.cuml)) 1 else truncate.el.cuml
+
+    for (network in seq_along(dat[["nwparam"]])) {
+      dat <- update_cumulative_edgelist(dat, network, truncate.el.cuml)
+    }
+  }
 
   ## Output
   return(dat)
 }
+

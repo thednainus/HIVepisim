@@ -5,13 +5,21 @@ library(reshape2)
 model1 <- readRDS("../../HIV_platform/Results_modelling1/HIVModelMainFit_20211022_110848.rds")
 model2 <- readRDS("../../HIV_platform/Results_modelling2/HIVModelMainFit_20211027_103512.rds")
 model3 <- readRDS("../../HIV_platform/Results_modelling3/HIVModelMainFit_20211027_110750.rds")
+#6knots
+#spline every 2 years from 1992 for the diagnosis rate
+model4 <- readRDS("../../HIV_platform/Results_modelling4/HIVModelMainFit_20220131_142936.rds")
+#4knots
+#spline every 2 years from 1992 for the diagnosis rate
+model5 <- readRDS("../../HIV_platform/Results_modelling5/HIVModelMainFit_20220131_145158.rds")
 
 
 
 incidence <- data.frame(year = model1$Year,
                         model1 = model1$N_Inf_M,
                         model2 = model2$N_Inf_M,
-                        model3 = model3$N_Inf_M)
+                        model3 = model3$N_Inf_M,
+                        model4 = model4$N_Inf_M,
+                        model5 = model5$N_Inf_M)
 
 incidence_melt <- melt(incidence, id.vars = "year")
 

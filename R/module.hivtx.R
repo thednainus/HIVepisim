@@ -25,6 +25,8 @@
 hivtx_msm <- function(dat, at) {
 
   # Attributes ----
+  origin <- get_attr(dat, "origin")
+  active <- get_attr(dat, "active")
   status <- get_attr(dat, "status")
   tx.status <- get_attr(dat, "tx.status")
   diag.status <- get_attr(dat, "diag.status")
@@ -43,52 +45,104 @@ hivtx_msm <- function(dat, at) {
 
 
   if (at >= art_start){
-    ## Initiation -----
-    tx.init.elig <- which(status == "i"  &
-                           tx.status == 0  &
-                           diag.status == 1  &
-                           cuml.time.on.tx == 0 )
-    rates <- tx.init.prob
-    tx.init <- tx.init.elig[rbinom(length(tx.init.elig), 1, rates) == 1]
+    ## Initiation: "region" population -----
+    tx.init.elig_pop1 <- which(active == 1 &
+                                 status == "i" &
+                                 tx.status == 0 &
+                                 diag.status == 1 &
+                                 cuml.time.on.tx == 0 &
+                                 origin == "region")
+    tx.init_pop1 <- tx.init.elig_pop1[rbinom(length(tx.init.elig_pop1), 1,
+                                             tx.init.prob) == 1]
 
-    ## Halting
-    tx.halt.elig <- which(tx.status == 1 & cuml.time.on.tx > 0)
-    rates.halt <- tx.halt.prob
-    tx.halt <- tx.halt.elig[rbinom(length(tx.halt.elig), 1, rates.halt) == 1]
+    ## Halting: "region" population
+    tx.halt.elig_pop1 <- which(active == 1 & tx.status == 1 & cuml.time.on.tx > 0 &
+                                 origin == "region")
+    tx.halt_pop1 <- tx.halt.elig_pop1[rbinom(length(tx.halt.elig_pop1), 1, tx.halt.prob) == 1]
 
-    ## Restarting
-    tx.reinit.elig <- which(tx.status == 0 & cuml.time.on.tx > 0)
-    rates.reinit <- tx.reinit.prob
-    tx.reinit <- tx.reinit.elig[rbinom(length(tx.reinit.elig), 1, rates.reinit) == 1]
+    ## Restarting: "region" population
+    tx.reinit.elig_pop1 <- which(active == 1 & tx.status == 0 & cuml.time.on.tx > 0 &
+                                   origin == "region")
+    tx.reinit_pop1 <- tx.reinit.elig_pop1[rbinom(length(tx.reinit.elig_pop1), 1,
+                                                 tx.reinit.prob) == 1]
+
+    ## Initiation: "global" population -----
+    tx.init.elig_pop2 <- which(active == 1 &
+                                 status == "i" &
+                                 tx.status == 0 &
+                                 diag.status == 1 &
+                                 cuml.time.on.tx == 0 &
+                                 origin == "global")
+    tx.init_pop2 <- tx.init.elig_pop2[rbinom(length(tx.init.elig_pop2), 1,
+                                             tx.init.prob) == 1]
+
+    ## Halting: "global" population
+    tx.halt.elig_pop2 <- which(active == 1 & tx.status == 1 & cuml.time.on.tx > 0 &
+                                 origin == "global")
+    tx.halt_pop2 <- tx.halt.elig_pop2[rbinom(length(tx.halt.elig_pop2), 1, tx.halt.prob) == 1]
+
+    ## Restarting: "global" population
+    tx.reinit.elig_pop2 <- which(active == 1 & tx.status == 0 & cuml.time.on.tx > 0 &
+                                   origin == "global")
+    tx.reinit_pop2 <- tx.reinit.elig_pop2[rbinom(length(tx.reinit.elig_pop2), 1,
+                                                 tx.reinit.prob) == 1]
+
 
     ## Update Attributes
     #browser
-    tx.status[tx.init] <- 1
-    tx.status[tx.halt] <- 0
-    tx.status[tx.reinit] <- 1
+    if (length(tx.init_pop1) > 0){
+      tx.status[tx.init_pop1] <- 1
+    }
+
+    if(length(tx.halt_pop1) > 0) {
+      tx.status[tx.halt_pop1] <- 0
+    }
+
+    if (length(tx.reinit_pop1) > 0) {
+      tx.status[tx.reinit_pop1] <- 1
+    }
+
+
+
+
+
+    if (length(tx.init_pop2) > 0){
+      tx.status[tx.init_pop2] <- 1
+    }
+
+    if(length(tx.halt.elig_pop2) > 0) {
+      tx.status[tx.halt.elig_pop2] <- 0
+    }
+
+    if (length(tx.reinit.elig_pop2) > 0) {
+      tx.status[tx.reinit.elig_pop2] <- 1
+    }
+
+
 
     # Save ART init ----
     if (dat$control$save.stats == TRUE){
-      if (length(tx.init) > 0) {
+      if (length(tx.init_pop1) > 0 | length(tx.init_pop2) > 0) {
         #browser()
-        dat <- set_art_init(dat, at, tx.init)
+        dat <- set_art_init(dat, at, c(tx.init_pop1, tx.init_pop2))
       }
 
-      if (length(tx.halt) > 0){
-        dat <- set_art_halt(dat, at, tx.halt)
+      if (length(tx.halt_pop1) > 0 | length(tx.halt_pop2) > 0){
+        dat <- set_art_halt(dat, at, c(tx.halt_pop1, tx.halt_pop2))
       }
 
-      if (length(tx.reinit) > 0){
-        dat <- set_art_reinit(dat, at, tx.reinit)
+      if (length(tx.reinit_pop2) > 0 | length(tx.reinit_pop1) > 0){
+        dat <- set_art_reinit(dat, at, c(tx.halt_pop1_pop1, tx.halt_pop1_pop2))
       }
     }
 
     cuml.time.on.tx[which(tx.status == 1)] <- cuml.time.on.tx[which(tx.status == 1)] + 1
     cuml.time.off.tx[which(tx.status == 0)] <- cuml.time.off.tx[which(tx.status == 0)] + 1
 
-    tx.init.time[tx.init] <- at
+    tx.init.time[c(tx.init_pop1, tx.init_pop2)] <- at
 
-    idsSetPeriod <- union(tx.init, tx.reinit)
+    #browser()
+    idsSetPeriod <- c(tx.init_pop1, tx.init_pop2, tx.reinit_pop1, tx.reinit_pop2)
     tx.period.first[idsSetPeriod] <- at
     tx.period.last[idsSetPeriod] <- at
 

@@ -41,15 +41,22 @@ hivtrans_mig <- function(dat, at) {
 
   # Parameters ------
   # baseline for transmission rate
-  inf.prob_df <- get_param(dat, "inf.prob")
+  inf.prob <- get_param(dat, "inf.prob")
   init_sim_date <- get_param(dat, "init_date")
 
   #get infection probability per day
-  inf.prob <-get_rate(init_date = init_sim_date, times = inf.prob_df$time,
-                      rates = inf.prob_df$trans.prob, at = at)
+  if(class(inf.prob) != "numeric"){
+    inf.prob <-get_rate(init_date = init_sim_date, times = inf.prob$time,
+                        rates = inf.prob$trans.prob, at = at)
+  }
+
 
   #time.unit <- get_param(dat, "time.unit")
   actRate <- get_param(dat, "act.rate")
+  actRate_scalars <- get_param(dat, "act.rate_scalars")
+  actRate_year2 <- get_param(dat, "act.rate_year2")
+  actRate_year3 <- get_param(dat, "act.rate_year3")
+
 
   # transmission risk ratio by stage of HIV infection
   ws0 <- get_param(dat, "ws0")
@@ -111,6 +118,11 @@ hivtrans_mig <- function(dat, at) {
       del$susMigrant <- migrant[del$sus]
       del$susStatus <- status[del$sus]
 
+      #remove potential pairs of "global" - "region"
+      #from del
+
+      del <- del[!(del$infOrigin != del$susOrigin),]
+
       #del$act.rate <- actRate
 
 
@@ -142,8 +154,31 @@ hivtrans_mig <- function(dat, at) {
       del$inf.prob[del$risk.group == 1] <- del$inf.prob[del$risk.group == 1] * wr1
       del$inf.prob[del$risk.group == 2] <- del$inf.prob[del$risk.group == 2] * wr2
 
-      del$actRate <- actRate
-      del$finalProb <- 1 - (1 - del$inf.prob)^del$actRate
+      if(is.null(actRate_scalars)){
+        del$actRate <- actRate
+        del$finalProb <- 1 - (1 - del$inf.prob)^del$actRate
+      } else {
+
+        if(at < actRate_year2){
+          del$actRate <- actRate * actRate_scalars[1]
+          del$finalProb <- 1 - (1 - del$inf.prob)^del$actRate
+        }
+
+        if(at >= actRate_year2 & at < actRate_year3){
+          del$actRate <- actRate * actRate_scalars[2]
+          del$finalProb <- 1 - (1 - del$inf.prob)^del$actRate
+        }
+
+        if(at >= actRate_year3){
+          del$actRate <- actRate * actRate_scalars[3]
+          del$finalProb <- 1 - (1 - del$inf.prob)^del$actRate
+        }
+
+
+
+      }
+
+
 
 
       # Transmission from infected person --------------------------------------
