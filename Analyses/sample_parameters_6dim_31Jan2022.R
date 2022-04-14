@@ -61,8 +61,8 @@ params6dim <- sampler6(n = 10000,
                                             init_pop1_param = c(10, 300),
                                             scalar4 =  c(1, 3)))
 
-# for imperial college cluster but using a certain paramter values that seem
-# to be closer to the diagnosis incidence (some preminaly analysis in OSG)
+# for imperial college cluster but using a certain parameter values that seem
+# to be closer to the diagnosis incidence (some preliminary analysis in OSG)
 params6dim <- sampler6(n = 5000,
                        paramdf = data.frame(scalar1 =  c(3000, 3500),
                                             scalar2 =  c(4000, 5300),

@@ -530,8 +530,6 @@ act.rate.param_scalars <- c(params6dim$scalar1,
 
 #rates to progress to each stage is the average time for all individuals to
 #transition from one CD4+ category to the next (Cori et al. 2015)
-# analyses were reported for 1,039 individuals
-#rate per individual were then divided by 1039 (Cori et al. 2015)
 
 #if act.rate_scalars = NULL, it will fix act.rate per year
 
@@ -574,17 +572,13 @@ param <- param.net(time.unit = time.unit,
                    asmr_pop1 = list(dr_times = departure_rate_years, dep_vec = dr_vec1_pop1),
                    asmr_pop2 = list(dr_times = departure_rate_years, dep_vec = dr_vec1_pop2),
                    a1.rate = list(a1.times = arrival1.rate.times,
-                                  a1.rates = (arrival1.rates*5)),
+                                  a1.rates = (arrival1.rates * 5)),
                    a2.rate = list(a2.times = a2.rate.times,
                                   a2.rates = (a2.rates * 4)),
                    arrival.age = 18,
                    m12.migrants = 50,
                    m21.migrants = 50)
-# In order to have a m12.rate that will generate 500 migrations every 10 years,
-# the m12.rate should be 1/(100 * 365) (rate per day)
-# to balance number of migrant for m21.rate, we will have 15000/x = 50 individuals per year;
-# x = 15000/50; x = 300 years
-# m21.rate = 1/(300*365)
+
 
 
 init <- init.net()

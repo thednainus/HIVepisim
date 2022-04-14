@@ -59,10 +59,6 @@ if(file.exists("data/sim1/sim1.cp.rda") == FALSE){
 
   # 63% per year is 0.0027 per day
   # 0.01253765 is 99% per year
-  # /109    /68
-  #params5dim <- readRDS(system.file("data/params5dim_1Feb2022.RDS",
-  #                                  package = "HIVepisim"))[line_number,]
-
   params6dim <- readRDS(system.file("data/params6dim_19Feb2022.RDS",
                                     package = "HIVepisim"))[line_number,]
 
@@ -508,19 +504,16 @@ a2.rates <- a2.rates/365
 # and searching fro San Diego only
 # rates are per 100,000 population
 
-#migration in both directions will be set to 1 individual in 10 years
-
-#hiv.test.rate:data was previously fit using a fixed value of 0.045
 hiv.test.rate.df <- readRDS(system.file("data/probability_msm_tested_per_day2.RDS",
                                         package = "HIVepisim"))
-#0.0008587123 was based on some calculations described in testing.R
+#0.0006711141 was based on some calculations described in testing.R
 hiv.test.rate.df$perc_per_day <-  hiv.test.rate.df$perc_per_day * params6dim$scalar4
 
 inf.prob.param <-  readRDS(system.file("data/transmission_probability_v2.RDS",
                                        package = "HIVepisim"))
 #baseline of act.rate per day is 1
 act.rate.param <- 1
-act.rate.param_scalars <- c(params6dim$scalar1/2,
+act.rate.param_scalars <- c(params6dim$scalar1,
                             params6dim$scalar2,
                             params6dim$scalar3)
 
@@ -532,8 +525,6 @@ act.rate.param_scalars <- c(params6dim$scalar1/2,
 
 #rates to progress to each stage is the average time for all individuals to
 #transition from one CD4+ category to the next (Cori et al. 2015)
-# analyses were reported for 1,039 individuals
-#rate per individual were then divided by 1039 (Cori et al. 2015)
 
 #if act.rate_scalars = NULL, it will fix act.rate per year
 
@@ -576,17 +567,12 @@ param <- param.net(time.unit = time.unit,
                    asmr_pop1 = list(dr_times = departure_rate_years, dep_vec = dr_vec1_pop1),
                    asmr_pop2 = list(dr_times = departure_rate_years, dep_vec = dr_vec1_pop2),
                    a1.rate = list(a1.times = arrival1.rate.times,
-                                  a1.rates = (arrival1.rates*5)),
+                                  a1.rates = (arrival1.rates * 5)),
                    a2.rate = list(a2.times = a2.rate.times,
                                   a2.rates = (a2.rates * 4)),
                    arrival.age = 18,
                    m12.migrants = 50,
                    m21.migrants = 50)
-# In order to have a m12.rate that will generate 500 migrations every 10 years,
-# the m12.rate should be 1/(100 * 365) (rate per day)
-# to balance number of migrant for m21.rate, we will have 15000/x = 50 individuals per year;
-# x = 15000/50; x = 300 years
-# m21.rate = 1/(300*365)
 
 
 init <- init.net()

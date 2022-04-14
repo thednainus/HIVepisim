@@ -21,9 +21,24 @@ incidence <- data.frame(year = model1$Year,
                         model4 = model4$N_Inf_M,
                         model5 = model5$N_Inf_M)
 
+
 incidence_melt <- melt(incidence, id.vars = "year")
 
 
 ggplot(data = incidence_melt, aes(x = year, y = value, colour = variable)) +
   geom_line() +
   theme_bw()
+
+
+incidence <- data.frame(year = model1$Year,
+                        model1 = model1$N_Inf_M)
+
+ggplot(data = incidence, aes(x = year, y = model1)) +
+  geom_line(size = 1) +
+  theme_bw() +
+  xlab("Year") +
+  ylab("Incidence") +
+  theme(text=element_text(size=30))
+
+#ggsave("incidence_plot_ecdc.pdf", useDingbats=FALSE, width=19.3, height=11.1)
+ggsave("incidence_plot_ecdc.pdf", useDingbats=FALSE, width=12, height=9)
