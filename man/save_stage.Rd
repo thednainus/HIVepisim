@@ -13,7 +13,7 @@ other initialization information passed from \code{\link[EpiModel]{netsim}}.}
 \item{prefix}{Text for prefix to use when saving filename.}
 }
 \value{
-
+It writes a csv file to the specific location in the computer
 }
 \description{
 At the final step of network simulation, it will save the IDs of
@@ -21,7 +21,4 @@ At the final step of network simulation, it will save the IDs of
 }
 \details{
 If a prefix is not provided, csv file will be saved as stage_and_IDs.csv
-}
-\examples{
-TO DO
 }

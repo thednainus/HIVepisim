@@ -14,7 +14,7 @@ append_core_attr_mig(dat, at, n.new)
 \item{n.new}{the number of new nodes to initiate with core attributes}
 }
 \value{
-
+the Master list object of network models (\code{dat})
 }
 \description{
 Function to append core attributes

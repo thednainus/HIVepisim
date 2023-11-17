@@ -17,7 +17,7 @@ other initialization information passed from \code{\link[EpiModel]{netsim}}.}
 \item{IDs}{Indexes of node IDs}
 }
 \value{
-
+the Master list object of network models (\code{dat})
 }
 \description{
 This function will track for each node its HIV stage of infection and when

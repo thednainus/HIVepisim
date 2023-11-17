@@ -27,7 +27,7 @@ simulate_population(
 \item{inf.prob.param}{Infection probability parameter}
 }
 \value{
-
+sim object
 }
 \description{
 Simulate population of MSM in San Diego

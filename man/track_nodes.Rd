@@ -15,7 +15,7 @@ other initialization information passed from \code{\link[EpiModel]{netsim}}.}
 \item{total_nodes}{Matrix for total nodes at step at by attribute origin}
 }
 \value{
-
+the Master list object of network models (\code{dat})
 }
 \description{
 This function will track the total number of nodes in each time step

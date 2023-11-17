@@ -117,6 +117,9 @@ hivtrans_mig <- function(dat, at) {
       del$susOrigin <- origin[del$sus]
       del$susMigrant <- migrant[del$sus]
       del$susStatus <- status[del$sus]
+      #adding this line to the code for the genetic cluster paper
+      #as I need to know the risk group of the susceptible individuals too
+      del$sus_risk.group <- risk.group[del$sus]
 
       #remove potential pairs of "global" - "region"
       #from del

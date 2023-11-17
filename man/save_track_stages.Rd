@@ -13,7 +13,7 @@ other initialization information passed from \code{\link[EpiModel]{netsim}}.}
 \item{prefix}{Text for prefix to use when saving filename.}
 }
 \value{
-
+it writes a csv file at a specific location at the computer
 }
 \description{
 Whenever an individual change the stage of HIV infection, this

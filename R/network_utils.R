@@ -3,7 +3,7 @@
 #'
 #' @inheritParams EpiModel::append_core_attr
 #'
-#' @return
+#' @return the Master list object of network models (\code{dat})
 #'
 #' @details
 #' This function is based on \link[EpiModel]{append_core_attr}. I added migrationTime
@@ -149,11 +149,9 @@ delete_edges <- function(el, vid) {
 #' @details
 #' If a prefix is not provided, csv file will be saved as departure_IDs.csv
 #'
-#' @return
+#' @return it saves a csv file to the specified location in the computer
 #' @export
 #'
-#' @examples
-#' TO DO
 save_departures <- function(dat, prefix = NULL){
 
   if(!is.null(dat$stats$departures) == TRUE){
@@ -177,14 +175,9 @@ save_departures <- function(dat, prefix = NULL){
 #' @param departures ids of departures
 #' @param prefix Text for prefix to use when saving filename.
 #'
-#' @details
-#' If a prefix is not provided, csv file will be saved as departure_IDs.csv
 #'
-#' @return
+#' @return the Master list object of network models (\code{dat})
 #' @export
-#'
-#' @examples
-#' TO DO
 set_departures <- function(dat, departures, at){
   active <- get_attr(dat, "active")
   status <- get_attr(dat, "status")
@@ -228,11 +221,8 @@ set_departures <- function(dat, departures, at){
 #' @details
 #' If a prefix is not provided, csv file will be saved as stage_and_IDs.csv
 #'
-#' @return
+#' @return It writes a csv file to the specific location in the computer
 #' @export
-#'
-#' @examples
-#' TO DO
 save_stage <- function(dat, prefix = NULL){
 
 
@@ -256,14 +246,8 @@ save_stage <- function(dat, prefix = NULL){
 #'
 #' @inheritParams EpiModel::arrivals.net
 #'
-#' @details
-#' If a prefix is not provided, csv file will be saved as stage_and_IDs.csv
-#'
-#' @return
+#' @return the Master list object of network models (\code{dat})
 #' @export
-#'
-#' @examples
-#' TO DO
 set_stage <- function(dat, at){
   active <- get_attr(dat, "active")
   status <- get_attr(dat, "status")
@@ -310,11 +294,8 @@ set_stage <- function(dat, at){
 #' @details
 #' If a prefix is not provided, csv file will be saved as ART_init.csv
 #'
-#' @return
+#' @return it writes a csv file at a specific location at the computer
 #' @export
-#'
-#' @examples
-#' TO DO
 save_art <- function(dat, prefix = NULL){
 
   if(!is.null(dat$stats$art_init) == TRUE){
@@ -341,10 +322,7 @@ save_art <- function(dat, prefix = NULL){
 #' @param IDs IDs of individuals who started ART.
 #' @param prefix Text for prefix to use when saving filename.
 #'
-#' @details
-#' If a prefix is not provided, csv file will be saved as ART.csv
-#'
-#' @return
+#' @return the Master list object of network models (\code{dat})
 #' @export
 #'
 set_art_init <- function(dat, at, IDs){
@@ -376,11 +354,8 @@ set_art_init <- function(dat, at, IDs){
 #' @details
 #' If a prefix is not provided, csv file will be saved as ART_halt.csv
 #'
-#' @return
+#' @return it writes a csv file at a specific location at the computer
 #' @export
-#'
-#' @examples
-#' TO DO
 save_art_halt <- function(dat, prefix = NULL){
 
   if(!is.null(dat$stats$art_halt) == TRUE){
@@ -407,10 +382,7 @@ save_art_halt <- function(dat, prefix = NULL){
 #' @param IDs IDs of individuals who started ART.
 #' @param prefix Text for prefix to use when saving filename.
 #'
-#' @details
-#' If a prefix is not provided, csv file will be saved as ART.csv
-#'
-#' @return
+#' @return the Master list object of network models (\code{dat})
 #' @export
 #'
 set_art_halt <- function(dat, at, IDs){
@@ -443,11 +415,8 @@ set_art_halt <- function(dat, at, IDs){
 #' @details
 #' If a prefix is not provided, csv file will be saved as ART_reinit.csv
 #'
-#' @return
+#' @return it writes a csv file at a specifi location at the computer
 #' @export
-#'
-#' @examples
-#' TO DO
 save_art_reinit <- function(dat, prefix = NULL){
 
   if(!is.null(dat$stats$art_reinit) == TRUE){
@@ -474,10 +443,7 @@ save_art_reinit <- function(dat, prefix = NULL){
 #' @param IDs IDs of individuals who started ART.
 #' @param prefix Text for prefix to use when saving filename.
 #'
-#' @details
-#' If a prefix is not provided, csv file will be saved as ART.csv
-#'
-#' @return
+#' @return the Master list object of network models (\code{dat})
 #' @export
 #'
 set_art_reinit <- function(dat, at, IDs){
@@ -510,7 +476,7 @@ set_art_reinit <- function(dat, at, IDs){
 #' @details
 #' If a prefix is not provided, csv file will be saved as diag_time.csv
 #'
-#' @return
+#' @return it writes a csv file at a specific location at the computer
 #' @export
 save_diagnosis_time <- function(dat, prefix = NULL){
 
@@ -539,10 +505,7 @@ save_diagnosis_time <- function(dat, prefix = NULL){
 #' @param IDs IDs of individuals who have been diagonsed as HIV positive.
 #' @param prefix Text for prefix to use when saving filename.
 #'
-#' @details
-#' If a prefix is not provided, csv file will be saved as ART.csv
-#'
-#' @return
+#' @return the Master list object of network models (\code{dat})
 #' @export
 set_diagnosis_time <- function(dat, at, IDs){
   #browser()
@@ -574,7 +537,7 @@ set_diagnosis_time <- function(dat, at, IDs){
 #' @details
 #' If a prefix is not provided, csv file will be saved as stages.csv
 #'
-#' @return
+#' @return it writes a csv file at a specific location at the computer
 #' @export
 save_track_stages <- function(dat, prefix = NULL){
 
@@ -600,7 +563,7 @@ save_track_stages <- function(dat, prefix = NULL){
 #' @param HIVstage stage of HIV infection
 #' @param IDs Indexes of node IDs
 #'
-#' @return
+#' @return the Master list object of network models (\code{dat})
 #' @export
 track_stages <- function(dat, at, HIVstage, IDs){
   #browser()
@@ -630,7 +593,7 @@ track_stages <- function(dat, at, HIVstage, IDs){
 #'    ("region" to "global").
 #' @param IDs Indexes of node IDs
 #'
-#' @return
+#' @return the Master list object of network models (\code{dat})
 #' @export
 track_origin <- function(dat, at, migrations, IDs){
   #browser()
@@ -660,7 +623,7 @@ track_origin <- function(dat, at, migrations, IDs){
 #' @inheritParams EpiModel::arrivals.net
 #' @param total_nodes Matrix for total nodes at step at by attribute origin
 #'
-#' @return
+#' @return the Master list object of network models (\code{dat})
 #' @export
 track_nodes <- function(dat, at, total_nodes){
 
@@ -692,7 +655,7 @@ track_nodes <- function(dat, at, total_nodes){
 #' @details
 #' If a prefix is not provided, csv file will be saved as origin.csv
 #'
-#' @return
+#' @return it writes a csv file to the specified location in the computer
 #' @export
 save_track_origin <- function(dat, prefix = NULL){
 
@@ -719,7 +682,7 @@ save_track_origin <- function(dat, prefix = NULL){
 #' @details
 #' If a prefix is not provided, csv file will be saved as total_nodes.csv
 #'
-#' @return
+#' @return it writes a csv file at a specific location at the computer
 #' @export
 save_nodes <- function(dat, prefix = NULL){
 
@@ -746,7 +709,7 @@ save_nodes <- function(dat, prefix = NULL){
 #' @details
 #' If a prefix is not provided, csv file will be saved as r0.csv
 #'
-#' @return
+#' @return it writes a csv file to the specified location in the computer
 #' @export
 save_r0 <- function(dat, prefix = NULL){
 

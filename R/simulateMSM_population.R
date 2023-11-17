@@ -7,7 +7,7 @@
 #' @param act.rate.param Act rate parameter
 #' @param inf.prob.param Infection probability parameter
 #'
-#' @return
+#' @return sim object
 #' @export
 #'
 simulate_population <- function(npop1, npop2, init_infect_pop2,
@@ -476,7 +476,7 @@ simulate_population <- function(npop1, npop2, init_infect_pop2,
 #' @param tx.init.prob.param Probability an MSM will initiated treatment per day
 #'    when diagnosed with HIV.
 #'
-#' @return
+#' @return sim object
 #' @export
 #'
 simulate_msm_pop <- function(npop1,

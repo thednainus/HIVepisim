@@ -29,7 +29,7 @@ Fixed at 300.9307 (according the ECDC model)}
 when diagnosed with HIV.}
 }
 \value{
-
+sim object
 }
 \description{
 Simulate population of MSM in San Diego

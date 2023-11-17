@@ -13,7 +13,7 @@ other initialization information passed from \code{\link[EpiModel]{netsim}}.}
 \item{prefix}{Text for prefix to use when saving filename.}
 }
 \value{
-
+it writes a csv file to the specified location in the computer
 }
 \description{
 This function will save information for cumulative basic reproduction

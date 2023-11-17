@@ -13,15 +13,9 @@ other initialization information passed from \code{\link[EpiModel]{netsim}}.}
 \item{at}{Current time step.}
 }
 \value{
-
+the Master list object of network models (\code{dat})
 }
 \description{
 At the final step of network simulation, it will save the IDs of
    infected nodes and their stage of HIV infection.
-}
-\details{
-If a prefix is not provided, csv file will be saved as stage_and_IDs.csv
-}
-\examples{
-TO DO
 }

@@ -13,7 +13,7 @@ other initialization information passed from \code{\link[EpiModel]{netsim}}.}
 \item{prefix}{Text for prefix to use when saving filename.}
 }
 \value{
-
+it writes a csv file at a specifi location at the computer
 }
 \description{
 Whenever an individual initiates ART, this function will save
@@ -24,7 +24,4 @@ This function will save the time in which an individual initiated ART
 
 
 If a prefix is not provided, csv file will be saved as ART_reinit.csv
-}
-\examples{
-TO DO
 }

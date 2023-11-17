@@ -17,15 +17,9 @@ other initialization information passed from \code{\link[EpiModel]{netsim}}.}
 \item{prefix}{Text for prefix to use when saving filename.}
 }
 \value{
-
+the Master list object of network models (\code{dat})
 }
 \description{
 It aims to save the ID and time of infected individual that
  departure the network via natural or HIV related cause.
-}
-\details{
-If a prefix is not provided, csv file will be saved as departure_IDs.csv
-}
-\examples{
-TO DO
 }

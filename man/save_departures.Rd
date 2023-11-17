@@ -15,7 +15,7 @@ other initialization information passed from \code{\link[EpiModel]{netsim}}.}
 \item{departures}{ids of departures}
 }
 \value{
-
+it saves a csv file to the specified location in the computer
 }
 \description{
 It aims to save the ID and time of infected individual that
@@ -23,7 +23,4 @@ It aims to save the ID and time of infected individual that
 }
 \details{
 If a prefix is not provided, csv file will be saved as departure_IDs.csv
-}
-\examples{
-TO DO
 }

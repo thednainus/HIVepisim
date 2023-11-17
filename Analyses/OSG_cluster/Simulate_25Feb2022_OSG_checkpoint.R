@@ -289,8 +289,8 @@ if(file.exists("data/sim1/sim1.cp.rda") == FALSE){
   mean_dr_rate <- weighted.mean(c(mean(dr_vec1_pop1), mean(dr_vec1_pop2)),
                                 c(n_pop1, n_pop2))
 
-  m12.rate = 1/((n_pop1/50)*365)
-  m21.rate = 1/((n_pop2/50)*365)
+  m12.rate = 1/((n_pop1/500)*365)
+  m21.rate = 1/((n_pop2/500)*365)
 
 
   mean_migration_rate <- weighted.mean(c(m12.rate, m21.rate), c(n_pop1, n_pop2))
