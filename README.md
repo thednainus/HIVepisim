@@ -1,9 +1,6 @@
-<img alt="Project stage: Development" src="https://img.shields.io/badge/Project%20Stage-Development-yellowgreen.svg" />
+# R package to simulate networks with migrations
 
-# R package to simulate network with migrations
-
-HIVepisim uses the [R package EpiModel](http://www.epimodel.org/) to simulate networks. 
-The aim is to get a transmission matrix for simualtions using phylodynamics.
+HIVepisim uses the [R package EpiModel](http://www.epimodel.org/) to simulate networks.
 
 ## Notes
 
@@ -12,6 +9,8 @@ The aim is to get a transmission matrix for simualtions using phylodynamics.
   - [ergm version 4.2.1](https://github.com/statnet/ergm/releases/tag/4.2.1)
   - [tergm version 4.0.2](https://github.com/statnet/tergm/releases/tag/4.0.2)
 
-Please note that the analysis involving the EpiModel package might not work using newerr versions of EpiModel, ergm and tergm.
+Please note that the analysis involving the EpiModel package might not work using newer versions of EpiModel, ergm and tergm.
+
+**Also note that this package is not being maintained anymore.**
 
 
