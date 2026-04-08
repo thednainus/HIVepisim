@@ -11,6 +11,6 @@ HIVepisim uses the [R package EpiModel](http://www.epimodel.org/) to simulate ne
 
 Please note that the analysis involving the EpiModel package might not work using newer versions of EpiModel, ergm and tergm.
 
-**Also note that this package is not being maintained anymore.**
+**Also note that this package is no longer being maintained.**
 
 
