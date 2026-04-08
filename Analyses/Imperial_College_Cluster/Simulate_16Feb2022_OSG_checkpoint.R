@@ -61,7 +61,7 @@ if(file.exists("data/sim1/sim1.cp.rda") == FALSE){
   # 0.01253765 is 99% per year
   # /109    /68
 
-  params6dim <- readRDS(system.file("data/params6dim_19Feb2022_imperial.RDS",
+  params6dim <- readRDS(system.file("data/params6dim_19Feb2022.RDS",
                                     package = "HIVepisim"))[line_number,]
 
 
