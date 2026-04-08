@@ -2,6 +2,8 @@
 
 HIVepisim uses the [R package EpiModel](http://www.epimodel.org/) to simulate networks.
 
+A [wiki page](https://github.com/thednainus/HIVepisim/wiki) contains some details of the scripts in directory [Analyses](https://github.com/thednainus/HIVepisim/tree/master/Analyses).
+
 ## Notes
 
 - The analyses described in this paper was carried out using [EpiModel version 2.2.1](https://github.com/EpiModel/EpiModel/releases/tag/v2.2.1)
